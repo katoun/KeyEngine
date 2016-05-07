@@ -1,0 +1,30 @@
+			{{#HasGetter}}
+			reflection::AttributeInitializer<Getter>([](const reflection::Any &object)
+			{
+				if (object.GetType() == typeof({{& ClassName}}))
+				{
+					auto &instance = object.GetValue<{{& ClassName}}>();
+					return reflection::Any{ instance.{{#HasExplicitGetter}}{{& ExplicitGetter}}(){{/HasExplicitGetter}}{{^HasExplicitGetter}}{{FieldName}}{{/HasExplicitGetter}} };
+				}
+				else
+				{
+					auto &instance = object.GetValue<{{& ClassName}}*>();
+					return reflection::Any{ instance->{{#HasExplicitGetter}}{{& ExplicitGetter}}(){{/HasExplicitGetter}}{{^HasExplicitGetter}}{{FieldName}}{{/HasExplicitGetter}} };
+				}
+			}){{#IsGetterLast}},{{/IsGetterLast}}
+			{{/HasGetter}}{{#HasSetter}}
+			reflection::AttributeInitializer<Setter>([](reflection::Any &object, const reflection::Any &value)
+			{
+				if (object.GetType() == typeof({{& ClassName}}))
+				{
+					auto &instance = object.GetValue<{{& ClassName}}>();
+					{{#HasExplicitSetter}}instance.{{& ExplicitSetter}}( value.GetValue<{{FieldType}}>() );{{/HasExplicitSetter}}{{^HasExplicitSetter}}instance.{{FieldName}} = value.GetValue<{{FieldType}}>();{{/HasExplicitSetter}}
+				}
+				else
+				{
+					auto &instance = object.GetValue<{{& ClassName}}*>();
+					{{#HasExplicitSetter}}instance->{{& ExplicitSetter}}( value.GetValue<{{FieldType}}>() );{{/HasExplicitSetter}}{{^HasExplicitSetter}}instance->{{FieldName}} = value.GetValue<{{FieldType}}>();{{/HasExplicitSetter}}
+				}
+			}){{#IsSetterLast}},{{/IsSetterLast}}{{/HasSetter}}
+			{{#AttributeInitializer}}reflection::AttributeInitializer<{{& AttributeType}}>({{& Arguments}}){{^IsLast}}, {{/IsLast}}
+			{{/AttributeInitializer}}

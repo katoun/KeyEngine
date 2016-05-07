@@ -1,0 +1,40 @@
+#pragma once
+
+#include <Reflection/ReflectionManager.h>
+#include <Reflection/TypeConfig.h>
+#include <Core/Utils.h>
+
+#include <Project.h>
+
+using namespace attribute;
+
+{{#ClassDeclaration}}template class PROJECT_API reflection::TypeInfo<{{& ClassName}}>;
+{{/ClassDeclaration}}
+reflection::Package ProjectPackage("{{ProjectName}}");
+
+void RegisterReflectionData()
+{	{{#ClassDefinition}}
+	{
+		auto id = core::string::Hash("{{& ClassName}}");
+		reflection::TypeInfo<{{& ClassName}}>::Register(id);
+		auto& data = reflection::TypeData("{{& ClassName}}"{{#HasClassAttributes}}, 
+		{
+			{{> AttributeInitializerList}}
+		}{{/HasClassAttributes}});
+		data.Initialize<{{& ClassName}}>();
+		{{#HasBaseTypes}}
+		data.SetBaseTypes(id, { {{#BaseClass}}typeof({{& ClassName}}){{^IsLast}},{{/IsLast}} {{/BaseClass}}});
+		{{/HasBaseTypes}}{{#Field}}
+		data.AddField<{{& ClassName}}, {{FieldType}}>("{{& FieldName}}",
+		{
+			{{> AttributeInitializerList}}
+		});{{/Field}}
+		ProjectPackage.AddType(id, data);
+	}{{/ClassDefinition}}
+	reflection::ReflectionManager::Instance().RegisterPackage(ProjectPackage);
+}
+
+void UnloadReflectionData()
+{
+	reflection::ReflectionManager::Instance().RemovePackage(ProjectPackage);
+}
