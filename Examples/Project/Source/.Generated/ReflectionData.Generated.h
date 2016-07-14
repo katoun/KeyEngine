@@ -1,14 +1,14 @@
 /* Copyright (c) 2016 Catalin-Alexandru Nastase
 *
-* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the
-* Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-* and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+* sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 *
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 *
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
-* ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+* ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #pragma once
@@ -21,12 +21,59 @@
 
 using namespace attribute;
 
+template class PROJECT_API reflection::TypeInfo<std::ios_base>;
 template class PROJECT_API reflection::TypeInfo<MyComponent>;
 
 reflection::Package ProjectPackage("Project");
 
 void RegisterReflectionData()
 {	
+	{
+		auto id = core::string::Hash("std::ios_base");
+		reflection::TypeInfo<std::ios_base>::Register(id);
+		auto& data = reflection::TypeData("std::ios_base", 
+		{
+						
+			reflection::AttributeInitializer<DisplayName>("std::ios_base")
+			
+		});
+		data.Initialize<std::ios_base>();
+		
+		data.AddField<std::ios_base, size_t>("_Stdstr",
+		{
+						
+			reflection::AttributeInitializer<Getter>([](const reflection::Any &object)
+			{
+				if (object.GetType() == typeof(std::ios_base))
+				{
+					auto &instance = object.GetValue<std::ios_base>();
+					return reflection::Any{ instance._Stdstr };
+				}
+				else
+				{
+					auto &instance = object.GetValue<std::ios_base*>();
+					return reflection::Any{ instance->_Stdstr };
+				}
+			}),
+			
+			reflection::AttributeInitializer<Setter>([](reflection::Any &object, const reflection::Any &value)
+			{
+				if (object.GetType() == typeof(std::ios_base))
+				{
+					auto &instance = object.GetValue<std::ios_base>();
+					instance._Stdstr = value.GetValue<size_t>();
+				}
+				else
+				{
+					auto &instance = object.GetValue<std::ios_base*>();
+					instance->_Stdstr = value.GetValue<size_t>();
+				}
+			}),
+			reflection::AttributeInitializer<DisplayName>("_ Stdstr")
+			
+		});
+		ProjectPackage.AddType(id, data);
+	}
 	{
 		auto id = core::string::Hash("MyComponent");
 		reflection::TypeInfo<MyComponent>::Register(id);
