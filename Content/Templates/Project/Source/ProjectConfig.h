@@ -11,7 +11,20 @@
 * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#include <MyComponent.h>
+#pragma once
 
-MyComponent::MyComponent(): game::Component(), m_Test(0.0f)
-{}
+#include <Platform.h>
+
+#ifdef PROJECT_DLL
+#	ifdef PROJECT_EXPORTS
+#		define PROJECT_API DLL_EXPORT
+#	else
+#		define PROJECT_API DLL_IMPORT
+#	endif
+#	define PROJECT_PRIVATE DLL_PRIVATE
+#else
+#	define PROJECT_API
+#	define PROJECT_PRIVATE
+#endif
+
+#define PROJECT_VERSION "0.0.1"
