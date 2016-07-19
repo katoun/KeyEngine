@@ -59,12 +59,9 @@ namespace parser
 
 				m_BaseClasses.emplace_back(baseClass);
 
-				if (IsReservedType(baseClass->Name))
-				{
-					m_IsValid = false;
-				}
+				m_IsValid = false;
 
-				if (IsBaseType(baseClass->Name) || IsValidType(baseClass->Name))
+				if (!IsReservedType(baseClass->Name) && (IsBaseType(baseClass->Name) || IsValidType(baseClass->Name)))
 				{
 					m_IsValid = true;
 				}
@@ -72,6 +69,10 @@ namespace parser
 				if (m_IsValid)
 				{
 					ValidClasses.emplace_back(m_Name);
+				}
+				else
+				{
+					return;
 				}
 			}
 			break;

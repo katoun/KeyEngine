@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{37C41D8E-DAB6-490A-A93C-89EEC5182BF5}</ProjectGuid>
+    <ProjectGuid>{91E2EFCC-7880-4C2E-9809-B81E3DAA71C2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ReflectionParser</RootNamespace>
+    <RootNamespace>ProjectCreator</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -100,18 +100,18 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ReflectionParser;$(ProjectDir)..\..\Dependencies\LLVM\include;$(ProjectDir)..\..\Dependencies\tclap\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ProjectCreator;$(ProjectDir)..\..\Dependencies\tclap\include;$(ProjectDir)..\..\Dependencies\mustache;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>KeyRuntime_d.lib;libclang.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win32;$(ProjectDir)..\..\Dependencies\LLVM\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>KeyRuntime_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(OutDir)"
-copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,19 +120,19 @@ copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Comman
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ReflectionParser;$(ProjectDir)..\..\Dependencies\LLVM\include;$(ProjectDir)..\..\Dependencies\tclap\include;$(ProjectDir)..\..\Dependencies\mustache;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ProjectCreator;$(ProjectDir)..\..\Dependencies\tclap\include;$(ProjectDir)..\..\Dependencies\mustache;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win64;$(ProjectDir)..\..\Dependencies\LLVM\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KeyRuntime_d.lib;libclang.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>KeyRuntime_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(OutDir)"
-copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,7 +144,7 @@ copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Comman
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ReflectionParser;$(ProjectDir)..\..\Dependencies\LLVM\include;$(ProjectDir)..\..\Dependencies\tclap\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ProjectCreator;$(ProjectDir)..\..\Dependencies\LLVM\include;$(ProjectDir)..\..\Dependencies\tclap\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
@@ -152,12 +152,12 @@ copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Comman
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>KeyRuntime.lib;libclang.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win32;$(ProjectDir)..\..\Dependencies\LLVM\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>KeyRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(OutDir)"
-copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -169,7 +169,7 @@ copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Comman
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ReflectionParser;$(ProjectDir)..\..\Dependencies\LLVM\include;$(ProjectDir)..\..\Dependencies\tclap\include;$(ProjectDir)..\..\Dependencies\mustache;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\ProjectCreator;$(ProjectDir)..\..\Dependencies\tclap\include;$(ProjectDir)..\..\Dependencies\mustache;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
@@ -177,37 +177,23 @@ copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Comman
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win64;$(ProjectDir)..\..\Dependencies\LLVM\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KeyRuntime.lib;libclang.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>KeyRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(OutDir)"
-copy "$(ProjectDir)..\..\Dependencies\LLVM\bin\libclang.dll" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Attributes.cpp" />
-    <ClCompile Include="Class.cpp" />
-    <ClCompile Include="Cursor.cpp" />
-    <ClCompile Include="CursorType.cpp" />
-    <ClCompile Include="Field.cpp" />
-    <ClCompile Include="LanguageType.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Creator.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Attributes.h" />
-    <ClInclude Include="Class.h" />
-    <ClInclude Include="Cursor.h" />
-    <ClInclude Include="CursorType.h" />
-    <ClInclude Include="Field.h" />
-    <ClInclude Include="LanguageType.h" />
-    <ClInclude Include="Namespace.h" />
-    <ClInclude Include="ParserOptions.h" />
-    <ClInclude Include="Parser.h" />
-    <ClInclude Include="ParserConfig.h" />
-    <ClInclude Include="Reserved.h" />
+    <ClInclude Include="CreatorOptions.h" />
+    <ClInclude Include="Creator.h" />
+    <ClInclude Include="CreatorConfig.h" />
     <ClInclude Include="Templates.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

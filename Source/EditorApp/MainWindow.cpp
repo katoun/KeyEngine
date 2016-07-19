@@ -31,6 +31,7 @@ namespace editor
 		m_InspectorWidget = new InspectorWidget(this);
 		ui.Inspector->setWidget(m_InspectorWidget);
 
+		QObject::connect(ui.NewProject, SIGNAL(triggered()), this, SLOT(OnNewProject()));
 		QObject::connect(ui.OpenProject, SIGNAL(triggered()), this, SLOT(OnOpenProject()));
 		//QObject::connect(ui.Save, SIGNAL(triggered()), this, SLOT(OnSave()));
 
@@ -87,7 +88,7 @@ namespace editor
 			component_action->setText(QApplication::translate("MainWindow", component_name.c_str(), 0));
 
 			auto icon = FindComponentIcon(QString::fromStdString(core::string::ToLower(component_name)));
-			
+
 			component_action->setIcon(icon);
 
 			component_action->setData(component.GetID());
@@ -99,7 +100,7 @@ namespace editor
 	}
 
 	void MainWindow::RefreshTypesList()
-	{		
+	{
 		auto &rm = reflection::ReflectionManager::Instance();
 
 		std::vector<reflection::Type> types = rm.GetTypes();
@@ -163,7 +164,7 @@ namespace editor
 		{
 			icon.addFile(icon_resource_path, QSize(), QIcon::Normal, QIcon::Off);
 		}
-		else if(QFile(icon_project_path).exists())
+		else if (QFile(icon_project_path).exists())
 		{
 			icon.addFile(icon_project_path, QSize(), QIcon::Normal, QIcon::Off);
 		}
@@ -173,6 +174,16 @@ namespace editor
 		}
 
 		return icon;
+	}
+
+	void MainWindow::OnNewProject()
+	{
+		QString project_path = QFileDialog::getExistingDirectory(this, tr("New Project"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+		current_project_path = project_path;
+		current_project_name = tr("TestProject");//TEMP, REPLACE WITH A CREATE PROJECT DIALOG!!!
+
+		StartProjectCreator();
 	}
 
 	void MainWindow::OnOpenProject()
@@ -206,10 +217,32 @@ namespace editor
 			RefreshTypesList();
 		}
 
-		StartParser();
+		StartReflectionParser();
 	}
 
-	void MainWindow::StartParser()
+	void MainWindow::StartProjectCreator()
+	{
+		QDir app_dir = QDir(QApplication::applicationDirPath());
+
+		QString creator_name = "ProjectCreator";
+#ifdef _DEBUG
+		creator_name += "_d";
+#endif
+		creator_name += ".exe";
+		QString creator_path = app_dir.absoluteFilePath(creator_name);
+
+		m_BuildProcess = new QProcess();
+		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCreatorFinished(int, QProcess::ExitStatus)));
+
+		m_BuildProcess->setWorkingDirectory(app_dir.absolutePath());
+
+		QString command = creator_path + " " + "-n " + current_project_name + " -p \"" + current_project_path + "\"";
+		m_BuildProcess->start(command);
+
+		ui.StatusBar->showMessage(tr("Creating Project"));
+	}
+
+	void MainWindow::StartReflectionParser()
 	{
 		QDir app_dir = QDir(QApplication::applicationDirPath());
 
@@ -221,7 +254,7 @@ namespace editor
 		QString parser_path = app_dir.absoluteFilePath(parser_name);
 
 		m_BuildProcess = new QProcess();
-		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnParserFinished(int, QProcess::ExitStatus)));
+		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnReflectionParserFinished(int, QProcess::ExitStatus)));
 
 		m_BuildProcess->setWorkingDirectory(app_dir.absolutePath());
 
@@ -230,7 +263,8 @@ namespace editor
 
 		ui.StatusBar->showMessage(tr("Parsing"));
 	}
-	void MainWindow::StartCompile()
+
+	void MainWindow::StartProjectCompile()
 	{
 		//Clear intermediate build directories
 		QString build_path = current_project_path;
@@ -247,17 +281,17 @@ namespace editor
 		QString msbuild_exe = "\"C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\MSBuild.exe\"";
 
 		m_BuildProcess = new QProcess();
-		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnCompileFinished(int, QProcess::ExitStatus)));
+		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCompileFinished(int, QProcess::ExitStatus)));
 
 		m_BuildProcess->setWorkingDirectory(current_project_path);
 
-		QString command = msbuild_exe + " " + "Project.sln /target:Project /p:Platform=Win64;Configuration=\"Debug Editor\"";
+		QString command = msbuild_exe + " " + current_project_name + ".sln /target:"+ current_project_name + " /p:Platform=Win64;Configuration=\"Debug Editor\"";
 		m_BuildProcess->start(command);
 
 		ui.StatusBar->showMessage(tr("Compiling"));
 	}
 
-	void MainWindow::OnParserFinished(int exitCode, QProcess::ExitStatus status)
+	void MainWindow::OnProjectCreatorFinished(int exitCode, QProcess::ExitStatus status)
 	{
 		SAFE_DELETE(m_BuildProcess);
 
@@ -265,7 +299,33 @@ namespace editor
 		{
 			ui.StatusBar->clearMessage();
 
-			StartCompile();
+			QString project_file_path = current_project_path;
+			project_file_path.append("/");
+			project_file_path.append(current_project_name);
+			project_file_path.append("/");
+			project_file_path.append(current_project_name);
+			project_file_path.append(".keyproject");
+			OpenProject(project_file_path);
+		}
+
+		if (status == QProcess::CrashExit)
+		{
+			current_project_path = tr("");
+			current_project_name = tr("");
+
+			ui.StatusBar->showMessage(tr("Project Creation Failed"));
+		}
+	}
+
+	void MainWindow::OnReflectionParserFinished(int exitCode, QProcess::ExitStatus status)
+	{
+		SAFE_DELETE(m_BuildProcess);
+
+		if (status == QProcess::NormalExit)
+		{
+			ui.StatusBar->clearMessage();
+
+			StartProjectCompile();
 		}
 
 		if (status == QProcess::CrashExit)
@@ -274,7 +334,7 @@ namespace editor
 		}
 	}
 
-	void MainWindow::OnCompileFinished(int exitCode, QProcess::ExitStatus status)
+	void MainWindow::OnProjectCompileFinished(int exitCode, QProcess::ExitStatus status)
 	{
 		SAFE_DELETE(m_BuildProcess);
 

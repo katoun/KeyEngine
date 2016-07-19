@@ -61,17 +61,20 @@ namespace editor
 
 	public slots:
 
+		void OnNewProject();
 		void OnOpenProject();
 		void OnSave();
 		void OnExit();
 
 		void OnCompile();
 
-		void StartParser();
-		void StartCompile();
+		void StartProjectCreator();
+		void StartReflectionParser();
+		void StartProjectCompile();
 
-		void OnParserFinished(int, QProcess::ExitStatus);
-		void OnCompileFinished(int, QProcess::ExitStatus);
+		void OnProjectCreatorFinished(int, QProcess::ExitStatus);
+		void OnReflectionParserFinished(int, QProcess::ExitStatus);
+		void OnProjectCompileFinished(int, QProcess::ExitStatus);
 	};
 }
 

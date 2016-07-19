@@ -206,6 +206,9 @@
     <CustomBuild Include="..\..\Dependencies\qtpropertybrowser\src\qtpropertybrowser.qrc">
       <Filter>QtPropertyBrowser</Filter>
     </CustomBuild>
+    <CustomBuild Include="Forms\NewProjectDialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\Editor.rc">
@@ -223,6 +226,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="EditorAppConfig.h" />
+    <ClInclude Include="GeneratedFiles\ui_NewProjectDialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Dependencies\qtpropertybrowser\src\images\cursor-arrow.png">

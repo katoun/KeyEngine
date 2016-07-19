@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Creator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Templates.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="CreatorConfig.h" />
+    <ClInclude Include="CreatorOptions.h" />
+    <ClInclude Include="Creator.h" />
+  </ItemGroup>
+</Project>
