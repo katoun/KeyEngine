@@ -5,6 +5,7 @@
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "MainWindow.h"
+#include "NewProjectDialog.h"
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFile>
@@ -178,12 +179,18 @@ namespace editor
 
 	void MainWindow::OnNewProject()
 	{
-		QString project_path = QFileDialog::getExistingDirectory(this, tr("New Project"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+		NewProjectDialog dialog(this);
+		dialog.exec();
+		if (dialog.result() == QDialog::Accepted)
+		{
+			QString project_path = dialog.GetProjectPath();
+			QString project_name = dialog.GetProjectName();
 
-		current_project_path = project_path;
-		current_project_name = tr("TestProject");//TEMP, REPLACE WITH A CREATE PROJECT DIALOG!!!
+			current_project_path = project_path;
+			current_project_name = project_name;
 
-		StartProjectCreator();
+			StartProjectCreator();
+		}
 	}
 
 	void MainWindow::OnOpenProject()

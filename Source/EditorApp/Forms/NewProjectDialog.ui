@@ -48,7 +48,7 @@
     <number>3</number>
    </property>
    <item row="2" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="QDialogButtonBox" name="ButtonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

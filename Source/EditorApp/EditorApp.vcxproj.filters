@@ -140,6 +140,13 @@
     <ClCompile Include="GeneratedFiles\qrc_qtpropertybrowser.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_NewProjectDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_NewProjectDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="NewProjectDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\Icons\icons.qrc">
@@ -209,6 +216,7 @@
     <CustomBuild Include="Forms\NewProjectDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="NewProjectDialog.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\Editor.rc">
