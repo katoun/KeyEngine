@@ -10,8 +10,7 @@ namespace reflection
 {
 	ReflectionManager::ReflectionManager(void)
 	{
-		// register all of the native type variants explicitly, before
-		// anything else
+		// register all of the native type variants explicitly, before anything else
 		RegisterReflectionData();
 
 		RegisterPackage(Package::Default);

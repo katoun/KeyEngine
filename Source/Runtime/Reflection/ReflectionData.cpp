@@ -18,18 +18,54 @@
 			Package::Default.AddType(id, data);		\
 		}											\
 
-#define REGISTER_COMPONENT(type, name)											\
-		{																		\
-			auto id = core::string::Hash( #type );								\
-			TypeInfo<type>::Register(id);										\
-			auto& data = TypeData( #type,										\
-			{																	\
-				reflection::AttributeInitializer<attribute::DisplayName>(name),	\
-			});																	\
-			data.Initialize<type>();											\
-			data.SetBaseTypes(id, { typeof(game::Component) });					\
-			Package::Default.AddType(id, data);									\
-		}																		\
+#define REGISTER_TYPE_BEGIN(type, name)																							\
+		{																														\
+			auto id = core::string::Hash( #type );																				\
+			TypeInfo<type>::Register(id);																						\
+			auto& data = TypeData( #type,																						\
+			{																													\
+				reflection::AttributeInitializer<attribute::DisplayName>(name),													\
+			});																													\
+			data.Initialize<type>();																							\
+
+#define REGISTER_TYPE_BASE(base)																								\
+			data.SetBaseTypes(id, { typeof(base) });																			\
+
+#define REGISTER_TYPE_FIELD(class_type, type, name, display_name, getter, setter)												\
+			data.AddField<class_type,type>(#name,																				\
+			{																													\
+				reflection::AttributeInitializer<attribute::Getter>([](const reflection::Any &object)							\
+				{																												\
+					if (object.GetType() == typeof(class_type))																	\
+					{																											\
+						auto &instance = object.GetValue<class_type>();															\
+						return reflection::Any{ instance.getter() };															\
+					}																											\
+					else																										\
+					{																											\
+						auto &instance = object.GetValue<class_type*>();														\
+						return reflection::Any{ instance->getter() };															\
+					}																											\
+				}),																												\
+				reflection::AttributeInitializer<attribute::Setter>([](reflection::Any &object, const reflection::Any &value)	\
+				{																												\
+					if (object.GetType() == typeof(class_type))																	\
+					{																											\
+						auto &instance = object.GetValue<class_type>();															\
+						instance.setter(value.GetValue<type>());																\
+					}																											\
+					else																										\
+					{																											\
+						auto &instance = object.GetValue<class_type*>();														\
+						instance->setter(value.GetValue<type>());																\
+					}																											\
+				}),																												\
+				reflection::AttributeInitializer<attribute::DisplayName>(display_name)											\
+			});																													\
+
+#define REGISTER_TYPE_END()																										\
+			Package::Default.AddType(id, data);																					\
+		}																														\
 
 namespace reflection
 {
@@ -58,107 +94,11 @@ namespace reflection
 		REGISTER_BASE_TYPE(game::GameObject);
 		REGISTER_BASE_TYPE(game::Component);
 
-		//Transform
-		{
-			auto id = core::string::Hash("Transform");
-			reflection::TypeInfo<game::Transform>::Register(id);
-			auto& data = reflection::TypeData("Transform",
-			{
-				reflection::AttributeInitializer<attribute::DisplayName>("Transform")
-			});
-			data.Initialize<game::Transform>();
-			data.SetBaseTypes(id, { typeof(game::Component) });
-			data.AddField<game::Transform, glm::vec3>("m_Position",
-			{
-				reflection::AttributeInitializer<attribute::Getter>([](const reflection::Any &object)
-				{
-					if (object.GetType() == typeof(game::Transform))
-					{
-						auto &instance = object.GetValue<game::Transform>();
-						return reflection::Any{ instance.GetPosition() };
-					}
-					else
-					{
-						auto &instance = object.GetValue<game::Transform*>();
-						return reflection::Any{ instance->GetPosition() };
-					}
-				}),
-				reflection::AttributeInitializer<attribute::Setter>([](reflection::Any &object, const reflection::Any &value)
-				{
-					if (object.GetType() == typeof(game::Transform))
-					{
-						auto &instance = object.GetValue<game::Transform>();
-						instance.SetPosition(value.GetValue<glm::vec3>());
-					}
-					else
-					{
-						auto &instance = object.GetValue<game::Transform*>();
-						instance->SetPosition(value.GetValue<glm::vec3>());
-					}
-				}),
-				reflection::AttributeInitializer<attribute::DisplayName>("Position")
-			});
-			data.AddField<game::Transform, glm::vec3>("m_EulerAngles",
-			{
-				reflection::AttributeInitializer<attribute::Getter>([](const reflection::Any &object)
-				{
-					if (object.GetType() == typeof(game::Transform))
-					{
-						auto &instance = object.GetValue<game::Transform>();
-						return reflection::Any{ instance.GetEulerAngles() };
-					}
-					else
-					{
-						auto &instance = object.GetValue<game::Transform*>();
-						return reflection::Any{ instance->GetEulerAngles() };
-					}
-				}),
-				reflection::AttributeInitializer<attribute::Setter>([](reflection::Any &object, const reflection::Any &value)
-				{
-					if (object.GetType() == typeof(game::Transform))
-					{
-						auto &instance = object.GetValue<game::Transform>();
-						instance.SetEulerAngles(value.GetValue<glm::vec3>());
-					}
-					else
-					{
-						auto &instance = object.GetValue<game::Transform*>();
-						instance->SetEulerAngles(value.GetValue<glm::vec3>());
-					}
-				}),
-				reflection::AttributeInitializer<attribute::DisplayName>("Rotation")
-			});
-			data.AddField<game::Transform, glm::vec3>("m_Scale",
-			{
-				reflection::AttributeInitializer<attribute::Getter>([](const reflection::Any &object)
-				{
-					if (object.GetType() == typeof(game::Transform))
-					{
-						auto &instance = object.GetValue<game::Transform>();
-						return reflection::Any{ instance.GetScale() };
-					}
-					else
-					{
-						auto &instance = object.GetValue<game::Transform*>();
-						return reflection::Any{ instance->GetScale() };
-					}
-				}),
-				reflection::AttributeInitializer<attribute::Setter>([](reflection::Any &object, const reflection::Any &value)
-				{
-					if (object.GetType() == typeof(game::Transform))
-					{
-						auto &instance = object.GetValue<game::Transform>();
-						instance.SetScale(value.GetValue<glm::vec3>());
-					}
-					else
-					{
-						auto &instance = object.GetValue<game::Transform*>();
-						instance->SetScale(value.GetValue<glm::vec3>());
-					}
-				}),
-				reflection::AttributeInitializer<attribute::DisplayName>("Scale")
-			});
-			Package::Default.AddType(id, data);
-		}
+		REGISTER_TYPE_BEGIN(game::Transform, "Transform")
+			REGISTER_TYPE_BASE(game::Component)
+			REGISTER_TYPE_FIELD(game::Transform, glm::vec3, "m_Position", "Position", GetPosition, SetPosition)
+			REGISTER_TYPE_FIELD(game::Transform, glm::vec3, "m_EulerAngles", "Rotation", GetEulerAngles, SetEulerAngles)
+			REGISTER_TYPE_FIELD(game::Transform, glm::vec3, "m_Scale", "Scale", GetScale, SetScale)
+		REGISTER_TYPE_END()
 	}
 }
