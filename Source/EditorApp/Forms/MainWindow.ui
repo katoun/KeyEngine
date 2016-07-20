@@ -54,6 +54,7 @@
     <addaction name="Save"/>
     <addaction name="SaveAll"/>
     <addaction name="separator"/>
+    <addaction name="OpenVS"/>
     <addaction name="Build"/>
     <addaction name="separator"/>
     <addaction name="Exit"/>
@@ -507,6 +508,18 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+C</string>
+   </property>
+  </action>
+  <action name="OpenVS">
+   <property name="icon">
+    <iconset resource="../Resources/Icons/icons.qrc">
+     <normaloff>:/icons/visual_studio.png</normaloff>:/icons/visual_studio.png</iconset>
+   </property>
+   <property name="text">
+    <string>OpenVS</string>
+   </property>
+   <property name="toolTip">
+    <string>OpenVS</string>
    </property>
   </action>
  </widget>

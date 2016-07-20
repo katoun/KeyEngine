@@ -52,7 +52,7 @@ namespace editor
 		ContentBrowserWidget* m_ContentBrowserWidget;
 		InspectorWidget* m_InspectorWidget;
 
-		QProcess* m_BuildProcess;
+		QProcess* m_CommandProcess;
 
 		void RefreshComponentsList();
 		void RefreshTypesList();
@@ -66,6 +66,7 @@ namespace editor
 		void OnSave();
 		void OnExit();
 
+		void OpenVS();
 		void OnCompile();
 
 		void StartProjectCreator();
@@ -75,6 +76,7 @@ namespace editor
 		void OnProjectCreatorFinished(int, QProcess::ExitStatus);
 		void OnReflectionParserFinished(int, QProcess::ExitStatus);
 		void OnProjectCompileFinished(int, QProcess::ExitStatus);
+		void OnOpenVSFinished(int, QProcess::ExitStatus);
 	};
 }
 

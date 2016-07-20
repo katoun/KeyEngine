@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QDir>
+#include <QDesktopServices>
 
 #include <Runtime.h>
 #include <Editor/ModuleManager.h>
@@ -38,6 +39,7 @@ namespace editor
 
 		QObject::connect(ui.Exit, SIGNAL(triggered()), this, SLOT(OnExit()));
 		QObject::connect(ui.Compile, SIGNAL(triggered()), this, SLOT(OnCompile()));
+		QObject::connect(ui.OpenVS, SIGNAL(triggered()), this, SLOT(OpenVS()));
 
 		QObject::connect(ui.CreateGameObject, SIGNAL(triggered()), m_OutlinerWidget, SLOT(OnCreateTopLevelGameObject()));
 
@@ -52,7 +54,7 @@ namespace editor
 		RefreshTypesList();
 
 		m_ModuleManager = editor::ModuleManager::GetInstance();
-		m_BuildProcess = nullptr;
+		m_CommandProcess = nullptr;
 		m_CurrentProjectModule = nullptr;
 	}
 
@@ -210,6 +212,32 @@ namespace editor
 		QApplication::exit();
 	}
 
+	void MainWindow::OpenVS()
+	{
+		if (current_project_path.isEmpty())
+			return;
+
+		QString vs_solution_file = current_project_name;
+		vs_solution_file.append(".sln");
+
+		/*m_CommandProcess = new QProcess();
+		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnOpenVSFinished(int, QProcess::ExitStatus)));
+
+		m_CommandProcess->setWorkingDirectory(current_project_path);
+
+		QString command = "start " + vs_solution_file;
+		m_CommandProcess->start(command);*/
+
+		QString url = "file:///";
+		url.append(current_project_path);
+		url.append("/");
+		url.append(vs_solution_file);
+
+		QDesktopServices::openUrl(QUrl(url));//FOR NOW THIS METHIS WORKS!!!
+
+		ui.StatusBar->showMessage(tr("Opening VS"));
+	}
+
 	void MainWindow::OnCompile()
 	{
 		if (current_project_path.isEmpty())
@@ -238,13 +266,13 @@ namespace editor
 		creator_name += ".exe";
 		QString creator_path = app_dir.absoluteFilePath(creator_name);
 
-		m_BuildProcess = new QProcess();
-		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCreatorFinished(int, QProcess::ExitStatus)));
+		m_CommandProcess = new QProcess();
+		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCreatorFinished(int, QProcess::ExitStatus)));
 
-		m_BuildProcess->setWorkingDirectory(app_dir.absolutePath());
+		m_CommandProcess->setWorkingDirectory(app_dir.absolutePath());
 
 		QString command = creator_path + " " + "-n " + current_project_name + " -p \"" + current_project_path + "\"";
-		m_BuildProcess->start(command);
+		m_CommandProcess->start(command);
 
 		ui.StatusBar->showMessage(tr("Creating Project"));
 	}
@@ -260,13 +288,13 @@ namespace editor
 		parser_name += ".exe";
 		QString parser_path = app_dir.absoluteFilePath(parser_name);
 
-		m_BuildProcess = new QProcess();
-		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnReflectionParserFinished(int, QProcess::ExitStatus)));
+		m_CommandProcess = new QProcess();
+		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnReflectionParserFinished(int, QProcess::ExitStatus)));
 
-		m_BuildProcess->setWorkingDirectory(app_dir.absolutePath());
+		m_CommandProcess->setWorkingDirectory(app_dir.absolutePath());
 
 		QString command = parser_path + " " + "-n " + current_project_name + " -p \"" + current_project_path + "\"";
-		m_BuildProcess->start(command);
+		m_CommandProcess->start(command);
 
 		ui.StatusBar->showMessage(tr("Parsing"));
 	}
@@ -287,20 +315,20 @@ namespace editor
 
 		QString msbuild_exe = "\"C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\MSBuild.exe\"";
 
-		m_BuildProcess = new QProcess();
-		QObject::connect(m_BuildProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCompileFinished(int, QProcess::ExitStatus)));
+		m_CommandProcess = new QProcess();
+		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCompileFinished(int, QProcess::ExitStatus)));
 
-		m_BuildProcess->setWorkingDirectory(current_project_path);
+		m_CommandProcess->setWorkingDirectory(current_project_path);
 
 		QString command = msbuild_exe + " " + current_project_name + ".sln /target:"+ current_project_name + " /p:Platform=Win64;Configuration=\"Debug Editor\"";
-		m_BuildProcess->start(command);
+		m_CommandProcess->start(command);
 
 		ui.StatusBar->showMessage(tr("Compiling"));
 	}
 
 	void MainWindow::OnProjectCreatorFinished(int exitCode, QProcess::ExitStatus status)
 	{
-		SAFE_DELETE(m_BuildProcess);
+		SAFE_DELETE(m_CommandProcess);
 
 		if (status == QProcess::NormalExit)
 		{
@@ -326,7 +354,7 @@ namespace editor
 
 	void MainWindow::OnReflectionParserFinished(int exitCode, QProcess::ExitStatus status)
 	{
-		SAFE_DELETE(m_BuildProcess);
+		SAFE_DELETE(m_CommandProcess);
 
 		if (status == QProcess::NormalExit)
 		{
@@ -343,7 +371,7 @@ namespace editor
 
 	void MainWindow::OnProjectCompileFinished(int exitCode, QProcess::ExitStatus status)
 	{
-		SAFE_DELETE(m_BuildProcess);
+		SAFE_DELETE(m_CommandProcess);
 
 		if (status == QProcess::NormalExit)
 		{
@@ -358,6 +386,21 @@ namespace editor
 		if (status == QProcess::CrashExit)
 		{
 			ui.StatusBar->showMessage(tr("Compiling Failed"));
+		}
+	}
+
+	void MainWindow::OnOpenVSFinished(int exitCode, QProcess::ExitStatus status)
+	{
+		SAFE_DELETE(m_CommandProcess);
+
+		if (status == QProcess::NormalExit)
+		{
+			ui.StatusBar->clearMessage();
+		}
+
+		if (status == QProcess::CrashExit)
+		{
+			ui.StatusBar->showMessage(tr("Open VS Failed"));
 		}
 	}
 }
