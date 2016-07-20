@@ -4,6 +4,6 @@
     <LocalDebuggerCommand>$(TargetFileName)</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerCommandArguments>-n Project -p "$(ProjectDir)..\..\Examples\Project"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-n Test -p "$(ProjectDir)..\..\Projects\Test"</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

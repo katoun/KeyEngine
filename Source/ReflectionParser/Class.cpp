@@ -35,11 +35,7 @@ namespace parser
 		: LanguageType(cursor, currentNamespace)
 		, m_Name(cursor.GetType().GetDisplayName())
 	{
-		if (IsReservedType(m_Name) || IsBaseType(m_Name))
-		{
-			m_IsValid = false;
-			return;
-		}
+		m_IsValid = false;
 
 		m_DisplayName = m_Attributes.GetProperty(DisplayName);
 
@@ -59,20 +55,9 @@ namespace parser
 
 				m_BaseClasses.emplace_back(baseClass);
 
-				m_IsValid = false;
-
 				if (!IsReservedType(baseClass->Name) && (IsBaseType(baseClass->Name) || IsValidType(baseClass->Name)))
 				{
 					m_IsValid = true;
-				}
-
-				if (m_IsValid)
-				{
-					ValidClasses.emplace_back(m_Name);
-				}
-				else
-				{
-					return;
 				}
 			}
 			break;
@@ -93,6 +78,20 @@ namespace parser
 				}
 				break;
 			}
+		}
+
+		if (IsReservedType(m_Name) || IsBaseType(m_Name))
+		{
+			m_IsValid = false;
+		}
+
+		if (m_IsValid)
+		{
+			ValidClasses.emplace_back(m_Name);
+		}
+		else
+		{
+			m_Fields.clear();
 		}
 	}
 
