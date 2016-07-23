@@ -8,10 +8,13 @@
 
 namespace game
 {
-	enum TransformSpace
+	enum MessageType
 	{
-		LOCAL,
-		PARENT,
-		WORLD
+		UNDEFINED,
+		PARENT_CHANGED,
+		COMPONENT_ATTACHED,
+		COMPONENT_DETACHED,
+		NEEDS_UPDATE,
+		COUNT
 	};
-}
+} // end namespace game

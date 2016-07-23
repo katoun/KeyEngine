@@ -6,7 +6,7 @@
 
 #include <Game/Transform.h>
 #include <Game/GameObject.h>
-#include <Game/Messages.h>
+#include <Game/MessageType.h>
 
 namespace game
 {
@@ -145,14 +145,14 @@ namespace game
 	{
 		switch (relativeTo)
 		{
-		case TransformSpace::TRANSFORM_LOCAL_SPACE:
+		case TransformSpace::LOCAL:
 			// position is relative to parent so transform downwards
 			m_Position += m_Orientation * d;
 			break;
-		case TransformSpace::TRANSFORM_PARENT_SPACE:
+		case TransformSpace::PARENT:
 			m_Position += d;
 			break;
-		case TransformSpace::TRANSFORM_WORLD_SPACE:
+		case TransformSpace::WORLD:
 			// position is relative to parent so transform upwards
 			if (m_Parent != nullptr)
 			{
@@ -177,15 +177,15 @@ namespace game
 
 		switch (relativeTo)
 		{
-		case TRANSFORM_LOCAL_SPACE:
+		case TransformSpace::LOCAL:
 			// Note the order of the mult, i.e. q comes after
 			m_Orientation = m_Orientation * qnorm;
 			break;
-		case TRANSFORM_PARENT_SPACE:
+		case TransformSpace::PARENT:
 			// Rotations are normally relative to local axes, transform up
 			m_Orientation = qnorm * m_Orientation;
 			break;
-		case TRANSFORM_WORLD_SPACE:
+		case TransformSpace::WORLD:
 			// Rotations are normally relative to local axes, transform up
 			m_Orientation = m_Orientation * glm::inverse(GetAbsoluteOrientation()) * qnorm * GetAbsoluteOrientation();
 			break;
@@ -227,7 +227,7 @@ namespace game
 
 		if (m_TransformNeedsUpdate)
 		{
-			m_GameObject->SendMessage(Message::NEEDS_UPDATE);
+			m_GameObject->SendMessage(MessageType::NEEDS_UPDATE);
 
 			if (m_Parent != nullptr)
 			{
@@ -292,7 +292,7 @@ namespace game
 
 		switch (message)
 		{
-		case Message::PARENT_CHANGED:
+		case MessageType::PARENT_CHANGED:
 		{
 			GameObject* parent_object = m_GameObject->GetParent();
 			if (parent_object)
@@ -307,7 +307,7 @@ namespace game
 			m_TransformNeedsUpdate = true;
 		}
 		break;
-		case Message::NEEDS_UPDATE:
+		case MessageType::NEEDS_UPDATE:
 		{
 			m_TransformNeedsUpdate = true;
 		}

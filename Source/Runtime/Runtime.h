@@ -11,9 +11,15 @@
 #include <Core/Utils.h>
 #include <Core/Object.h>
 
-#include <Game/Messages.h>
+#include <Game/MessageType.h>
 #include <Game/GameObject.h>
 #include <Game/Component.h>
+
+#include <Resource/ResourceState.h>
+#include <Resource/ResourceEvent.h>
+#include <Resource/ResourceEventReceiver.h>
+#include <Resource/Resource.h>
+#include <Resource/ResourceManager.h>
 
 #include <Reflection/TypeConfig.h>
 #include <Reflection/TypeInfo.h>

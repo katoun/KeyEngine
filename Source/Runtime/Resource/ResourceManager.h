@@ -6,12 +6,19 @@
 
 #pragma once
 
-namespace game
+#include <RuntimeConfig.h>
+
+namespace resource
 {
-	enum TransformSpace
+	class RUNTIME_API ResourceManager
 	{
-		LOCAL,
-		PARENT,
-		WORLD
+	public:
+
+		ResourceManager(void);
+
+		static ResourceManager &Instance(void);
+
+	private:
+
 	};
 }

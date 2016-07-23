@@ -12,38 +12,79 @@ namespace resource
 		: core::Object()
 		, m_Path(path)
 		, m_State(ResourceState::UNLOADED)
+	{
+		m_Event.source = this;
+	}
+
+	Resource::~Resource(void)
 	{}
 
-	Resource::~Resource()
-	{}
-
-	const filesystem::path& Resource::GetPath() const
+	const filesystem::path& Resource::GetPath(void) const
 	{
 		return m_Path;
 	}
 
-	const ResourceState& Resource::GetState() const
+	const ResourceState& Resource::GetState(void) const
 	{
 		return m_State;
 	}
 
-	void Resource::RegisterEventReceiver(ResourceEventReceiver& reveicer)
+	void Resource::RegisterEventReceiver(ResourceEventReceiver* receiver)
 	{
+		if (receiver == nullptr)
+			return;
 
+		m_EventReceivers.emplace_back(receiver);
+
+		if (m_State == ResourceState::LOADED)
+		{
+			SendLoadedEvent(receiver);
+		}
 	}
 
-	void Resource::RemoveEventReceiver(ResourceEventReceiver& reveicer)
+	void Resource::RemoveEventReceiver(ResourceEventReceiver* receiver)
 	{
-
+		if (receiver == nullptr)
+			return;
+		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end(); ++i)
+		{
+			if ((*i) == receiver)
+			{
+				m_EventReceivers.erase(i);
+				return;
+			}
+		}
 	}
 
-	void Resource::SendLoadedEvent()
+	void Resource::SendLoadedEvent(ResourceEventReceiver* receiver)
 	{
+		if (receiver == nullptr)
+			return;
 
+		receiver->ResourceLoaded(m_Event);
 	}
 
-	void Resource::SendUnloadedEvent()
+	void Resource::SendLoadedEvent(void)
 	{
+		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end(); ++i)
+		{
+			SendLoadedEvent(*i);
+		}
+	}
 
+	void Resource::SendUnloadedEvent(ResourceEventReceiver* receiver)
+	{
+		if (receiver == nullptr)
+			return;
+
+		receiver->ResourceUnloaded(m_Event);
+	}
+
+	void Resource::SendUnloadedEvent(void)
+	{
+		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end(); ++i)
+		{
+			SendUnloadedEvent(*i);
+		}
 	}
 }

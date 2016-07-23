@@ -4,17 +4,16 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#pragma once
+#include <Resource/ResourceManager.h>
 
-namespace game
+namespace resource
 {
-	enum Message
+	ResourceManager::ResourceManager(void){}
+
+	ResourceManager &ResourceManager::Instance(void)
 	{
-		UNDEFINED,
-		PARENT_CHANGED,
-		COMPONENT_ATTACHED,
-		COMPONENT_DETACHED,
-		NEEDS_UPDATE,
-		COUNT
-	};
-} // end namespace game
+		static ResourceManager instance;
+
+		return instance;
+	}
+}

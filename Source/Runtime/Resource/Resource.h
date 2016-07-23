@@ -9,7 +9,7 @@
 #include <RuntimeConfig.h>
 #include <Core/Object.h>
 #include <Reflection/Reflection.h>
-#include <Resource/ResourceDefines.h>
+#include <Resource/ResourceState.h>
 #include <Resource/ResourceEvent.h>
 #include <Resource/ResourceEventReceiver.h>
 
@@ -22,22 +22,24 @@ namespace resource
 		DEFINE_OBJECT
 	public:
 
-		typedef std::vector<ResourceEventReceiver&> EventReceivers;
+		typedef std::vector<ResourceEventReceiver*> EventReceivers;
 
 		Resource(const filesystem::path& path);
 
-		virtual ~Resource();
+		virtual ~Resource(void);
 
-		const filesystem::path& GetPath() const;
-		const ResourceState& GetState() const;
+		const filesystem::path& GetPath(void) const;
+		const ResourceState& GetState(void) const;
 
-		void RegisterEventReceiver(ResourceEventReceiver& reveicer);
-		void RemoveEventReceiver(ResourceEventReceiver& reveicer);
+		void RegisterEventReceiver(ResourceEventReceiver* receiver);
+		void RemoveEventReceiver(ResourceEventReceiver* receiver);
 
 	protected:
 
-		void SendLoadedEvent();
-		void SendUnloadedEvent();
+		void SendLoadedEvent(ResourceEventReceiver* receiver);
+		void SendLoadedEvent(void);
+		void SendUnloadedEvent(ResourceEventReceiver* receiver);
+		void SendUnloadedEvent(void);
 
 		filesystem::path m_Path;
 		ResourceState m_State;

@@ -5,7 +5,7 @@
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <Game/GameObject.h>
-#include <Game/Messages.h>
+#include <Game/MessageType.h>
 #include <Reflection/Any.h>
 #include <Reflection/TypeInfo.h>
 #include <Core/Utils.h>
@@ -113,7 +113,7 @@ namespace game
 			m_Index = m_IndexCounter++;
 		}
 
-		SendMessage(Message::PARENT_CHANGED);
+		SendMessage(MessageType::PARENT_CHANGED);
 	}
 
 	void GameObject::AddChild(GameObject* child)
@@ -130,7 +130,7 @@ namespace game
 		m_Children.push_back(child);
 		child->m_Parent = this;
 		child->m_Index = (uint32_t)m_Children.size() - 1;
-		child->SendMessage(Message::PARENT_CHANGED);
+		child->SendMessage(MessageType::PARENT_CHANGED);
 	}
 
 	void GameObject::DetachChild(GameObject* child)
@@ -227,7 +227,7 @@ namespace game
 
 		component = component_any.GetValue<Component*>();
 		component->m_GameObject = this;
-		component->OnMessage(Message::COMPONENT_ATTACHED);
+		component->OnMessage(MessageType::COMPONENT_ATTACHED);
 
 		m_Components.emplace(type.GetID(), component);
 		m_ComponentsAny.emplace(type.GetID(), reflection::Any{ component });
@@ -265,7 +265,7 @@ namespace game
 			if (component == nullptr)
 				continue;
 
-			component->OnMessage(Message::COMPONENT_DETACHED);
+			component->OnMessage(MessageType::COMPONENT_DETACHED);
 
 			SAFE_DELETE(component);
 		}

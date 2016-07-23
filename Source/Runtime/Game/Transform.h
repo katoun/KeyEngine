@@ -57,13 +57,13 @@ namespace game
 		const glm::vec3& GetAbsoluteScale();
 
 		virtual void Scale(const glm::vec3& scale);
-		virtual void Translate(const glm::vec3& d, TransformSpace relativeTo = TRANSFORM_LOCAL_SPACE);
-		virtual void Rotate(const glm::quat& q, TransformSpace relativeTo = TRANSFORM_LOCAL_SPACE);
+		virtual void Translate(const glm::vec3& d, TransformSpace relativeTo = TransformSpace::LOCAL);
+		virtual void Rotate(const glm::quat& q, TransformSpace relativeTo = TransformSpace::LOCAL);
 
-		virtual void Rotate(const float& degrees, const glm::vec3& axis, TransformSpace relativeTo = TRANSFORM_LOCAL_SPACE);
-		virtual void RotateX(float degrees, TransformSpace relativeTo = TRANSFORM_LOCAL_SPACE);
-		virtual void RotateY(float degrees, TransformSpace relativeTo = TRANSFORM_LOCAL_SPACE);
-		virtual void RotateZ(float degrees, TransformSpace relativeTo = TRANSFORM_LOCAL_SPACE);
+		virtual void Rotate(const float& degrees, const glm::vec3& axis, TransformSpace relativeTo = TransformSpace::LOCAL);
+		virtual void RotateX(float degrees, TransformSpace relativeTo = TransformSpace::LOCAL);
+		virtual void RotateY(float degrees, TransformSpace relativeTo = TransformSpace::LOCAL);
+		virtual void RotateZ(float degrees, TransformSpace relativeTo = TransformSpace::LOCAL);
 
 	protected:
 

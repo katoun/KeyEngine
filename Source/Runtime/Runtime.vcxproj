@@ -193,12 +193,13 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
     <ClInclude Include="Resource\Resource.h" />
     <ClInclude Include="Resource\ResourceEvent.h" />
     <ClInclude Include="Resource\ResourceEventReceiver.h" />
+    <ClInclude Include="Resource\ResourceManager.h" />
     <ClInclude Include="Resource\ResourceState.h" />
     <ClInclude Include="RuntimeConfig.h" />
     <ClInclude Include="Core\Object.h" />
     <ClInclude Include="Core\Utils.h" />
     <ClInclude Include="Game\GameObject.h" />
-    <ClInclude Include="Game\Messages.h" />
+    <ClInclude Include="Game\MessageType.h" />
     <ClInclude Include="Reflection\Attribute.h" />
     <ClInclude Include="Reflection\Constructor.h" />
     <ClInclude Include="Reflection\Destructor.h" />
@@ -232,6 +233,7 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
     <ClCompile Include="Reflection\TypeData.cpp" />
     <ClCompile Include="Reflection\Any.cpp" />
     <ClCompile Include="Resource\Resource.cpp" />
+    <ClCompile Include="Resource\ResourceManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

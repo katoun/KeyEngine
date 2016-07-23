@@ -14,6 +14,7 @@ namespace resource
 
 	class RUNTIME_API ResourceEventReceiver
 	{
+	public:
 		virtual void ResourceLoaded(const ResourceEvent& event) {};
 		virtual void ResourceUnloaded(const ResourceEvent& event) {};
 	};

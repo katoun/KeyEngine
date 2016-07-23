@@ -121,7 +121,7 @@ namespace game
 
 		component = new ComponentType();
 		component->m_GameObject = this;
-		component->OnMessage(Message::COMPONENT_ATTACHED);
+		component->OnMessage(MessageType::COMPONENT_ATTACHED);
 
 		m_Components.emplace(type.GetID(), component);
 		m_ComponentsAny.emplace(type.GetID(), reflection::Any{ component });
@@ -159,7 +159,7 @@ namespace game
 
 		Component* component = search->second;
 		assert(component != nullptr);
-		component->OnMessage(Message::COMPONENT_DETACHED);
+		component->OnMessage(MessageType::COMPONENT_DETACHED);
 
 		m_Components.erase(search);
 
