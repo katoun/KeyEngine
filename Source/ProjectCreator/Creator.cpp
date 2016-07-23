@@ -6,6 +6,7 @@
 
 #include <Creator.h>
 #include <Utils.h>
+#include <Core/Utils.h>
 
 namespace creator
 {
@@ -14,12 +15,12 @@ namespace creator
 		m_Options = options;
 
 		auto sdk_path = filesystem::path(m_Options.SDKPath.c_str());
-		sdk_path = GetCanonicalPath(sdk_path);
+		sdk_path = core::system::GetCanonicalPath(sdk_path);
 
 		m_TemplatePath = (sdk_path / "Content" / "Templates" / "Project");
 
 		auto project_path = filesystem::path(m_Options.ProjectPath.c_str());
-		project_path = GetCanonicalPath(project_path);
+		project_path = core::system::GetCanonicalPath(project_path);
 
 		m_ProjectPath = (project_path / m_Options.ProjectName);
 	}

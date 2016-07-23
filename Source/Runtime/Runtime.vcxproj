@@ -190,6 +190,10 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
     <ClInclude Include="Reflection\AttributesContainer.h" />
     <ClInclude Include="Reflection\Package.h" />
     <ClInclude Include="Reflection\ReflectionData.h" />
+    <ClInclude Include="Resource\Resource.h" />
+    <ClInclude Include="Resource\ResourceEvent.h" />
+    <ClInclude Include="Resource\ResourceEventReceiver.h" />
+    <ClInclude Include="Resource\ResourceState.h" />
     <ClInclude Include="RuntimeConfig.h" />
     <ClInclude Include="Core\Object.h" />
     <ClInclude Include="Core\Utils.h" />
@@ -227,6 +231,7 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
     <ClCompile Include="Reflection\Type.cpp" />
     <ClCompile Include="Reflection\TypeData.cpp" />
     <ClCompile Include="Reflection\Any.cpp" />
+    <ClCompile Include="Resource\Resource.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

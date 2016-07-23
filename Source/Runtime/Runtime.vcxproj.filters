@@ -73,6 +73,18 @@
     <ClInclude Include="Reflection\ReflectionData.h">
       <Filter>Reflection</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\Resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\ResourceState.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\ResourceEvent.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\ResourceEventReceiver.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -83,6 +95,9 @@
     </Filter>
     <Filter Include="Reflection">
       <UniqueIdentifier>{d54f6e92-b8f8-46c5-b63f-fda571fec788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{3487ddc1-b22a-4f19-8fb4-50631f6f98b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="Reflection\ReflectionData.cpp">
       <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\Resource.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

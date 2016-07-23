@@ -8,6 +8,8 @@
 
 #include <Platform.h>
 
+#include <experimental/filesystem>
+
 #ifdef RUNTIME_DLL
 #	ifdef RUNTIME_EXPORTS
 #		define RUNTIME_API DLL_EXPORT
@@ -58,3 +60,5 @@
 #define ENGINE_MESSAGE(text) __MESSAGE( ": " ##text )
 
 #define ENGINE_TODO(text) __MESSAGE( ": TODO: " ##text )
+
+namespace filesystem = std::experimental::filesystem;

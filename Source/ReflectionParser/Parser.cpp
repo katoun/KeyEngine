@@ -7,6 +7,7 @@
 #include <Parser.h>
 #include <Class.h>
 #include <Utils.h>
+#include <Core/Utils.h>
 
 #define RECURSE_NAMESPACES(kind, cursor, method, ns) \
     if (kind == CXCursor_Namespace)                  \
@@ -47,15 +48,15 @@ namespace parser
 		std::string vc_include = "C:\\Program Files(x86)\\Microsoft Visual Studio 14.0\\VC\\include";
 
 		auto test_path = filesystem::path("C:\\Program Files(x86)\\Microsoft Visual Studio 14.0\\..\\..");
-		test_path = GetCanonicalPath(test_path);
+		test_path = core::system::GetCanonicalPath(test_path);
 
 		auto sdk_path = filesystem::path(m_Options.SDKPath.c_str());
-		sdk_path = GetCanonicalPath(sdk_path);
+		sdk_path = core::system::GetCanonicalPath(sdk_path);
 		auto runtime_source = (sdk_path / "Source" / "Runtime").string();
 		auto editor_source = (sdk_path / "Source" / "Editor").string();
 
 		auto project_path = filesystem::path(m_Options.ProjectPath.c_str());
-		project_path = GetCanonicalPath(project_path);
+		project_path = core::system::GetCanonicalPath(project_path);
 		auto project_source = (project_path / "Source").string();
 		m_InputSourceFile = (project_path / "Source" / "Project.h").string();
 
