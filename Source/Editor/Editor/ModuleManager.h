@@ -30,12 +30,10 @@ namespace editor
 		void UnloadAllModules();
 		void ReloadAllModules();
 
-		static ModuleManager* GetInstance();
+		static ModuleManager &Instance(void);
 
 	protected:
 
 		std::vector<Module*> m_Modules;
-
-		static ModuleManager *m_Instance;
 	};
 }

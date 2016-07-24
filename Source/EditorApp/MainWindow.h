@@ -42,8 +42,6 @@ namespace editor
 	private:
 		Ui::MainWindow ui;
 
-		editor::ModuleManager* m_ModuleManager;
-
 		QString current_project_path;
 		QString current_project_name;
 		editor::Module* m_CurrentProjectModule;

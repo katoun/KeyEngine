@@ -28,6 +28,7 @@ namespace resource
 
 		virtual ~Resource(void);
 
+		const uint32_t& GetID() const;
 		const filesystem::path& GetPath(void) const;
 		const ResourceState& GetState(void) const;
 
@@ -41,6 +42,7 @@ namespace resource
 		void SendUnloadedEvent(ResourceEventReceiver* receiver);
 		void SendUnloadedEvent(void);
 
+		uint32_t m_ID;
 		filesystem::path m_Path;
 		ResourceState m_State;
 

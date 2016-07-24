@@ -14,6 +14,7 @@
 #include <Game/MessageType.h>
 #include <Game/GameObject.h>
 #include <Game/Component.h>
+#include <Game/Scene.h>
 
 #include <Resource/ResourceState.h>
 #include <Resource/ResourceEvent.h>

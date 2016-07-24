@@ -5,12 +5,14 @@
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <Resource/Resource.h>
+#include <Core/Utils.h>
 
 namespace resource
 {
 	Resource::Resource(const filesystem::path& path)
 		: core::Object()
 		, m_Path(path)
+		, m_ID(core::string::Hash(path.string()))
 		, m_State(ResourceState::UNLOADED)
 	{
 		m_Event.source = this;
@@ -18,6 +20,11 @@ namespace resource
 
 	Resource::~Resource(void)
 	{}
+
+	const uint32_t& Resource::GetID() const
+	{
+		return m_ID;
+	}
 
 	const filesystem::path& Resource::GetPath(void) const
 	{

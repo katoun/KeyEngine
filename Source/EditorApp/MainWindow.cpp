@@ -53,7 +53,6 @@ namespace editor
 		RefreshComponentsList();
 		RefreshTypesList();
 
-		m_ModuleManager = editor::ModuleManager::GetInstance();
 		m_CommandProcess = nullptr;
 		m_CurrentProjectModule = nullptr;
 	}
@@ -245,7 +244,7 @@ namespace editor
 
 		if (m_CurrentProjectModule != nullptr)
 		{
-			m_ModuleManager->UnloadModule(m_CurrentProjectModule);
+			editor::ModuleManager::Instance().UnloadModule(m_CurrentProjectModule);
 			m_CurrentProjectModule = nullptr;
 
 			RefreshComponentsList();
@@ -377,7 +376,7 @@ namespace editor
 		{
 			ui.StatusBar->clearMessage();
 
-			m_CurrentProjectModule = m_ModuleManager->LoadModule(current_project_path.toStdString(), current_project_name.toStdString());
+			m_CurrentProjectModule = editor::ModuleManager::Instance().LoadModule(current_project_path.toStdString(), current_project_name.toStdString());
 
 			RefreshComponentsList();
 			RefreshTypesList();

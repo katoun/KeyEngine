@@ -88,6 +88,9 @@
     <ClInclude Include="Game\MessageType.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Game\Scene.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -156,6 +159,9 @@
     </ClCompile>
     <ClCompile Include="Resource\ResourceManager.cpp">
       <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scene.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

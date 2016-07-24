@@ -183,6 +183,7 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Game\Component.h" />
+    <ClInclude Include="Game\Scene.h" />
     <ClInclude Include="Game\Transform.h" />
     <ClInclude Include="Game\TransformSpace.h" />
     <ClInclude Include="Platform.h" />
@@ -218,6 +219,7 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
     <ClCompile Include="Core\Utils.cpp" />
     <ClCompile Include="Game\Component.cpp" />
     <ClCompile Include="Game\GameObject.cpp" />
+    <ClCompile Include="Game\Scene.cpp" />
     <ClCompile Include="Game\Transform.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Reflection\Attributes.cpp" />

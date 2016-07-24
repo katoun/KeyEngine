@@ -10,6 +10,21 @@ namespace resource
 {
 	ResourceManager::ResourceManager(void){}
 
+	void ResourceManager::LoadResources()
+	{
+
+	}
+
+	void ResourceManager::UnloadResources()
+	{
+
+	}
+
+	const filesystem::path& ResourceManager::GetBasePath() const
+	{
+		return m_BasePath;
+	}
+
 	ResourceManager &ResourceManager::Instance(void)
 	{
 		static ResourceManager instance;

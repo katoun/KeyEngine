@@ -7,8 +7,6 @@
 #include <Editor/ModuleManager.h>
 #include <Editor/Module.h>
 
-editor::ModuleManager *editor::ModuleManager::m_Instance = nullptr;
-
 namespace editor
 {
 
@@ -79,11 +77,10 @@ namespace editor
 		}
 	}
 
-	ModuleManager* ModuleManager::GetInstance()
+	ModuleManager &ModuleManager::Instance(void)
 	{
-		if (m_Instance == nullptr)
-			m_Instance = new ModuleManager;
+		static ModuleManager instance;
 
-		return m_Instance;
+		return instance;
 	}
 }
