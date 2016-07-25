@@ -8,10 +8,10 @@
 
 namespace game
 {
-	enum TransformSpace
+	enum class TransformSpace
 	{
 		LOCAL,
 		PARENT,
-		WORLD
+		GLOBAL
 	};
 }

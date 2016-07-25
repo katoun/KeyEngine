@@ -14,6 +14,7 @@
 
 namespace game
 {
+	enum class MessageType;
 	class GameObject;
 
 	class RUNTIME_API Component : core::Object
@@ -39,7 +40,7 @@ namespace game
 		virtual void OnStart(void);
 		virtual void OnUpdate(float dt);
 		virtual void OnStop(void);
-		virtual void OnMessage(const std::uint32_t message);
+		virtual void OnMessage(MessageType message);
 
 		void OnEnable(void);
 		void OnDisable(void);

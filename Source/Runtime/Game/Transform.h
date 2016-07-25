@@ -70,7 +70,7 @@ namespace game
 		void OnStart(void) override;
 		void OnUpdate(float dt) override;
 		void OnStop(void) override;
-		void OnMessage(const std::uint32_t message) override;
+		void OnMessage(MessageType message) override;
 
 		Transform* m_Parent;
 

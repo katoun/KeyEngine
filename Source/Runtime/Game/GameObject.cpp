@@ -272,7 +272,7 @@ namespace game
 		m_Components.clear();
 	}
 
-	void GameObject::SendMessage(const std::uint32_t message)
+	void GameObject::SendMessage(const MessageType message)
 	{
 		OnMessage(message);
 
@@ -354,7 +354,7 @@ namespace game
 		}
 	}
 
-	void GameObject::OnMessage(const std::uint32_t message)
+	void GameObject::OnMessage(MessageType message)
 	{
 		for (auto& pair : m_Components)
 		{

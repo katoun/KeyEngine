@@ -149,10 +149,7 @@ namespace game
 			// position is relative to parent so transform downwards
 			m_Position += m_Orientation * d;
 			break;
-		case TransformSpace::PARENT:
-			m_Position += d;
-			break;
-		case TransformSpace::WORLD:
+		case TransformSpace::GLOBAL:
 			// position is relative to parent so transform upwards
 			if (m_Parent != nullptr)
 			{
@@ -181,11 +178,7 @@ namespace game
 			// Note the order of the mult, i.e. q comes after
 			m_Orientation = m_Orientation * qnorm;
 			break;
-		case TransformSpace::PARENT:
-			// Rotations are normally relative to local axes, transform up
-			m_Orientation = qnorm * m_Orientation;
-			break;
-		case TransformSpace::WORLD:
+		case TransformSpace::GLOBAL:
 			// Rotations are normally relative to local axes, transform up
 			m_Orientation = m_Orientation * glm::inverse(GetAbsoluteOrientation()) * qnorm * GetAbsoluteOrientation();
 			break;
@@ -286,7 +279,7 @@ namespace game
 		Component::OnStop();
 	}
 
-	void Transform::OnMessage(const std::uint32_t message)
+	void Transform::OnMessage(MessageType message)
 	{
 		Component::OnMessage(message);
 

@@ -8,7 +8,7 @@
 
 namespace game
 {
-	enum MessageType
+	enum class MessageType
 	{
 		UNDEFINED,
 		PARENT_CHANGED,

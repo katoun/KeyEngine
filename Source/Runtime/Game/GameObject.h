@@ -82,7 +82,7 @@ namespace game
 
 		void RemoveComponents(void);
 
-		void SendMessage(const std::uint32_t message);
+		void SendMessage(MessageType message);
 
 		void OnStart(void);
 		void OnUpdate(float dt);
@@ -90,7 +90,7 @@ namespace game
 
 	protected:
 
-		void OnMessage(const std::uint32_t message);
+		void OnMessage(MessageType message);
 		void OnEnable(void);
 		void OnDisable(void);
 

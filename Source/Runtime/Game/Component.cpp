@@ -59,7 +59,7 @@ namespace game
 
 	void Component::OnStop(void) {}
 
-	void Component::OnMessage(const std::uint32_t message) {}
+	void Component::OnMessage(const MessageType message) {}
 
 	void Component::OnEnable(void) {}
 	void Component::OnDisable(void) {}

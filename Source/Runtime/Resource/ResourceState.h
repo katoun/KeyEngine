@@ -8,7 +8,7 @@
 
 namespace resource
 {
-	enum ResourceState
+	enum class ResourceState
 	{
 		UNLOADED,
 		LOADING,
