@@ -23,6 +23,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "Source\Editor\Edi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectCreator", "Source\ProjectCreator\ProjectCreator.vcxproj", "{91E2EFCC-7880-4C2E-9809-B81E3DAA71C2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{8A0C33F3-F04E-41E8-9682-A0493F10A379}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Programs", "Programs", "{0AE25F11-DDB5-46DE-BCF3-2E679BF89ACF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -96,5 +100,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{37C41D8E-DAB6-490A-A93C-89EEC5182BF5} = {0AE25F11-DDB5-46DE-BCF3-2E679BF89ACF}
+		{D24A73B6-C1DE-47FA-9BEB-053F7854B503} = {8A0C33F3-F04E-41E8-9682-A0493F10A379}
+		{F0693BD7-4597-4E91-867B-BA9704432337} = {8A0C33F3-F04E-41E8-9682-A0493F10A379}
+		{AC23993B-BB8A-4E8A-8277-94E6B77D6DEE} = {8A0C33F3-F04E-41E8-9682-A0493F10A379}
+		{91E2EFCC-7880-4C2E-9809-B81E3DAA71C2} = {0AE25F11-DDB5-46DE-BCF3-2E679BF89ACF}
 	EndGlobalSection
 EndGlobal

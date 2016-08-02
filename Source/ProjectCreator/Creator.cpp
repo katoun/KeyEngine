@@ -15,12 +15,12 @@ namespace creator
 		m_Options = options;
 
 		auto sdk_path = filesystem::path(m_Options.SDKPath);
-		sdk_path = core::system::GetCanonicalPath(sdk_path);
+		sdk_path = filesystem::canonical(sdk_path);
 
 		m_TemplatePath = (sdk_path / "Content" / "Templates" / "Project");
 
 		auto project_path = filesystem::path(m_Options.ProjectPath);
-		project_path = core::system::GetCanonicalPath(project_path);
+		project_path = filesystem::canonical(project_path);
 
 		m_ProjectPath = (project_path / m_Options.ProjectName);
 	}

@@ -52,8 +52,6 @@ namespace core
 	namespace system
 	{
 		inline RUNTIME_API std::string GetEnv(const std::string& var);
-
-		RUNTIME_API filesystem::path GetCanonicalPath(const filesystem::path& p);
 	}
 
 } // end namespace core
