@@ -319,7 +319,7 @@ namespace editor
 
 		m_CommandProcess->setWorkingDirectory(current_project_path);
 
-		QString command = msbuild_exe + " " + current_project_name + ".sln /target:"+ current_project_name + " /p:Platform=Win64;Configuration=\"Debug Editor\"";
+		QString command = msbuild_exe + " Project.sln /target:Project /p:Platform=Win64;Configuration=\"Debug Editor\"";
 		m_CommandProcess->start(command);
 
 		ui.StatusBar->showMessage(tr("Compiling"));

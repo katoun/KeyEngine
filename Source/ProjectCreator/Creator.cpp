@@ -30,28 +30,20 @@ namespace creator
 		filesystem::copy(m_TemplatePath, m_ProjectPath, filesystem::copy_options::recursive);
 		
 		RemoveMustacheFiles();
-		RenameVisualStudioFiles();
 
 		BuildProjectFile();
-		BuildVisualStudioSolution();
+		BuildVisualStudioProjectFile();
 	}
 
 	void Creator::RemoveMustacheFiles()
 	{
 		filesystem::remove(m_ProjectPath / templates::ProjectFile);
-		filesystem::remove(m_ProjectPath / templates::VisualStudioSolution);
-	}
-
-	void Creator::RenameVisualStudioFiles()
-	{
-		filesystem::rename(m_ProjectPath / "Source" / "Project.vcxproj", m_ProjectPath / "Source" / (m_Options.ProjectName + ".vcxproj"));
-		filesystem::rename(m_ProjectPath / "Source" / "Project.vcxproj.filters", m_ProjectPath / "Source" / (m_Options.ProjectName + ".vcxproj.filters"));
-		filesystem::rename(m_ProjectPath / "Source" / "Project.vcxproj.user", m_ProjectPath / "Source" / (m_Options.ProjectName + ".vcxproj.user"));
+		filesystem::remove(m_ProjectPath / "Source" / templates::VisualStudioProject);
 	}
 
 	void Creator::BuildProjectFile()
 	{
-		auto& output_file_mustache = LoadTemplate(templates::ProjectFile);
+		auto& output_file_mustache = LoadTemplate(filesystem::path("") ,templates::ProjectFile);
 
 		if (!output_file_mustache.isValid())
 		{
@@ -75,9 +67,9 @@ namespace creator
 		WriteText(file_path, output_data);
 	}
 
-	void Creator::BuildVisualStudioSolution()
+	void Creator::BuildVisualStudioProjectFile()
 	{
-		auto& output_file_mustache = LoadTemplate(templates::VisualStudioSolution);
+		auto& output_file_mustache = LoadTemplate(filesystem::path("Source"), templates::VisualStudioProject);
 
 		if (!output_file_mustache.isValid())
 		{
@@ -94,22 +86,28 @@ namespace creator
 		OutputFileData["ProjectName"] = m_Options.ProjectName;
 
 		std::string output_data = output_file_mustache.render(OutputFileData);
-		std::string file_name = m_Options.ProjectName + ".sln";
-
-		std::string file_path = (m_ProjectPath / file_name).string();
+		std::string file_path = (m_ProjectPath / "Source" / "Project.vcxproj").string();
 
 		WriteText(file_path, output_data);
 	}
 
-	mustache Creator::LoadTemplate(const std::string &name) const
+	mustache Creator::LoadTemplate(const filesystem::path& subpath, const std::string &name) const
 	{
-		auto path = filesystem::path(m_TemplatePath).append(name).string();
+		std::string template_path = "";
+		if (!subpath.empty())
+		{
+			template_path = filesystem::path(m_TemplatePath).append(subpath).append(name).string();
+		}
+		else
+		{
+			template_path = filesystem::path(m_TemplatePath).append(name).string();
+		}
 
 		try
 		{
 			std::string text;
 
-			LoadText(path, text);
+			LoadText(template_path, text);
 
 			return text;
 		}

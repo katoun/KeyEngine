@@ -19,16 +19,15 @@ namespace creator
 		void SetOptions(const CreatorOptions &options);
 		void Create(void);
 
-		mustache LoadTemplate(const std::string &name) const;
+		mustache LoadTemplate(const filesystem::path& subpath, const std::string &name) const;
 
 		static Creator &Instance(void);
 
 	private:
 
 		void RemoveMustacheFiles();
-		void RenameVisualStudioFiles();
 		void BuildProjectFile();
-		void BuildVisualStudioSolution();
+		void BuildVisualStudioProjectFile();
 
 		CreatorOptions m_Options;
 
