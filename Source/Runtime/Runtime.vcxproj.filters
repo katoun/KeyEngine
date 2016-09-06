@@ -91,6 +91,15 @@
     <ClInclude Include="Game\Scene.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\SerializeTypes.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\Archive.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\JsonArchive.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -162,6 +171,9 @@
     </ClCompile>
     <ClCompile Include="Game\Scene.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource\JsonArchive.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

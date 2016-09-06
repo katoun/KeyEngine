@@ -16,6 +16,8 @@
 #include <Game/Component.h>
 #include <Game/Scene.h>
 
+#include <Resource/SerializeTypes.h>
+#include <Resource/Archive.h>
 #include <Resource/ResourceState.h>
 #include <Resource/ResourceEvent.h>
 #include <Resource/ResourceEventReceiver.h>

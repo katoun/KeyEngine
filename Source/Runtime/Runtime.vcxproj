@@ -96,7 +96,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_USRDLL;RUNTIME_DLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Dependencies\glm;$(ProjectDir)..\..\Dependencies\sweet_persist;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -116,8 +116,8 @@ copy "$(ProjectDir)..\..\Build\Win32\KeyRuntime_d.pdb" "$(ProjectDir)..\..\Binar
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;WINDOWS;_USRDLL;RUNTIME_DLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Dependencies\glm;$(ProjectDir)..\..\Dependencies\cereal\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WINDOWS;BUILD_OS_WINDOWS;BUILD_LIBRARY_TYPE_DYNAMIC;BUILD_MODULE_ASSERT;BUILD_MODULE_ERROR;BUILD_MODULE_PATH;BUILD_MODULE_RTTI;BUILD_MODULE_PERSIST;BUILD_VARIANT_DEBUG_DLL;_USRDLL;RUNTIME_DLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Dependencies\base64;$(ProjectDir)..\..\Dependencies\glm;$(ProjectDir)..\..\Dependencies\rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -165,7 +165,7 @@ copy "$(ProjectDir)..\..\Build\Win32\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_USRDLL;RUNTIME_DLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Dependencies\base64;$(ProjectDir)..\..\Dependencies\glm;$(ProjectDir)..\..\Dependencies\rapidjson\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -191,11 +191,14 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
     <ClInclude Include="Reflection\AttributesContainer.h" />
     <ClInclude Include="Reflection\Package.h" />
     <ClInclude Include="Reflection\ReflectionData.h" />
+    <ClInclude Include="Resource\Archive.h" />
+    <ClInclude Include="Resource\JsonArchive.h" />
     <ClInclude Include="Resource\Resource.h" />
     <ClInclude Include="Resource\ResourceEvent.h" />
     <ClInclude Include="Resource\ResourceEventReceiver.h" />
     <ClInclude Include="Resource\ResourceManager.h" />
     <ClInclude Include="Resource\ResourceState.h" />
+    <ClInclude Include="Resource\SerializeTypes.h" />
     <ClInclude Include="RuntimeConfig.h" />
     <ClInclude Include="Core\Object.h" />
     <ClInclude Include="Core\Utils.h" />
@@ -234,6 +237,7 @@ copy "$(ProjectDir)..\..\Build\Win64\KeyRuntime.dll" "$(ProjectDir)..\..\Binarie
     <ClCompile Include="Reflection\Type.cpp" />
     <ClCompile Include="Reflection\TypeData.cpp" />
     <ClCompile Include="Reflection\Any.cpp" />
+    <ClCompile Include="Resource\JsonArchive.cpp" />
     <ClCompile Include="Resource\Resource.cpp" />
     <ClCompile Include="Resource\ResourceManager.cpp" />
   </ItemGroup>
