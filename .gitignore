@@ -8,4 +8,9 @@
 *.gch
 *.pch
 
+*.vs/
+
+/Binaries/
+/Build/
 /Source/EditorApp/GeneratedFiles
+/Projects/
