@@ -39,7 +39,7 @@ namespace reflection
 		, m_Category(nullptr)
 	{ }
 
-	TypeData::TypeData(const std::string &name, const AttibutesContainer::Initializer &attributes)
+	TypeData::TypeData(const std::string &name, const AttributesContainer::Initializer &attributes)
 		: m_IsEnum(false)
 		, m_IsPrimitive(false)
 		, m_IsPointer(false)

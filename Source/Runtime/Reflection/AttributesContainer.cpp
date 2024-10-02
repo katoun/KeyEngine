@@ -11,7 +11,7 @@
 
 namespace reflection
 {
-	std::vector<std::pair<Type, const Attribute *>> AttibutesContainer::GetAttributes(void) const
+	std::vector<std::pair<Type, const Attribute *>> AttributesContainer::GetAttributes(void) const
 	{
 		std::vector<std::pair<Type, const Attribute *>> attributes;
 
@@ -23,7 +23,7 @@ namespace reflection
 		return attributes;
 	}
 
-	void AttibutesContainer::SetAttributes(const Initializer &attributes)
+	void AttributesContainer::SetAttributes(const Initializer &attributes)
 	{
 		for (auto &pair : attributes)
 		{

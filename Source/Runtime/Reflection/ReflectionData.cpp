@@ -9,6 +9,8 @@
 #include <Reflection/Any.h>
 #include <Reflection/Package.h>
 
+#include <glm/glm.hpp>
+
 #define REGISTER_BASE_TYPE(type)					\
 		{											\
 			auto id = core::string::Hash( #type );	\

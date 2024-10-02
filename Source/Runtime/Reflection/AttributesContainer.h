@@ -20,7 +20,7 @@ namespace reflection
 {
 	struct Attribute;
 
-	class RUNTIME_API AttibutesContainer
+	class RUNTIME_API AttributesContainer
 	{
 	public:
 
@@ -37,7 +37,7 @@ namespace reflection
 
 	private:
 
-		AttibutesContainer &operator=(const AttibutesContainer &rhs) = delete;
+		AttributesContainer &operator=(const AttributesContainer &rhs) = delete;
 
 		friend class TypeData;
 
@@ -45,7 +45,7 @@ namespace reflection
 	};
 
 	template<typename AttributeType>
-	const AttributeType* AttibutesContainer::GetAttribute(void) const
+	const AttributeType* AttributesContainer::GetAttribute(void) const
 	{
 		static_assert(std::is_base_of<Attribute, AttributeType>::value, "Type must be an Attribute.");
 

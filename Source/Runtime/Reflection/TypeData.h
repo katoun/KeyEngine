@@ -28,13 +28,13 @@ namespace attribute
 
 namespace reflection
 {
-	class RUNTIME_API TypeData : public AttibutesContainer
+	class RUNTIME_API TypeData : public AttributesContainer
 	{
 	public:
 
 		TypeData(void);
 		TypeData(const std::string &name);
-		TypeData(const std::string &name, const AttibutesContainer::Initializer &attributes);
+		TypeData(const std::string &name, const AttributesContainer::Initializer &attributes);
 
 		~TypeData(void);
 
@@ -42,7 +42,7 @@ namespace reflection
 		void Initialize(void);
 
 		template<typename ClassType, typename FieldType>
-		void AddField(const std::string &name, const AttibutesContainer::Initializer &attributes);
+		void AddField(const std::string &name, const AttributesContainer::Initializer &attributes);
 
 		template<typename EnumType>
 		void SetEnum(const std::string &name, const typename Enum::Container<EnumType>::Table &table);
@@ -122,7 +122,7 @@ namespace reflection
 	}
 
 	template<typename ClassType, typename FieldType>
-	void TypeData::AddField(const std::string &name, const AttibutesContainer::Initializer &attributes)
+	void TypeData::AddField(const std::string &name, const AttributesContainer::Initializer &attributes)
 	{
 		Field field{ name, typeof(FieldType), typeof(ClassType), attributes };
 

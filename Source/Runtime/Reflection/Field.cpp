@@ -18,7 +18,7 @@ namespace reflection
 		, m_Setter(nullptr)
 	{ }
 
-	Field::Field(const std::string &name, Type type, Type classType, const AttibutesContainer::Initializer &attributes)
+	Field::Field(const std::string &name, Type type, Type classType, const AttributesContainer::Initializer &attributes)
 		: m_Name(name)
 		, m_Type(type)
 		, m_ClassType(classType)

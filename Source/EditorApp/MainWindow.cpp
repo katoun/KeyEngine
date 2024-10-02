@@ -68,6 +68,11 @@ namespace editor
 
 		m_ContentBrowserWidget->ProjectChanged(current_project_path);
 
+		m_CurrentProjectModule = editor::ModuleManager::Instance().LoadModule(current_project_path.toStdString(), current_project_name.toStdString());
+
+		RefreshComponentsList();
+		RefreshTypesList();
+
 		ui.StatusBar->showMessage(tr("Project Loaded"), 3000);
 	}
 
@@ -216,23 +221,25 @@ namespace editor
 		if (current_project_path.isEmpty())
 			return;
 
-		QString vs_solution_file = current_project_name;
+		QString vs_path = "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/devenv.exe";
+
+		QString vs_solution_file = current_project_path + "\\Project";
 		vs_solution_file.append(".sln");
 
-		/*m_CommandProcess = new QProcess();
+		m_CommandProcess = new QProcess();
 		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnOpenVSFinished(int, QProcess::ExitStatus)));
 
 		m_CommandProcess->setWorkingDirectory(current_project_path);
 
-		QString command = "start " + vs_solution_file;
-		m_CommandProcess->start(command);*/
+		QString command = vs_path + " \"" + vs_solution_file + "\"";
+		m_CommandProcess->start(command);
 
-		QString url = "file:///";
-		url.append(current_project_path);
-		url.append("/");
-		url.append(vs_solution_file);
+		//QString url = "file:///";
+		//url.append(current_project_path);
+		//url.append("/");
+		//url.append(vs_solution_file);
 
-		QDesktopServices::openUrl(QUrl(url));//FOR NOW THIS METHIS WORKS!!!
+		//QDesktopServices::openUrl(QUrl(url));//FOR NOW THIS METHIS WORKS!!!
 
 		ui.StatusBar->showMessage(tr("Opening VS"));
 	}
@@ -312,14 +319,14 @@ namespace editor
 		QDir bin_dir(binaries_path);
 		res = bin_dir.removeRecursively();
 
-		QString msbuild_exe = "\"C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\MSBuild.exe\"";
+		QString msbuild_exe = "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe";
 
 		m_CommandProcess = new QProcess();
 		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCompileFinished(int, QProcess::ExitStatus)));
 
 		m_CommandProcess->setWorkingDirectory(current_project_path);
 
-		QString command = msbuild_exe + " Project.sln /target:Project /p:Platform=Win64;Configuration=\"Debug Editor\"";
+		QString command = msbuild_exe + " Project.sln /target:Test /p:Platform=Win64;Configuration=\"Debug Editor\"";
 		m_CommandProcess->start(command);
 
 		ui.StatusBar->showMessage(tr("Compiling"));

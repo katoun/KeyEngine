@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -21,20 +13,10 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D24A73B6-C1DE-47FA-9BEB-053F7854B503}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
     <ProjectName>EditorApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
@@ -48,12 +30,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -64,59 +40,16 @@
   <PropertyGroup>
     <_ProjectFileVersion>14.0.24720.0</_ProjectFileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(ProjectDir)..\..\Binaries\Win32\</OutDir>
-    <IntDir>$(ProjectDir)..\..\Build\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
-    <TargetName>KeyEditor_d</TargetName>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)..\..\Binaries\Win64\</OutDir>
     <TargetName>KeyEditor_d</TargetName>
     <IntDir>$(ProjectDir)..\..\Build\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(ProjectDir)..\..\Binaries\Win32\</OutDir>
-    <IntDir>$(ProjectDir)..\..\Build\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
-    <TargetName>KeyEditor</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)..\..\Binaries\Win64\</OutDir>
     <IntDir>$(ProjectDir)..\..\Build\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
     <TargetName>KeyEditor</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>UNICODE;_DEBUG;WIN32;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;RUNTIME_DLL;EDITOR_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Dependencies\glm;$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\Editor;$(ProjectDir)..\..\Source\EditorApp;$(ProjectDir)..\..\Source\EditorApp\GeneratedFiles;$(ProjectDir)..\..\Source\EditorApp\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(ProjectDir)..\..\Dependencies\qtpropertybrowser\src;.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <Optimization>Disabled</Optimization>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win32;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;KeyRuntime_d.lib;KeyEditor_d.lib;qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ProgramDatabaseFile>$(OutDir)KeyEditorApp_d.pdb</ProgramDatabaseFile>
-    </Link>
-    <PostBuildEvent>
-      <Command>mkdir "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Cored.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Cored.pdb" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Guid.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Guid.pdb" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5OpenGLd.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5OpenGLd.pdb" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Widgetsd.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Widgetsd.pdb" "$(OutDir)"
-mkdir "$(OutDir)\plugins"
-mkdir "$(OutDir)\plugins\platforms"
-copy "$(QTDIR)\plugins\platforms\qwindowsd.dll" "$(OutDir)\plugins\platforms"
-copy "$(QTDIR)\plugins\platforms\qwindowsd.pdb" "$(OutDir)\plugins\platforms"</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;_DEBUG;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;RUNTIME_DLL;EDITOR_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -136,45 +69,13 @@ copy "$(QTDIR)\plugins\platforms\qwindowsd.pdb" "$(OutDir)\plugins\platforms"</C
       <ProgramDatabaseFile>$(OutDir)KeyEditorApp_d.pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Cored.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Cored.pdb" "$(OutDir)"
+      <Command>copy "$(QTDIR)\bin\Qt5Cored.dll" "$(OutDir)"
 copy "$(QTDIR)\bin\Qt5Guid.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Guid.pdb" "$(OutDir)"
 copy "$(QTDIR)\bin\Qt5OpenGLd.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5OpenGLd.pdb" "$(OutDir)"
 copy "$(QTDIR)\bin\Qt5Widgetsd.dll" "$(OutDir)"
-copy "$(QTDIR)\bin\Qt5Widgetsd.pdb" "$(OutDir)"
 mkdir "$(OutDir)\plugins"
 mkdir "$(OutDir)\plugins\platforms"
-copy "$(QTDIR)\plugins\platforms\qwindowsd.dll" "$(OutDir)\plugins\platforms"
-copy "$(QTDIR)\plugins\platforms\qwindowsd.pdb" "$(OutDir)\plugins\platforms"</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;NDEBUG;QT_NO_DEBUG;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;RUNTIME_DLL;EDITOR_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\Dependencies\glm;$(ProjectDir)..\..\Source\Runtime;$(ProjectDir)..\..\Source\Editor;$(ProjectDir)..\..\Source\EditorApp;$(ProjectDir)..\..\Source\EditorApp\GeneratedFiles;$(ProjectDir)..\..\Source\EditorApp\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(ProjectDir)..\..\Dependencies\qtpropertybrowser\src;.\GeneratedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat />
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\Build\Win32;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;KeyRuntime.lib;KeyEditor.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ProgramDatabaseFile>$(OutDir)KeyEditorApp.pdb</ProgramDatabaseFile>
-    </Link>
-    <PostBuildEvent>
-      <Command>copy "$(ProjectDir)..\..\Dependencies\Qt\bin\Qt5Core.dll" "$(OutDir)"
-copy "$(ProjectDir)..\..\Dependencies\Qt\bin\Qt5Gui.dll" "$(OutDir)"
-copy "$(ProjectDir)..\..\Dependencies\Qt\bin\Qt5OpenGL.dll" "$(OutDir)"
-copy "$(ProjectDir)..\..\Dependencies\Qt\bin\Qt5Widgets.dll" "$(OutDir)"
-mkdir "$(OutDir)\plugins"
-mkdir "$(OutDir)\plugins\platforms"
-copy "$(QTDIR)\plugins\platforms\qwindows.dll" "$(OutDir)\plugins\platforms"</Command>
+copy "$(QTDIR)\plugins\platforms\qwindowsd.dll" "$(OutDir)\plugins\platforms"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -214,19 +115,15 @@ copy "$(QTDIR)\plugins\platforms\qwindows.dll" "$(OutDir)\plugins\platforms"</Co
     <ClCompile Include="..\..\Dependencies\qtpropertybrowser\src\qtvariantproperty.cpp" />
     <ClCompile Include="ContentBrowserWidget.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ContentBrowserWidget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_InspectorWidget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_NewProjectDialog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_OutlinerWidget.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_qtbuttonpropertybrowser.cpp">

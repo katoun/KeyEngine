@@ -27,12 +27,12 @@ namespace reflection
 {
 	struct Attribute;
 
-	class RUNTIME_API Field : public AttibutesContainer
+	class RUNTIME_API Field : public AttributesContainer
 	{
 	public:
 
 		Field(void);
-		Field(const std::string &name, Type type, Type classType, const AttibutesContainer::Initializer &attributes);
+		Field(const std::string &name, Type type, Type classType, const AttributesContainer::Initializer &attributes);
 
 		const std::string &GetName(void) const;
 
