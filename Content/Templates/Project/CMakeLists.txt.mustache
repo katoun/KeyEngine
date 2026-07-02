@@ -18,6 +18,45 @@ endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Build/Linux")
 set(CMAKE_DEBUG_POSTFIX "_d")
 
+include(FetchContent)
+
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "Do not update fetched dependencies after the first download")
+
+FetchContent_Declare(
+    glm
+    URL "https://github.com/g-truc/glm/archive/refs/tags/0.9.9.8.tar.gz"
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+FetchContent_Declare(
+    rapidjson
+    URL "https://github.com/Tencent/rapidjson/archive/refs/tags/v1.1.0.tar.gz"
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+FetchContent_Declare(
+    cereal
+    URL "https://github.com/USCiLab/cereal/archive/refs/tags/v1.3.2.tar.gz"
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+
+foreach(PROJECT_DEPENDENCY glm rapidjson cereal)
+    FetchContent_GetProperties(${PROJECT_DEPENDENCY})
+    if(NOT ${PROJECT_DEPENDENCY}_POPULATED)
+        FetchContent_Populate(${PROJECT_DEPENDENCY})
+    endif()
+endforeach()
+
+add_library(ProjectThirdParty_glm INTERFACE)
+add_library(ProjectThirdParty::glm ALIAS ProjectThirdParty_glm)
+target_include_directories(ProjectThirdParty_glm INTERFACE "${glm_SOURCE_DIR}")
+
+add_library(ProjectThirdParty_rapidjson INTERFACE)
+add_library(ProjectThirdParty::rapidjson ALIAS ProjectThirdParty_rapidjson)
+target_include_directories(ProjectThirdParty_rapidjson INTERFACE "${rapidjson_SOURCE_DIR}/include")
+
+add_library(ProjectThirdParty_base64 INTERFACE)
+add_library(ProjectThirdParty::base64 ALIAS ProjectThirdParty_base64)
+target_include_directories(ProjectThirdParty_base64 INTERFACE "${cereal_SOURCE_DIR}/include/cereal/external")
+
 file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS
     "Source/*.cpp"
 )
@@ -37,9 +76,6 @@ target_include_directories({{ProjectName}}EditorModule
         "${CMAKE_CURRENT_SOURCE_DIR}/Source"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/.Generated"
         "${KEY_ENGINE_SDK_PATH}/Source/Runtime"
-        "${KEY_ENGINE_SDK_PATH}/Dependencies/base64"
-        "${KEY_ENGINE_SDK_PATH}/Dependencies/glm"
-        "${KEY_ENGINE_SDK_PATH}/Dependencies/rapidjson/include"
 )
 
 set(KEY_RUNTIME_LIBRARY "${KEY_ENGINE_SDK_PATH}/Build/Linux/libKeyRuntime.so")
@@ -47,7 +83,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(KEY_RUNTIME_LIBRARY "${KEY_ENGINE_SDK_PATH}/Build/Linux/libKeyRuntime_d.so")
 endif()
 
-target_link_libraries({{ProjectName}}EditorModule PRIVATE "${KEY_RUNTIME_LIBRARY}")
+target_link_libraries({{ProjectName}}EditorModule
+    PRIVATE
+        "${KEY_RUNTIME_LIBRARY}"
+        ProjectThirdParty::base64
+        ProjectThirdParty::glm
+        ProjectThirdParty::rapidjson
+)
 set_target_properties({{ProjectName}}EditorModule PROPERTIES
     PREFIX ""
     OUTPUT_NAME "{{ProjectName}}-EditorModule"

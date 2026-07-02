@@ -52,6 +52,10 @@ namespace parser
 		sdk_path = filesystem::canonical(sdk_path);
 		auto runtime_source = (sdk_path / "Source" / "Runtime").string();
 		auto editor_source = (sdk_path / "Source" / "Editor").string();
+		auto dependencies_path = sdk_path / "Build" / "Linux-Debug" / "_deps";
+		auto glm_source = (dependencies_path / "glm-src").string();
+		auto rapidjson_source = (dependencies_path / "rapidjson-src" / "include").string();
+		auto base64_source = (dependencies_path / "cereal-src" / "include" / "cereal" / "external").string();
 
 		auto project_path = filesystem::path(m_Options.ProjectPath);
 		project_path = filesystem::canonical(project_path);
@@ -70,6 +74,9 @@ namespace parser
 			"-D__REFLECTION_PARSER__",
 			"-I" + runtime_source,
 			"-I" + editor_source,
+			"-I" + glm_source,
+			"-I" + rapidjson_source,
+			"-I" + base64_source,
 			"-I" + project_source
 		} };
 

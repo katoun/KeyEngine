@@ -93,20 +93,37 @@ In VSCode, press `F5` after building.
 
 ## Dependencies
 
-Dependencies kept in `Dependencies/`:
+Vendored dependencies kept in `Dependencies/`:
 
-- `base64`
-- `glm`
-- `mustache`
 - `qtpropertybrowser`
-- `rapidjson`
-- `tclap`
+
+CMake-managed dependency declarations and local include-target setup live in:
+
+```text
+Dependencies/CMakeLists.txt
+```
+
+The root `CMakeLists.txt` imports that file with `add_subdirectory(Dependencies)`.
+Downloaded sources go into the active build tree, usually:
+
+```text
+Build/Linux-Debug/_deps
+```
+
+CMake-managed dependencies:
+
+- `cereal` 1.3.2, used only for `cereal/external/base64.hpp`.
+- `glm` 0.9.9.8.
+- `kainjow/Mustache` commit `506c6d3`, kept at the older API used by the tools.
+- `RapidJSON` 1.1.0.
+- `TCLAP` 1.2.5.
 
 Dependencies removed from the repo because the Linux/CMake build does not use them:
 
 - `LLVM`: now uses system LLVM/libclang from apt.
 - `assimp`: unused old Windows binaries/libs.
 - `bgfx`: unused old Windows binaries/libs.
+- `base64`, `glm`, `mustache`, `rapidjson`, `tclap`: now fetched by CMake.
 
 Expected system packages include CMake, Ninja, Clang, Qt5 development packages, LLVM/libclang development packages, OpenGL development libraries, and pthreads.
 
@@ -140,7 +157,8 @@ The editor compile workflow configures and builds generated projects with CMake,
 
 - Do not restore old `.sln`, `.vcxproj`, `.vcxproj.filters`, or `.vcxproj.user` files. CMake can generate Visual Studio files on Windows if needed.
 - Do not restore bundled `Dependencies/LLVM`, `Dependencies/assimp`, or `Dependencies/bgfx` unless a new feature actually needs them.
-- Keep `glm`; it is the base math dependency.
+- Do not restore vendored `base64`, `glm`, `mustache`, `rapidjson`, or `tclap`; CMake fetches them.
+- Keep `glm`; it is the base math dependency, now provided through CMake.
 - The editor action formerly named `OpenVS` is now `OpenVSCode`; it runs `code <project_path>` and falls back to opening the folder.
 - `Content/Templates/Project/Source/Main.cpp` was converted from UTF-16LE to UTF-8 so generated projects compile on Linux.
 - `ReflectionParser` no longer uses hardcoded Visual Studio include paths and now parses with `-std=c++17`.

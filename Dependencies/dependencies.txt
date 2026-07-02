@@ -1,7 +1,21 @@
-glm					0.9.4.1					for Runtime
-RapidJSON			1.0.2					for Runtime
-Qt					5.7.0					for Editor
-QtPropertyBrowser	2.6						for Editor
-tclap				1.2.1					for ReflectionParser
-LLVM/Clang			3.8.0					for ReflectionParser
-Mustache			506c6d3					for ReflectionParser
+CMake-managed dependencies:
+
+Configured by Dependencies/CMakeLists.txt and downloaded into the active build tree _deps folder.
+
+- cereal 1.3.2: provides cereal/external/base64.hpp include path for base64.hpp
+- glm 0.9.9.8: math types used by Runtime and EditorApp
+- kainjow/Mustache 506c6d3: reflection and project template rendering
+- RapidJSON 1.1.0: JSON archive/resource serialization
+- TCLAP 1.2.5: command-line parsing for ProjectCreator and ReflectionParser
+
+Vendored dependency:
+
+- QtPropertyBrowser 2.6: editor property browser widgets, kept in-tree for now
+
+System dependencies:
+
+- Clang/libclang
+- LLVM CMake package
+- Qt5 Core/Gui/Widgets/OpenGL
+- OpenGL
+- Threads/pthreads

@@ -22,6 +22,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Build/Linux")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Binaries/Linux")
 set(CMAKE_DEBUG_POSTFIX "_d")
 
+add_subdirectory(Dependencies)
+
 find_package(Threads REQUIRED)
 find_package(Qt5 COMPONENTS Core Gui Widgets OpenGL REQUIRED)
 find_package(LLVM REQUIRED CONFIG)
@@ -58,11 +60,14 @@ target_compile_definitions(KeyRuntime
 target_include_directories(KeyRuntime
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/base64"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/glm"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/rapidjson/include"
 )
-target_link_libraries(KeyRuntime PUBLIC Threads::Threads)
+target_link_libraries(KeyRuntime
+    PUBLIC
+        Threads::Threads
+        KeyThirdParty::base64
+        KeyThirdParty::glm
+        KeyThirdParty::rapidjson
+)
 set_target_properties(KeyRuntime PROPERTIES OUTPUT_NAME "KeyRuntime")
 
 file(GLOB_RECURSE KEY_EDITOR_SOURCES CONFIGURE_DEPENDS
@@ -78,9 +83,8 @@ target_include_directories(KeyEditor
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Editor"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/glm"
 )
-target_link_libraries(KeyEditor PUBLIC KeyRuntime ${CMAKE_DL_LIBS})
+target_link_libraries(KeyEditor PUBLIC KeyRuntime KeyThirdParty::glm ${CMAKE_DL_LIBS})
 set_target_properties(KeyEditor PROPERTIES OUTPUT_NAME "KeyEditor")
 
 file(GLOB KEY_PROJECT_CREATOR_SOURCES CONFIGURE_DEPENDS
@@ -92,10 +96,8 @@ target_include_directories(ProjectCreator
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/ProjectCreator"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/tclap/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/mustache"
 )
-target_link_libraries(ProjectCreator PRIVATE KeyRuntime)
+target_link_libraries(ProjectCreator PRIVATE KeyRuntime KeyThirdParty::mustache KeyThirdParty::tclap)
 
 file(GLOB KEY_REFLECTION_PARSER_SOURCES CONFIGURE_DEPENDS
     "Source/ReflectionParser/*.cpp"
@@ -106,11 +108,9 @@ target_include_directories(ReflectionParser
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/ReflectionParser"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/tclap/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/mustache"
         "${LLVM_INCLUDE_DIRS}"
 )
-target_link_libraries(ReflectionParser PRIVATE KeyRuntime ${LIBCLANG_LIBRARY})
+target_link_libraries(ReflectionParser PRIVATE KeyRuntime KeyThirdParty::mustache KeyThirdParty::tclap ${LIBCLANG_LIBRARY})
 
 file(GLOB KEY_QTPROPERTYBROWSER_SOURCES CONFIGURE_DEPENDS
     "Dependencies/qtpropertybrowser/src/*.cpp"
@@ -123,9 +123,8 @@ add_library(QtPropertyBrowser STATIC
 target_include_directories(QtPropertyBrowser
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/qtpropertybrowser/src"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/glm"
 )
-target_link_libraries(QtPropertyBrowser PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(QtPropertyBrowser PUBLIC KeyThirdParty::glm Qt5::Core Qt5::Gui Qt5::Widgets)
 
 add_executable(KeyEditorApp
     "Source/EditorApp/main.cpp"
@@ -152,7 +151,6 @@ target_include_directories(KeyEditorApp
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Editor"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/glm"
         "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/qtpropertybrowser/src"
         "${CMAKE_CURRENT_BINARY_DIR}/KeyEditorApp_autogen/include"
 )
