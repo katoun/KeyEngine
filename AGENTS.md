@@ -6,7 +6,7 @@ KeyEngine is a small C++ game engine with:
 
 - `Runtime`: core/game/reflection/resource runtime library.
 - `Editor`: editor support library that dynamically loads project editor modules.
-- `EditorApp`: Qt desktop editor application.
+- `EditorApp2`: Dear ImGui/SDL/Vulkan desktop editor application.
 - `ProjectCreator`: command-line project generator.
 - `ReflectionParser`: libclang-based reflection metadata generator.
 
@@ -93,10 +93,6 @@ In VSCode, press `F5` after building.
 
 ## Dependencies
 
-Vendored source dependencies kept in `Dependencies/`:
-
-- `qtpropertybrowser`
-
 CMake-managed dependency declarations and local include-target setup live in:
 
 ```text
@@ -113,16 +109,12 @@ Build/Linux-Debug/_deps
 CMake-managed dependencies:
 
 - `cereal` 1.3.2, used only for `cereal/external/base64.hpp`.
-- Dear ImGui `docking` branch for the experimental `EditorApp2` UI.
+- Dear ImGui `docking` branch for the editor UI.
 - `glm` 0.9.9.8.
 - `kainjow/Mustache` commit `506c6d3`, kept at the older API used by the tools.
 - `RapidJSON` 1.1.0.
-- SDL 3.4.12 for the experimental `EditorApp2` windowing/input.
+- SDL 3.4.12 for the editor windowing/input.
 - `TCLAP` 1.2.5.
-
-Vendored source dependency kept in the repo:
-
-- `qtpropertybrowser`: used by the primary Qt editor app inspector/property UI.
 
 Dependencies removed from the repo because the Linux/CMake build does not use them:
 
@@ -130,13 +122,13 @@ Dependencies removed from the repo because the Linux/CMake build does not use th
 - `assimp`: unused old Windows binaries/libs.
 - `bgfx`: unused old Windows binaries/libs.
 - `base64`, `glm`, `mustache`, `rapidjson`, `tclap`: now fetched by CMake.
+- `qtpropertybrowser`: replaced by the Dear ImGui editor UI.
 
-Expected system packages include CMake, Ninja, Clang 20, LLVM/libclang 20 development packages, Qt 5 development packages, Vulkan headers/loader, and pthreads.
+Expected system packages include CMake, Ninja, Clang 20, LLVM/libclang 20 development packages, Vulkan headers/loader, and pthreads.
 
 Editor executables:
 
-- `KeyEditor`: primary Qt editor app built from `Source/EditorApp`.
-- `KeyEditor2`: experimental Dear ImGui docking editor built from `Source/EditorApp2`.
+- `KeyEditor`: Dear ImGui docking editor app built from `Source/EditorApp2`.
 
 ## Generated Projects
 
@@ -177,7 +169,6 @@ The editor compile workflow configures and builds generated projects with CMake,
 - Do not restore old `.sln`, `.vcxproj`, `.vcxproj.filters`, or `.vcxproj.user` files. CMake can generate Visual Studio files on Windows if needed.
 - Do not restore bundled `Dependencies/LLVM`, `Dependencies/assimp`, or `Dependencies/bgfx` unless a new feature actually needs them.
 - Do not restore vendored `base64`, `glm`, `mustache`, `rapidjson`, or `tclap`; CMake fetches them.
-- Keep `Dependencies/qtpropertybrowser` while the Qt editor is the primary editor.
 - Keep `glm`; it is the base math dependency, now provided through CMake.
 - The editor action formerly named `OpenVS` is now `OpenVSCode`; it runs `code <project_path>` and falls back to opening the folder.
 - `Content/Templates/Project/Source/Main.cpp` was converted from UTF-16LE to UTF-8 so generated projects compile on Linux.
@@ -237,7 +228,6 @@ The build currently succeeds with warnings. Known warning families include:
 
 - `const` on scalar return types.
 - GLM old `register`/operator precedence warnings.
-- Qt metatype warnings around `reflection::Field` destructor/copy behavior.
 - Reorder and unused-variable warnings in old code.
 
 Treat these as cleanup work, not current build blockers.

@@ -54,7 +54,7 @@ namespace editor
 
 	fs::path EditorConfigPath()
 	{
-		return SdkPath() / "Config" / "KeyEditor2";
+		return SdkPath() / "Config" / "KeyEditor";
 	}
 
 	std::string ShellQuote(const fs::path& path)

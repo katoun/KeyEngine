@@ -19,7 +19,6 @@ set(CMAKE_DEBUG_POSTFIX "_d")
 add_subdirectory(Dependencies)
 
 find_package(Threads REQUIRED)
-find_package(Qt5 COMPONENTS Core Gui Widgets OpenGL REQUIRED)
 find_package(LLVM REQUIRED CONFIG)
 
 find_library(LIBCLANG_LIBRARY
@@ -106,72 +105,7 @@ target_include_directories(ReflectionParser
 )
 target_link_libraries(ReflectionParser PRIVATE KeyRuntime KeyThirdParty::mustache KeyThirdParty::tclap ${LIBCLANG_LIBRARY})
 
-file(GLOB KEY_QTPROPERTYBROWSER_SOURCES CONFIGURE_DEPENDS
-    "Dependencies/qtpropertybrowser/src/*.cpp"
-)
-
-add_library(QtPropertyBrowser STATIC
-    ${KEY_QTPROPERTYBROWSER_SOURCES}
-    "Dependencies/qtpropertybrowser/src/qtpropertybrowser.qrc"
-)
-target_include_directories(QtPropertyBrowser
-    PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/qtpropertybrowser/src"
-)
-target_link_libraries(QtPropertyBrowser PUBLIC KeyThirdParty::glm Qt5::Core Qt5::Gui Qt5::Widgets)
-set_target_properties(QtPropertyBrowser PROPERTIES
-    AUTOMOC ON
-    AUTORCC ON
-)
-
 add_executable(KeyEditorApp
-    "Source/EditorApp/main.cpp"
-    "Source/EditorApp/MainWindow.cpp"
-    "Source/EditorApp/ContentBrowserWidget.cpp"
-    "Source/EditorApp/InspectorWidget.cpp"
-    "Source/EditorApp/NewProjectDialog.cpp"
-    "Source/EditorApp/OutlinerWidget.cpp"
-    "Source/EditorApp/MainWindow.h"
-    "Source/EditorApp/ContentBrowserWidget.h"
-    "Source/EditorApp/InspectorWidget.h"
-    "Source/EditorApp/NewProjectDialog.h"
-    "Source/EditorApp/OutlinerWidget.h"
-    "Source/EditorApp/Forms/MainWindow.ui"
-    "Source/EditorApp/Forms/ContentBrowserWidget.ui"
-    "Source/EditorApp/Forms/InspectorWidget.ui"
-    "Source/EditorApp/Forms/NewProjectDialog.ui"
-    "Source/EditorApp/Resources/Icons/icons.qrc"
-    "Source/EditorApp/Resources/Styles/Dark/dark.qrc"
-)
-target_compile_definitions(KeyEditorApp PRIVATE RUNTIME_DLL EDITOR_DLL)
-target_include_directories(KeyEditorApp
-    PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Source/Editor"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/qtpropertybrowser/src"
-        "${CMAKE_CURRENT_BINARY_DIR}/KeyEditorApp_autogen/include"
-)
-target_link_libraries(KeyEditorApp
-    PRIVATE
-        KeyRuntime
-        KeyEditor
-        QtPropertyBrowser
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::OpenGL
-        GL
-)
-set_target_properties(KeyEditorApp PROPERTIES
-    AUTOMOC ON
-    AUTOUIC ON
-    AUTORCC ON
-    AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp/Forms"
-)
-set_target_properties(KeyEditorApp PROPERTIES OUTPUT_NAME "KeyEditor")
-
-add_executable(KeyEditorApp2
     "Source/EditorApp2/main.cpp"
     "Source/EditorApp2/MainWindow.cpp"
     "Source/EditorApp2/ContentBrowserWidget.cpp"
@@ -186,17 +120,17 @@ add_executable(KeyEditorApp2
     "Source/EditorApp2/OutlinerWidget.h"
     "Source/EditorApp2/Utils.h"
 )
-target_compile_definitions(KeyEditorApp2 PRIVATE RUNTIME_DLL EDITOR_DLL)
-target_include_directories(KeyEditorApp2
+target_compile_definitions(KeyEditorApp PRIVATE RUNTIME_DLL EDITOR_DLL)
+target_include_directories(KeyEditorApp
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp2"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Editor"
 )
-target_link_libraries(KeyEditorApp2
+target_link_libraries(KeyEditorApp
     PRIVATE
         KeyRuntime
         KeyEditor
         KeyThirdParty::imgui
 )
-set_target_properties(KeyEditorApp2 PROPERTIES OUTPUT_NAME "KeyEditor2")
+set_target_properties(KeyEditorApp PROPERTIES OUTPUT_NAME "KeyEditor")

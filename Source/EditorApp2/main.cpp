@@ -319,7 +319,7 @@ int main(int argc, char* argv[])
 	}
 
 	SDL_Window* window = SDL_CreateWindow(
-		"KeyEditor2",
+		"KeyEditor",
 		1600,
 		900,
 		SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);

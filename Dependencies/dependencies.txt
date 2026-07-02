@@ -3,21 +3,16 @@ CMake-managed dependencies:
 Configured by Dependencies/CMakeLists.txt and downloaded into the active build tree _deps folder.
 
 - cereal 1.3.2: provides cereal/external/base64.hpp include path for base64.hpp
-- glm 0.9.9.8: math types used by Runtime and EditorApp
-- Dear ImGui docking branch: immediate-mode UI for experimental EditorApp2
+- glm 0.9.9.8: math types used by Runtime and the editor
+- Dear ImGui docking branch: immediate-mode UI for the editor
 - kainjow/Mustache 506c6d3: reflection and project template rendering
 - RapidJSON 1.1.0: JSON archive/resource serialization
-- SDL 3.4.12: cross-platform windowing/input for experimental EditorApp2
+- SDL 3.4.12: cross-platform windowing/input for the editor
 - TCLAP 1.2.5: command-line parsing for ProjectCreator and ReflectionParser
-
-Vendored source dependencies:
-
-- qtpropertybrowser: Qt inspector/property widgets used by the primary EditorApp
 
 System dependencies:
 
 - Clang/libclang 20
 - LLVM 20 CMake package
-- Qt 5 Core/Gui/Widgets/OpenGL development packages
 - Vulkan headers and loader
 - Threads/pthreads
