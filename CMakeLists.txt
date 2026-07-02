@@ -106,24 +106,24 @@ target_include_directories(ReflectionParser
 target_link_libraries(ReflectionParser PRIVATE KeyRuntime KeyThirdParty::mustache KeyThirdParty::tclap ${LIBCLANG_LIBRARY})
 
 add_executable(KeyEditorApp
-    "Source/EditorApp2/main.cpp"
-    "Source/EditorApp2/MainWindow.cpp"
-    "Source/EditorApp2/ContentBrowserWidget.cpp"
-    "Source/EditorApp2/InspectorWidget.cpp"
-    "Source/EditorApp2/IconManager.cpp"
-    "Source/EditorApp2/OutlinerWidget.cpp"
-    "Source/EditorApp2/Utils.cpp"
-    "Source/EditorApp2/MainWindow.h"
-    "Source/EditorApp2/ContentBrowserWidget.h"
-    "Source/EditorApp2/InspectorWidget.h"
-    "Source/EditorApp2/IconManager.h"
-    "Source/EditorApp2/OutlinerWidget.h"
-    "Source/EditorApp2/Utils.h"
+    "Source/EditorApp/main.cpp"
+    "Source/EditorApp/MainWindow.cpp"
+    "Source/EditorApp/ContentBrowserWidget.cpp"
+    "Source/EditorApp/InspectorWidget.cpp"
+    "Source/EditorApp/IconManager.cpp"
+    "Source/EditorApp/OutlinerWidget.cpp"
+    "Source/EditorApp/Utils.cpp"
+    "Source/EditorApp/MainWindow.h"
+    "Source/EditorApp/ContentBrowserWidget.h"
+    "Source/EditorApp/InspectorWidget.h"
+    "Source/EditorApp/IconManager.h"
+    "Source/EditorApp/OutlinerWidget.h"
+    "Source/EditorApp/Utils.h"
 )
 target_compile_definitions(KeyEditorApp PRIVATE RUNTIME_DLL EDITOR_DLL)
 target_include_directories(KeyEditorApp
     PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp2"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Editor"
 )

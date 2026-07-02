@@ -6,7 +6,7 @@ KeyEngine is a small C++ game engine with:
 
 - `Runtime`: core/game/reflection/resource runtime library.
 - `Editor`: editor support library that dynamically loads project editor modules.
-- `EditorApp2`: Dear ImGui/SDL/Vulkan desktop editor application.
+- `EditorApp`: Dear ImGui/SDL/Vulkan desktop editor application.
 - `ProjectCreator`: command-line project generator.
 - `ReflectionParser`: libclang-based reflection metadata generator.
 
@@ -128,7 +128,7 @@ Expected system packages include CMake, Ninja, Clang 20, LLVM/libclang 20 develo
 
 Editor executables:
 
-- `KeyEditor`: Dear ImGui docking editor app built from `Source/EditorApp2`.
+- `KeyEditor`: Dear ImGui docking editor app built from `Source/EditorApp`.
 
 ## Generated Projects
 

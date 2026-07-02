@@ -72,19 +72,19 @@ namespace editor
 
 	Icon IconManager::GetEditorIcon(const std::string& name)
 	{
-		return GetIcon(SdkPath() / "Source" / "EditorApp2" / "Resources" / "Icons" / (name + ".png"));
+		return GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "Icons" / (name + ".png"));
 	}
 
 	Icon IconManager::GetContentIcon(const std::string& name)
 	{
-		return GetIcon(SdkPath() / "Source" / "EditorApp2" / "Resources" / "Icons" / "content" / (name + ".png"));
+		return GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "Icons" / "content" / (name + ".png"));
 	}
 
 	Icon IconManager::GetOutlinerIcon(const std::string& name)
 	{
-		Icon icon = GetIcon(SdkPath() / "Source" / "EditorApp2" / "Resources" / "Icons" / "outliner" / (name + ".png"));
+		Icon icon = GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "Icons" / "outliner" / (name + ".png"));
 		if (!icon.IsValid())
-			icon = GetIcon(SdkPath() / "Source" / "EditorApp2" / "Resources" / "Icons" / "outliner" / "gameobject.png");
+			icon = GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "Icons" / "outliner" / "gameobject.png");
 		return icon;
 	}
 
@@ -99,11 +99,11 @@ namespace editor
 				return project_icon;
 		}
 
-		Icon editor_icon = GetIcon(SdkPath() / "Source" / "EditorApp2" / "Resources" / "Icons" / "components" / (icon_name + ".png"));
+		Icon editor_icon = GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "Icons" / "components" / (icon_name + ".png"));
 		if (editor_icon.IsValid())
 			return editor_icon;
 
-		return GetIcon(SdkPath() / "Source" / "EditorApp2" / "Resources" / "Icons" / "components" / "default.png");
+		return GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "Icons" / "components" / "default.png");
 	}
 
 	void IconManager::DrawIcon(const Icon& icon, float size) const
