@@ -151,6 +151,14 @@ Generated projects now receive a `CMakeLists.txt` generated from:
 Content/Templates/Project/CMakeLists.txt.mustache
 ```
 
+Generated projects reuse the SDK dependency downloads from `Build/Linux-Debug/_deps`.
+They do not run their own `FetchContent` downloads.
+If a generated project cannot find those headers, configure the SDK first or pass:
+
+```bash
+-DKEY_ENGINE_SDK_BUILD_DIR=<path-to-sdk-build-dir>
+```
+
 The editor compile workflow configures and builds generated projects with CMake, not MSBuild.
 
 ## Important Porting Notes

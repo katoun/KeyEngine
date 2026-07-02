@@ -22,6 +22,20 @@
 
 namespace
 {
+	void WriteProcessOutput(QProcess* process, QProcess::ProcessChannel channel)
+	{
+		QByteArray output = channel == QProcess::StandardError
+			? process->readAllStandardError()
+			: process->readAllStandardOutput();
+
+		if (output.isEmpty())
+			return;
+
+		std::ostream& stream = channel == QProcess::StandardError ? std::cerr : std::cout;
+		stream.write(output.constData(), output.size());
+		stream.flush();
+	}
+
 	QString KeyEngineSDKPath()
 	{
 		QDir app_dir(QApplication::applicationDirPath());
@@ -44,6 +58,41 @@ namespace
 		QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
 		environment.insert("KEY_ENGINE_SDK_PATH", KeyEngineSDKPath());
 		process->setProcessEnvironment(environment);
+	}
+
+	void AttachProcessLogging(QProcess* process)
+	{
+		QObject::connect(process, &QProcess::readyReadStandardOutput, [process]() {
+			WriteProcessOutput(process, QProcess::StandardOutput);
+		});
+
+		QObject::connect(process, &QProcess::readyReadStandardError, [process]() {
+			WriteProcessOutput(process, QProcess::StandardError);
+		});
+
+		QObject::connect(process, QOverload<QProcess::ProcessError>::of(&QProcess::errorOccurred), [process](QProcess::ProcessError) {
+			std::cerr << "Process error: " << process->errorString().toStdString() << std::endl;
+		});
+	}
+
+	void StartLoggedProcess(QProcess* process, const QString& program, const QStringList& arguments)
+	{
+		AttachProcessLogging(process);
+
+		std::cout << "Running: " << program.toStdString();
+		for (const QString& argument : arguments)
+		{
+			std::cout << " " << argument.toStdString();
+		}
+		std::cout << std::endl;
+
+		process->start(program, arguments);
+	}
+
+	void FlushProcessOutput(QProcess* process)
+	{
+		WriteProcessOutput(process, QProcess::StandardOutput);
+		WriteProcessOutput(process, QProcess::StandardError);
 	}
 }
 
@@ -287,7 +336,7 @@ namespace editor
 
 		QStringList arguments;
 		arguments << "-n" << current_project_name << "-p" << current_project_path;
-		m_CommandProcess->start(creator_path, arguments);
+		StartLoggedProcess(m_CommandProcess, creator_path, arguments);
 
 		ui.StatusBar->showMessage(tr("Creating Project"));
 	}
@@ -306,7 +355,7 @@ namespace editor
 
 		QStringList arguments;
 		arguments << "-n" << current_project_name << "-p" << current_project_path;
-		m_CommandProcess->start(parser_path, arguments);
+		StartLoggedProcess(m_CommandProcess, parser_path, arguments);
 
 		ui.StatusBar->showMessage(tr("Parsing"));
 	}
@@ -334,15 +383,18 @@ namespace editor
 		QStringList arguments;
 		arguments << "-S" << current_project_path;
 		arguments << "-B" << current_project_path + "/Build/Linux-Debug";
+		arguments << "-G" << "Ninja";
 		arguments << "-DCMAKE_BUILD_TYPE=Debug";
+		arguments << "-DCMAKE_CXX_COMPILER=clang++";
 		arguments << "-DKEY_ENGINE_SDK_PATH=" + KeyEngineSDKPath();
-		m_CommandProcess->start("cmake", arguments);
+		StartLoggedProcess(m_CommandProcess, "cmake", arguments);
 
 		ui.StatusBar->showMessage(tr("Configuring"));
 	}
 
 	void MainWindow::OnProjectCreatorFinished(int exitCode, QProcess::ExitStatus status)
 	{
+		FlushProcessOutput(m_CommandProcess);
 		SAFE_DELETE(m_CommandProcess);
 
 		if (status == QProcess::NormalExit && exitCode == 0)
@@ -369,6 +421,7 @@ namespace editor
 
 	void MainWindow::OnReflectionParserFinished(int exitCode, QProcess::ExitStatus status)
 	{
+		FlushProcessOutput(m_CommandProcess);
 		SAFE_DELETE(m_CommandProcess);
 
 		if (status == QProcess::NormalExit && exitCode == 0)
@@ -386,6 +439,7 @@ namespace editor
 
 	void MainWindow::OnProjectConfigureFinished(int exitCode, QProcess::ExitStatus status)
 	{
+		FlushProcessOutput(m_CommandProcess);
 		SAFE_DELETE(m_CommandProcess);
 
 		if (status != QProcess::NormalExit || exitCode != 0)
@@ -403,13 +457,14 @@ namespace editor
 		QStringList arguments;
 		arguments << "--build" << current_project_path + "/Build/Linux-Debug";
 		arguments << "--parallel";
-		m_CommandProcess->start("cmake", arguments);
+		StartLoggedProcess(m_CommandProcess, "cmake", arguments);
 
 		ui.StatusBar->showMessage(tr("Compiling"));
 	}
 
 	void MainWindow::OnProjectCompileFinished(int exitCode, QProcess::ExitStatus status)
 	{
+		FlushProcessOutput(m_CommandProcess);
 		SAFE_DELETE(m_CommandProcess);
 
 		if (status == QProcess::NormalExit && exitCode == 0)
