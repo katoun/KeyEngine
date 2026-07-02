@@ -32,12 +32,35 @@ FetchContent_Declare(
     GIT_TAG "506c6d3"
 )
 
-foreach(KEYENGINE_DEPENDENCY glm rapidjson cereal tclap mustache)
+FetchContent_Declare(
+    sdl
+    GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git"
+    GIT_TAG "release-3.4.12"
+    GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY "https://github.com/ocornut/imgui.git"
+    GIT_TAG "docking"
+    GIT_SHALLOW TRUE
+    UPDATE_DISCONNECTED TRUE
+)
+
+foreach(KEYENGINE_DEPENDENCY glm rapidjson cereal tclap mustache sdl imgui)
     FetchContent_GetProperties(${KEYENGINE_DEPENDENCY})
     if(NOT ${KEYENGINE_DEPENDENCY}_POPULATED)
         FetchContent_Populate(${KEYENGINE_DEPENDENCY})
     endif()
 endforeach()
+
+set(SDL_TEST_LIBRARY OFF CACHE BOOL "Build SDL test library" FORCE)
+set(SDL_TESTS OFF CACHE BOOL "Build SDL tests" FORCE)
+set(SDL_EXAMPLES OFF CACHE BOOL "Build SDL examples" FORCE)
+set(SDL_X11_XSCRNSAVER OFF CACHE BOOL "Disable optional XScreenSaver dependency" FORCE)
+set(SDL_X11_XTEST OFF CACHE BOOL "Disable optional XTest dependency" FORCE)
+add_subdirectory("${sdl_SOURCE_DIR}" "${sdl_BINARY_DIR}")
 
 add_library(KeyThirdParty_glm INTERFACE)
 add_library(KeyThirdParty::glm ALIAS KeyThirdParty_glm)
@@ -58,3 +81,26 @@ target_include_directories(KeyThirdParty_tclap INTERFACE "${tclap_SOURCE_DIR}/in
 add_library(KeyThirdParty_mustache INTERFACE)
 add_library(KeyThirdParty::mustache ALIAS KeyThirdParty_mustache)
 target_include_directories(KeyThirdParty_mustache INTERFACE "${mustache_SOURCE_DIR}")
+
+find_package(Vulkan REQUIRED)
+
+add_library(KeyThirdParty_imgui STATIC
+    "${imgui_SOURCE_DIR}/imgui.cpp"
+    "${imgui_SOURCE_DIR}/imgui_demo.cpp"
+    "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+    "${imgui_SOURCE_DIR}/imgui_tables.cpp"
+    "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp"
+)
+add_library(KeyThirdParty::imgui ALIAS KeyThirdParty_imgui)
+target_include_directories(KeyThirdParty_imgui
+    PUBLIC
+        "${imgui_SOURCE_DIR}"
+        "${imgui_SOURCE_DIR}/backends"
+)
+target_link_libraries(KeyThirdParty_imgui
+    PUBLIC
+        SDL3::SDL3
+        Vulkan::Vulkan
+)

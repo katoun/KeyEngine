@@ -6,12 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS
-    "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp/Forms"
-)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
@@ -125,6 +119,10 @@ target_include_directories(QtPropertyBrowser
         "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/qtpropertybrowser/src"
 )
 target_link_libraries(QtPropertyBrowser PUBLIC KeyThirdParty::glm Qt5::Core Qt5::Gui Qt5::Widgets)
+set_target_properties(QtPropertyBrowser PROPERTIES
+    AUTOMOC ON
+    AUTORCC ON
+)
 
 add_executable(KeyEditorApp
     "Source/EditorApp/main.cpp"
@@ -165,4 +163,40 @@ target_link_libraries(KeyEditorApp
         Qt5::OpenGL
         GL
 )
+set_target_properties(KeyEditorApp PROPERTIES
+    AUTOMOC ON
+    AUTOUIC ON
+    AUTORCC ON
+    AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp/Forms"
+)
 set_target_properties(KeyEditorApp PROPERTIES OUTPUT_NAME "KeyEditor")
+
+add_executable(KeyEditorApp2
+    "Source/EditorApp2/main.cpp"
+    "Source/EditorApp2/MainWindow.cpp"
+    "Source/EditorApp2/ContentBrowserWidget.cpp"
+    "Source/EditorApp2/InspectorWidget.cpp"
+    "Source/EditorApp2/IconManager.cpp"
+    "Source/EditorApp2/OutlinerWidget.cpp"
+    "Source/EditorApp2/Utils.cpp"
+    "Source/EditorApp2/MainWindow.h"
+    "Source/EditorApp2/ContentBrowserWidget.h"
+    "Source/EditorApp2/InspectorWidget.h"
+    "Source/EditorApp2/IconManager.h"
+    "Source/EditorApp2/OutlinerWidget.h"
+    "Source/EditorApp2/Utils.h"
+)
+target_compile_definitions(KeyEditorApp2 PRIVATE RUNTIME_DLL EDITOR_DLL)
+target_include_directories(KeyEditorApp2
+    PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/EditorApp2"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/Runtime"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/Editor"
+)
+target_link_libraries(KeyEditorApp2
+    PRIVATE
+        KeyRuntime
+        KeyEditor
+        KeyThirdParty::imgui
+)
+set_target_properties(KeyEditorApp2 PROPERTIES OUTPUT_NAME "KeyEditor2")

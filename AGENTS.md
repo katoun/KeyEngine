@@ -93,7 +93,7 @@ In VSCode, press `F5` after building.
 
 ## Dependencies
 
-Vendored dependencies kept in `Dependencies/`:
+Vendored source dependencies kept in `Dependencies/`:
 
 - `qtpropertybrowser`
 
@@ -113,10 +113,16 @@ Build/Linux-Debug/_deps
 CMake-managed dependencies:
 
 - `cereal` 1.3.2, used only for `cereal/external/base64.hpp`.
+- Dear ImGui `docking` branch for the experimental `EditorApp2` UI.
 - `glm` 0.9.9.8.
 - `kainjow/Mustache` commit `506c6d3`, kept at the older API used by the tools.
 - `RapidJSON` 1.1.0.
+- SDL 3.4.12 for the experimental `EditorApp2` windowing/input.
 - `TCLAP` 1.2.5.
+
+Vendored source dependency kept in the repo:
+
+- `qtpropertybrowser`: used by the primary Qt editor app inspector/property UI.
 
 Dependencies removed from the repo because the Linux/CMake build does not use them:
 
@@ -125,7 +131,12 @@ Dependencies removed from the repo because the Linux/CMake build does not use th
 - `bgfx`: unused old Windows binaries/libs.
 - `base64`, `glm`, `mustache`, `rapidjson`, `tclap`: now fetched by CMake.
 
-Expected system packages include CMake, Ninja, Clang 20, Qt5 development packages, LLVM/libclang 20 development packages, OpenGL development libraries, and pthreads.
+Expected system packages include CMake, Ninja, Clang 20, LLVM/libclang 20 development packages, Qt 5 development packages, Vulkan headers/loader, and pthreads.
+
+Editor executables:
+
+- `KeyEditor`: primary Qt editor app built from `Source/EditorApp`.
+- `KeyEditor2`: experimental Dear ImGui docking editor built from `Source/EditorApp2`.
 
 ## Generated Projects
 
@@ -166,6 +177,7 @@ The editor compile workflow configures and builds generated projects with CMake,
 - Do not restore old `.sln`, `.vcxproj`, `.vcxproj.filters`, or `.vcxproj.user` files. CMake can generate Visual Studio files on Windows if needed.
 - Do not restore bundled `Dependencies/LLVM`, `Dependencies/assimp`, or `Dependencies/bgfx` unless a new feature actually needs them.
 - Do not restore vendored `base64`, `glm`, `mustache`, `rapidjson`, or `tclap`; CMake fetches them.
+- Keep `Dependencies/qtpropertybrowser` while the Qt editor is the primary editor.
 - Keep `glm`; it is the base math dependency, now provided through CMake.
 - The editor action formerly named `OpenVS` is now `OpenVSCode`; it runs `code <project_path>` and falls back to opening the folder.
 - `Content/Templates/Project/Source/Main.cpp` was converted from UTF-16LE to UTF-8 so generated projects compile on Linux.
