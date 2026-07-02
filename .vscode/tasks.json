@@ -13,8 +13,9 @@
                 "-G",
                 "Ninja",
                 "-DCMAKE_BUILD_TYPE=Debug",
-                "-DCMAKE_C_COMPILER=clang",
-                "-DCMAKE_CXX_COMPILER=clang++"
+                "-DCMAKE_C_COMPILER=clang-20",
+                "-DCMAKE_CXX_COMPILER=clang++-20",
+                "-DLLVM_DIR=/usr/lib/llvm-20/lib/cmake/llvm"
             ],
             "problemMatcher": []
         },

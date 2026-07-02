@@ -14,8 +14,8 @@ Vendored dependency:
 
 System dependencies:
 
-- Clang/libclang
-- LLVM CMake package
+- Clang/libclang 20
+- LLVM 20 CMake package
 - Qt5 Core/Gui/Widgets/OpenGL
 - OpenGL
 - Threads/pthreads

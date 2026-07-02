@@ -385,7 +385,7 @@ namespace editor
 		arguments << "-B" << current_project_path + "/Build/Linux-Debug";
 		arguments << "-G" << "Ninja";
 		arguments << "-DCMAKE_BUILD_TYPE=Debug";
-		arguments << "-DCMAKE_CXX_COMPILER=clang++";
+		arguments << "-DCMAKE_CXX_COMPILER=clang++-20";
 		arguments << "-DKEY_ENGINE_SDK_PATH=" + KeyEngineSDKPath();
 		StartLoggedProcess(m_CommandProcess, "cmake", arguments);
 

@@ -19,7 +19,7 @@ Use CMake from the repository root.
 Configure:
 
 ```bash
-cmake -S . -B Build/Linux-Debug -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+cmake -S . -B Build/Linux-Debug -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20 -DLLVM_DIR=/usr/lib/llvm-20/lib/cmake/llvm
 ```
 
 Build:
@@ -125,7 +125,7 @@ Dependencies removed from the repo because the Linux/CMake build does not use th
 - `bgfx`: unused old Windows binaries/libs.
 - `base64`, `glm`, `mustache`, `rapidjson`, `tclap`: now fetched by CMake.
 
-Expected system packages include CMake, Ninja, Clang, Qt5 development packages, LLVM/libclang development packages, OpenGL development libraries, and pthreads.
+Expected system packages include CMake, Ninja, Clang 20, Qt5 development packages, LLVM/libclang 20 development packages, OpenGL development libraries, and pthreads.
 
 ## Generated Projects
 
