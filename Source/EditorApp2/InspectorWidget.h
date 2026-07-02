@@ -9,6 +9,8 @@
 #include <Runtime.h>
 
 #include <array>
+#include <string>
+#include <unordered_map>
 
 namespace editor
 {
@@ -20,9 +22,13 @@ namespace editor
 
 	private:
 		void DrawGameObject(game::GameObject& game_object);
-		void DrawField(reflection::Any component_any, const reflection::Field& field);
+		void DrawNameField(game::GameObject& game_object);
+		void DrawField(reflection::Any component_any, const reflection::Type& component_type, const reflection::Field& field);
+		void DrawPropertyLabel(const std::string& label);
+		bool DrawVector3Field(const std::string& id, glm::vec3& value);
 
 		core::Object* m_Selection = nullptr;
 		std::array<char, 256> m_NameBuffer{};
+		std::unordered_map<std::string, std::array<char, 256>> m_StringBuffers;
 	};
 }
