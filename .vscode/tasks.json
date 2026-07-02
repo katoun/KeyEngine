@@ -9,7 +9,7 @@
                 "-S",
                 ".",
                 "-B",
-                "build/linux-Debug",
+                "Build/Linux-Debug",
                 "-G",
                 "Ninja",
                 "-DCMAKE_BUILD_TYPE=Debug",
@@ -24,7 +24,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "build/linux-Debug",
+                "Build/Linux-Debug",
                 "--parallel"
             ],
             "dependsOn": "cmake: configure debug",
