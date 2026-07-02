@@ -70,6 +70,11 @@ namespace editor
 		return { ImTextureRef(static_cast<ImTextureID>(reinterpret_cast<std::uintptr_t>(texture->descriptor_set))), ImVec2(static_cast<float>(texture->width), static_cast<float>(texture->height)) };
 	}
 
+	Icon IconManager::GetAppIcon()
+	{
+		return GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "KeyEngine.png");
+	}
+
 	Icon IconManager::GetEditorIcon(const std::string& name)
 	{
 		return GetIcon(SdkPath() / "Source" / "EditorApp" / "Resources" / "Icons" / (name + ".png"));

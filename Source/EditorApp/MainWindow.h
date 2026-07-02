@@ -45,6 +45,8 @@ namespace editor
 		static void OnOutlinerSelectionChanged(void* user_data, core::Object* selection);
 
 		void DrawMainMenu();
+		void DrawHeaderMenus();
+		void DrawAppHeader();
 		bool MenuItemWithIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
 		bool MenuItemWithOutlinerIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
 		void DrawToolbar();
@@ -83,7 +85,8 @@ namespace editor
 		std::vector<reflection::Type> m_ComponentTypes;
 		std::vector<reflection::Type> m_Types;
 
-		float m_ToolbarHeight = 42.0f;
+		float m_HeaderHeight = 44.0f;
+		float m_ToolbarHeight = 60.0f;
 		bool m_ShowNewProject = false;
 		bool m_ShowImguiDemo = false;
 		char m_NewProjectName[128] = "Test";

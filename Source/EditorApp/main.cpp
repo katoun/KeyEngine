@@ -14,6 +14,7 @@
 #include <imgui_impl_vulkan.h>
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 
@@ -49,6 +50,63 @@ namespace
 	ImGui_ImplVulkanH_Window g_MainWindowData;
 	int g_MinImageCount = 2;
 	bool g_SwapChainRebuild = false;
+
+	SDL_HitTestResult SDLCALL WindowHitTest(SDL_Window* window, const SDL_Point* area, void*)
+	{
+		constexpr int resize_border = 6;
+		constexpr int header_height = 44;
+		constexpr int left_interactive_width = 360;
+		constexpr int right_controls_width = 146;
+
+		int width = 0;
+		int height = 0;
+		SDL_GetWindowSize(window, &width, &height);
+
+		const bool left = area->x < resize_border;
+		const bool right = area->x >= width - resize_border;
+		const bool top = area->y < resize_border;
+		const bool bottom = area->y >= height - resize_border;
+
+		if (top && left)
+			return SDL_HITTEST_RESIZE_TOPLEFT;
+		if (top && right)
+			return SDL_HITTEST_RESIZE_TOPRIGHT;
+		if (bottom && left)
+			return SDL_HITTEST_RESIZE_BOTTOMLEFT;
+		if (bottom && right)
+			return SDL_HITTEST_RESIZE_BOTTOMRIGHT;
+		if (top)
+			return SDL_HITTEST_RESIZE_TOP;
+		if (bottom)
+			return SDL_HITTEST_RESIZE_BOTTOM;
+		if (left)
+			return SDL_HITTEST_RESIZE_LEFT;
+		if (right)
+			return SDL_HITTEST_RESIZE_RIGHT;
+
+		if (area->y < header_height
+			&& area->x > left_interactive_width
+			&& area->x < width - right_controls_width)
+		{
+			return SDL_HITTEST_DRAGGABLE;
+		}
+
+		return SDL_HITTEST_NORMAL;
+	}
+
+	void SetWindowIcon(SDL_Window* window)
+	{
+		const fs::path icon_path = editor::SdkPath() / "Source" / "EditorApp" / "Resources" / "KeyEngine.png";
+		SDL_Surface* icon = SDL_LoadPNG(icon_path.string().c_str());
+		if (icon == nullptr)
+		{
+			std::cerr << "Unable to load window icon: " << icon_path << " " << SDL_GetError() << std::endl;
+			return;
+		}
+
+		SDL_SetWindowIcon(window, icon);
+		SDL_DestroySurface(icon);
+	}
 
 	void CheckVkResult(VkResult err)
 	{
@@ -322,13 +380,16 @@ int main(int argc, char* argv[])
 		"KeyEditor",
 		1600,
 		900,
-		SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+		SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_BORDERLESS);
 	if (window == nullptr)
 	{
 		std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return EXIT_FAILURE;
 	}
+	if (!SDL_SetWindowHitTest(window, WindowHitTest, nullptr))
+		std::cerr << "SDL_SetWindowHitTest failed: " << SDL_GetError() << std::endl;
+	SetWindowIcon(window);
 
 	uint32_t extensions_count = 0;
 	const char* const* extensions = SDL_Vulkan_GetInstanceExtensions(&extensions_count);

@@ -32,6 +32,7 @@ namespace editor
 		void Shutdown();
 
 		Icon GetIcon(const std::filesystem::path& path);
+		Icon GetAppIcon();
 		Icon GetEditorIcon(const std::string& name);
 		Icon GetContentIcon(const std::string& name);
 		Icon GetOutlinerIcon(const std::string& name);
