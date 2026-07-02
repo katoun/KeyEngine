@@ -62,7 +62,7 @@ namespace editor
 
 	void ContentBrowserWidget::DoubleClicked(const QModelIndex &index)
 	{
-		auto& path = m_Model->filePath(ui.Content->currentIndex());
+		auto path = m_Model->filePath(ui.Content->currentIndex());
 		//TODO: open the appropriate editor for the file!!!
 	}
 

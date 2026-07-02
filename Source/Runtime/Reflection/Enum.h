@@ -134,7 +134,7 @@ namespace reflection
 	{
 		std::vector<std::string> keys;
 
-		for (auto &entry : m_table)
+		for (auto &entry : m_Table)
 			keys.emplace_back(entry.first);
 
 		return keys;
@@ -145,7 +145,7 @@ namespace reflection
 	{
 		std::vector<Any> values;
 
-		for (auto &entry : m_table)
+		for (auto &entry : m_Table)
 			values.emplace_back(entry.second);
 
 		return values;
@@ -166,7 +166,7 @@ namespace reflection
 
 		auto &converted = value.GetValue<T>();
 
-		for (auto &entry : m_table)
+		for (auto &entry : m_Table)
 		{
 			if (entry.second == converted)
 				return entry.first;

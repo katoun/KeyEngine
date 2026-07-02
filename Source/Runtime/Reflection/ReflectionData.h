@@ -49,5 +49,5 @@ DECLARE_TYPE(game::Transform)
 
 namespace reflection
 {
-	inline RUNTIME_API void RegisterReflectionData();
+	RUNTIME_API void RegisterReflectionData();
 }

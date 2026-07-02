@@ -38,7 +38,7 @@ namespace reflection
 
 	void ReflectionManager::RemovePackage(const std::string& name)
 	{
-		auto& search = m_Packages.find(name);
+		auto search = m_Packages.find(name);
 		if (search == m_Packages.end())
 			return;
 
@@ -47,7 +47,7 @@ namespace reflection
 		auto& ids = package.GetTypeIDs();
 		for (auto& id : ids)
 		{
-			auto& search = m_IDPackageMap.find(id);
+			auto search = m_IDPackageMap.find(id);
 			if (search != m_IDPackageMap.end())
 			{
 				m_IDPackageMap.erase(id);

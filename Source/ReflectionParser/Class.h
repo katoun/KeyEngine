@@ -9,6 +9,7 @@
 #include <LanguageType.h>
 #include <Cursor.h>
 #include <Namespace.h>
+#include <Field.h>
 
 #include <vector>
 #include <string>

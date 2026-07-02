@@ -6,6 +6,8 @@
 
 #include <Core/Utils.h>
 
+#include <cstdlib>
+
 #include <algorithm>
 #include <string>
 #include <sstream>
@@ -269,6 +271,7 @@ namespace core
 	{
 		RUNTIME_API std::string GetEnv(const std::string& var)
 		{
+#ifdef _MSC_VER
 			char* path;
 			size_t size;
 
@@ -288,6 +291,10 @@ namespace core
 			free(path);
 
 			return ret;
+#else
+			const char* value = std::getenv(var.c_str());
+			return value != nullptr ? std::string(value) : std::string();
+#endif
 		}
 	}
 } // end namespace core

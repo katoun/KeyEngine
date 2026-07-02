@@ -8,12 +8,10 @@
 
 #include <RuntimeConfig.h>
 
-#include <experimental/filesystem>
 #include <tclap/CmdLine.h>
 
-#include <Mustache.hpp>
+#include <mustache.hpp>
 
 using mustache = Kainjow::BasicMustache<std::string>;
 
-namespace filesystem = std::experimental::filesystem;
 namespace cmd_parser = TCLAP;

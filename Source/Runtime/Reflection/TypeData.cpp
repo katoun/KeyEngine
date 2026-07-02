@@ -17,7 +17,12 @@ namespace reflection
 		auto &manager = ReflectionManager::Instance();
 	}
 
-	TypeData& TypeData::Undefined = TypeData();
+	namespace
+	{
+		TypeData undefinedTypeData;
+	}
+
+	TypeData& TypeData::Undefined = undefinedTypeData;
 
 	TypeData::TypeData(void)
 		: m_IsEnum(false)

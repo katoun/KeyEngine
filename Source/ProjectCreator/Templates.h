@@ -11,7 +11,7 @@ namespace creator
 	namespace templates
 	{
 		const auto ProjectFile = "Project.keyproject.mustache";
-		const auto VisualStudioProject = "Project.vcxproj.mustache";
+		const auto CMakeProject = "CMakeLists.txt.mustache";
 	}
 }
 

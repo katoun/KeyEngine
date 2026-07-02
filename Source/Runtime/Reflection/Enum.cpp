@@ -38,17 +38,17 @@ namespace reflection
 
 	Type Enum::GetType(void) const
 	{
-		return m_Container != nullptr ? m_Container->GetType() : Type::Invalid;
+		return m_Container != nullptr ? m_Container->GetType() : Type(Type::Invalid);
 	}
 
 	Type Enum::GetParentType(void) const
 	{
-		return m_Container != nullptr ? m_Container->GetParentType() : Type::Invalid;
+		return m_Container != nullptr ? m_Container->GetParentType() : Type(Type::Invalid);
 	}
 
 	Type Enum::GetUnderlyingType(void) const
 	{
-		return m_Container != nullptr ? m_Container->GetUnderlyingType() : Type::Invalid;
+		return m_Container != nullptr ? m_Container->GetUnderlyingType() : Type(Type::Invalid);
 	}
 
 	std::vector<std::string> Enum::GetKeys(void) const

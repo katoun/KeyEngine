@@ -60,7 +60,7 @@ namespace reflection
 
 	Type Any::GetType(void) const
 	{
-		return (m_Container != nullptr ? m_Container->GetType() : Type::Invalid);
+		return (m_Container != nullptr ? m_Container->GetType() : Type(Type::Invalid));
 	}
 
 	bool Any::IsValid(void) const

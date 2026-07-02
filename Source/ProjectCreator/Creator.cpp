@@ -8,6 +8,8 @@
 #include <Utils.h>
 #include <Core/Utils.h>
 
+#include <stdexcept>
+
 namespace creator
 {
 	void Creator::SetOptions(const CreatorOptions &options)
@@ -32,18 +34,18 @@ namespace creator
 		RemoveMustacheFiles();
 
 		BuildProjectFile();
-		BuildVisualStudioProjectFile();
+		BuildCMakeProjectFile();
 	}
 
 	void Creator::RemoveMustacheFiles()
 	{
 		filesystem::remove(m_ProjectPath / templates::ProjectFile);
-		filesystem::remove(m_ProjectPath / "Source" / templates::VisualStudioProject);
+		filesystem::remove(m_ProjectPath / templates::CMakeProject);
 	}
 
 	void Creator::BuildProjectFile()
 	{
-		auto& output_file_mustache = LoadTemplate(filesystem::path("") ,templates::ProjectFile);
+		auto output_file_mustache = LoadTemplate(filesystem::path("") ,templates::ProjectFile);
 
 		if (!output_file_mustache.isValid())
 		{
@@ -52,7 +54,7 @@ namespace creator
 			error << "Unable to compile output project file template." << std::endl;
 			error << output_file_mustache.errorMessage();
 
-			throw std::exception(error.str().c_str());
+			throw std::runtime_error(error.str());
 		}
 
 		mustache::Data OutputFileData{ mustache::Data::Type::Object };
@@ -67,18 +69,18 @@ namespace creator
 		WriteText(file_path, output_data);
 	}
 
-	void Creator::BuildVisualStudioProjectFile()
+	void Creator::BuildCMakeProjectFile()
 	{
-		auto& output_file_mustache = LoadTemplate(filesystem::path("Source"), templates::VisualStudioProject);
+		auto output_file_mustache = LoadTemplate(filesystem::path(""), templates::CMakeProject);
 
 		if (!output_file_mustache.isValid())
 		{
 			std::stringstream error;
 
-			error << "Unable to compile output visual studio solution template." << std::endl;
+			error << "Unable to compile output CMake project file template." << std::endl;
 			error << output_file_mustache.errorMessage();
 
-			throw std::exception(error.str().c_str());
+			throw std::runtime_error(error.str());
 		}
 
 		mustache::Data OutputFileData{ mustache::Data::Type::Object };
@@ -86,7 +88,7 @@ namespace creator
 		OutputFileData["ProjectName"] = m_Options.ProjectName;
 
 		std::string output_data = output_file_mustache.render(OutputFileData);
-		std::string file_path = (m_ProjectPath / "Source" / "Project.vcxproj").string();
+		std::string file_path = (m_ProjectPath / "CMakeLists.txt").string();
 
 		WriteText(file_path, output_data);
 	}
@@ -96,7 +98,7 @@ namespace creator
 		std::string template_path = "";
 		if (!subpath.empty())
 		{
-			template_path = filesystem::path(m_TemplatePath).append(subpath).append(name).string();
+			template_path = (filesystem::path(m_TemplatePath) / subpath / name).string();
 		}
 		else
 		{

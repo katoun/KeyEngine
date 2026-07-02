@@ -45,7 +45,7 @@ namespace reflection
 	template<typename T>
 	std::vector<Type> ReflectionManager::GetTypes(void) const
 	{
-		auto& of_type = typeof(T);
+		auto of_type = typeof(T);
 
 		std::vector<Type> ret;
 
@@ -64,5 +64,23 @@ namespace reflection
 		}
 
 		return ret;
+	}
+
+	template<typename AttributeType>
+	const AttributeType* Type::GetAttribute(void) const
+	{
+		return ReflectionManager::Instance().GetTypeData(m_ID).GetAttribute<AttributeType>();
+	}
+
+	template<typename T>
+	bool Type::IsDerivedFrom(void) const
+	{
+		return IsDerivedFrom(typeof(T));
+	}
+
+	template<typename T>
+	bool Type::IsTypeOf(void) const
+	{
+		return IsTypeOf(typeof(T));
 	}
 }

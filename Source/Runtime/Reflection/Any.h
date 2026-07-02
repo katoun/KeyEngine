@@ -19,7 +19,7 @@
 
 #define DECLARE_STANDARD_VARIANTS(type)								\
 	template<>														\
-	class RUNTIME_API Container<type> : public ContainerBase		\
+	class RUNTIME_API Any::Container<type> : public Any::ContainerBase	\
 	{																\
 	public:															\
 																	\
@@ -30,7 +30,7 @@
 																	\
 		void *GetPtr(void) const override;							\
 																	\
-		ContainerBase *Clone(void) const override;					\
+		Any::ContainerBase *Clone(void) const override;				\
 																	\
 	private:														\
 																	\
@@ -121,26 +121,6 @@ namespace reflection
 			T m_Value;
 		};
 
-		template<>
-		class RUNTIME_API Container<void> : public ContainerBase
-		{
-		public:
-
-			Container(void);
-
-			Type GetType(void) const override;
-
-			void *GetPtr(void) const override;
-
-			ContainerBase *Clone(void) const override;
-
-		private:
-
-			friend class Any;
-
-			Container &operator=(const Container &rhs) = delete;
-		};
-
 		/*class RUNTIME_API ObjectContainer : public ContainerBase
 		{
 		public:
@@ -158,12 +138,6 @@ namespace reflection
 			core::Object* m_Instance;
 		};*/
 
-		DECLARE_STANDARD_VARIANTS(int)
-		DECLARE_STANDARD_VARIANTS(bool)
-		DECLARE_STANDARD_VARIANTS(float)
-		DECLARE_STANDARD_VARIANTS(double)
-		DECLARE_STANDARD_VARIANTS(std::string)
-
 	private:
 
 		friend class Destructor;
@@ -172,6 +146,32 @@ namespace reflection
 
 		ContainerBase *m_Container;
 	};
+
+	template<>
+	class RUNTIME_API Any::Container<void> : public Any::ContainerBase
+	{
+	public:
+
+		Container(void);
+
+		Type GetType(void) const override;
+
+		void *GetPtr(void) const override;
+
+		Any::ContainerBase *Clone(void) const override;
+
+	private:
+
+		friend class Any;
+
+		Container &operator=(const Container &rhs) = delete;
+	};
+
+	DECLARE_STANDARD_VARIANTS(int)
+	DECLARE_STANDARD_VARIANTS(bool)
+	DECLARE_STANDARD_VARIANTS(float)
+	DECLARE_STANDARD_VARIANTS(double)
+	DECLARE_STANDARD_VARIANTS(std::string)
 
 	/*template <typename T>
 	Any::Any(T *data, typename std::enable_if<std::is_base_of<core::Object, T>::value>::type*)

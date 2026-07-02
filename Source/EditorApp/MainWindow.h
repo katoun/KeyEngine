@@ -64,7 +64,7 @@ namespace editor
 		void OnSave();
 		void OnExit();
 
-		void OpenVS();
+		void OpenVSCode();
 		void OnCompile();
 
 		void StartProjectCreator();
@@ -73,8 +73,8 @@ namespace editor
 
 		void OnProjectCreatorFinished(int, QProcess::ExitStatus);
 		void OnReflectionParserFinished(int, QProcess::ExitStatus);
+		void OnProjectConfigureFinished(int, QProcess::ExitStatus);
 		void OnProjectCompileFinished(int, QProcess::ExitStatus);
-		void OnOpenVSFinished(int, QProcess::ExitStatus);
 	};
 }
 

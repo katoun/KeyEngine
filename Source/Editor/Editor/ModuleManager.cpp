@@ -53,7 +53,7 @@ namespace editor
 
 	void ModuleManager::UnloadAllModules()
 	{
-		for each (auto module in m_Modules)
+		for (auto module : m_Modules)
 		{
 			if (module == nullptr)
 				continue;
@@ -68,7 +68,7 @@ namespace editor
 
 	void ModuleManager::ReloadAllModules()
 	{
-		for each (auto module in m_Modules)
+		for (auto module : m_Modules)
 		{
 			if (module == nullptr)
 				continue;

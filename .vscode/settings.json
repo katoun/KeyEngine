@@ -1,0 +1,9 @@
+{
+    "cmake.generator": "Ninja",
+    "cmake.buildDirectory": "${workspaceFolder}/build/linux-${buildType}",
+    "cmake.configureSettings": {
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_C_COMPILER": "clang"
+    },
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/linux-Debug/compile_commands.json"
+}

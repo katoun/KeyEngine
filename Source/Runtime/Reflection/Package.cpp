@@ -10,7 +10,12 @@ namespace reflection
 {
 	uint32_t Package::m_NextID = 0;
 
-	Package& Package::Default = Package("Engine");
+	namespace
+	{
+		Package defaultPackage("Engine");
+	}
+
+	Package& Package::Default = defaultPackage;
 
 	Package::Package(const std::string& name)
 	{

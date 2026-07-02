@@ -9,15 +9,15 @@
 #include <RuntimeConfig.h>
 #include <Core/Object.h>
 #include <Reflection/Reflection.h>
+#include <Game/MessageType.h>
 
 #include <string>
 
 namespace game
 {
-	enum class MessageType;
 	class GameObject;
 
-	class RUNTIME_API Component : core::Object
+	class RUNTIME_API Component : public core::Object
 	{
 		DEFINE_OBJECT
 

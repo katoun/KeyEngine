@@ -63,10 +63,10 @@ namespace editor
 			return;
 		}
 
-		auto& type = m_Selection->GetType();
+		auto type = m_Selection->GetType();
 
 		//support only for game::GameObject for now
-		auto& game_object_type = typeof(game::GameObject);
+		auto game_object_type = typeof(game::GameObject);
 		if (type == game_object_type)
 		{
 			m_PropertyBrowser->clear();
@@ -84,11 +84,11 @@ namespace editor
 
 			QtBrowserItem* name_item = m_PropertyBrowser->addProperty(name_property);
 
-			auto& components_any = game_object->GetComponentsAny();
+			auto components_any = game_object->GetComponentsAny();
 			for (auto& pair : components_any)
 			{
 				auto& id = pair.first;
-				auto& component_type = reflection::Type(id);
+				auto component_type = reflection::Type(id);
 				auto& component_any = pair.second;
 
 				auto display_name_attribute = component_type.GetAttribute<attribute::DisplayName>();
@@ -98,13 +98,13 @@ namespace editor
 				component_data.setValue<reflection::Any>(component_any);
 
 				QtProperty* component_property = m_GroupManager->addProperty(QString::fromStdString(component_name));
-				auto& fields = component_type.GetFields();
+				auto fields = component_type.GetFields();
 				for (auto i = fields.begin(); i != fields.end(); ++i)
 				{
 					auto& field = (*i);
 					auto field_display_name_attribute = field.GetAttribute<attribute::DisplayName>();
 					std::string field_name = field_display_name_attribute->Value;
-					auto& value_any = field.GetValue(component_any);
+					auto value_any = field.GetValue(component_any);
 
 					QtProperty* field_property = nullptr;
 					if (field.GetType() == typeof(int))
@@ -167,8 +167,8 @@ namespace editor
 		{
 			QVariant component_data = property->data(0);
 			QVariant field_data = property->data(1);
-			auto& field = field_data.value<reflection::Field>();
-			auto& component_any = component_data.value<reflection::Any>();
+			auto field = field_data.value<reflection::Field>();
+			auto component_any = component_data.value<reflection::Any>();
 
 			field.SetValue(component_any, reflection::Any(value));
 		}
@@ -187,8 +187,8 @@ namespace editor
 		{
 			QVariant component_data = property->data(0);
 			QVariant field_data = property->data(1);
-			auto& field = field_data.value<reflection::Field>();
-			auto& component_any = component_data.value<reflection::Any>();
+			auto field = field_data.value<reflection::Field>();
+			auto component_any = component_data.value<reflection::Any>();
 
 			field.SetValue(component_any, reflection::Any((float)value));
 		}
@@ -216,8 +216,8 @@ namespace editor
 		{
 			QVariant component_data = property->data(0);
 			QVariant field_data = property->data(1);
-			auto& field = field_data.value<reflection::Field>();
-			auto& component_any = component_data.value<reflection::Any>();
+			auto field = field_data.value<reflection::Field>();
+			auto component_any = component_data.value<reflection::Any>();
 
 			field.SetValue(component_any, reflection::Any(value.toStdString()));
 		}
@@ -237,8 +237,8 @@ namespace editor
 		{
 			QVariant component_data = property->data(0);
 			QVariant field_data = property->data(1);
-			auto& field = field_data.value<reflection::Field>();
-			auto& component_any = component_data.value<reflection::Any>();
+			auto field = field_data.value<reflection::Field>();
+			auto component_any = component_data.value<reflection::Any>();
 
 			field.SetValue(component_any, reflection::Any(value));
 		}

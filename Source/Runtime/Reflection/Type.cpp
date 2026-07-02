@@ -152,7 +152,7 @@ namespace reflection
 			if (!basetype.IsValid())
 				continue;
 
-			auto& basefields = basetype.GetFields();
+			auto basefields = basetype.GetFields();
 			
 			for (auto &field : basefields)
 			{

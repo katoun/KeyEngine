@@ -14,6 +14,9 @@ namespace resource
 	{
 		class RUNTIME_API Archive
 		{
+		public:
+			Archive();
+
 		private:
 			//The rtti virtual function only exists to enable an archive to be used in a polymorphic fashion, if necessary.
 			virtual void rtti() {}

@@ -9,6 +9,8 @@
 #include <Utils.h>
 #include <Core/Utils.h>
 
+#include <stdexcept>
+
 #define RECURSE_NAMESPACES(kind, cursor, method, ns) \
     if (kind == CXCursor_Namespace)                  \
     {                                                \
@@ -45,10 +47,6 @@ namespace parser
 	void Parser::SetOptions(const ParserOptions &options)
 	{
 		m_Options = options;
-		std::string vc_include = "C:\\Program Files(x86)\\Microsoft Visual Studio 14.0\\VC\\include";
-
-		auto test_path = filesystem::path("C:\\Program Files(x86)\\Microsoft Visual Studio 14.0\\..\\..");
-		test_path = filesystem::canonical(test_path);
 
 		auto sdk_path = filesystem::path(m_Options.SDKPath);
 		sdk_path = filesystem::canonical(sdk_path);
@@ -68,9 +66,8 @@ namespace parser
 		{ {
 			"-x",
 			"c++",
-			"-std=c++11",
+			"-std=c++17",
 			"-D__REFLECTION_PARSER__",
-			"-I" + vc_include,
 			"-I" + runtime_source,
 			"-I" + editor_source,
 			"-I" + project_source
@@ -132,9 +129,9 @@ namespace parser
 
 		try
 		{
-			auto partialLoader = [=]()
+			auto partialLoader = [this, path]() -> std::string
 			{
-				auto& cache = m_TemplatePartialCache.find(path);
+				auto cache = m_TemplatePartialCache.find(path);
 
 				if (cache == m_TemplatePartialCache.end())
 				{
@@ -183,7 +180,7 @@ namespace parser
 
 	void Parser::BuildOutputSourceFile()
 	{
-		auto& output_file_mustache = LoadTemplate(templates::ReflectionData);
+		auto output_file_mustache = LoadTemplate(templates::ReflectionData);
 
 		if (!output_file_mustache.isValid())
 		{
@@ -192,7 +189,7 @@ namespace parser
 			error << "Unable to compile output file template." << std::endl;
 			error << output_file_mustache.errorMessage();
 
-			throw std::exception(error.str().c_str());
+			throw std::runtime_error(error.str());
 		}
 
 		mustache::Data OutputFileData{ mustache::Data::Type::Object };

@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 namespace parser
 {
@@ -37,7 +38,7 @@ namespace parser
 
 			error << "Unable to open file \"" << filename << "\" for reading." << std::endl;
 
-			throw std::exception(error.str().c_str());
+			throw std::runtime_error(error.str());
 		}
 
 		input.seekg(0, std::ios::end);
@@ -63,7 +64,7 @@ namespace parser
 
 			error << "Unable to open file \"" << filename << "\" for writing." << std::endl;
 
-			throw std::exception(error.str().c_str());
+			throw std::runtime_error(error.str());
 		}
 
 		output << text;

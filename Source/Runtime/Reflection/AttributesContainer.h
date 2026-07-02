@@ -49,9 +49,9 @@ namespace reflection
 	{
 		static_assert(std::is_base_of<Attribute, AttributeType>::value, "Type must be an Attribute.");
 
-		auto& type = typeof(AttributeType);
+		auto type = typeof(AttributeType);
 
-		auto& search = m_Attributes.find(type);
+		auto search = m_Attributes.find(type);
 
 		if (search == m_Attributes.end())
 			return nullptr;

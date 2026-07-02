@@ -27,7 +27,7 @@ namespace creator
 
 		void RemoveMustacheFiles();
 		void BuildProjectFile();
-		void BuildVisualStudioProjectFile();
+		void BuildCMakeProjectFile();
 
 		CreatorOptions m_Options;
 

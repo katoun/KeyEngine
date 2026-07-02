@@ -8,6 +8,7 @@
 
 #include <RuntimeConfig.h>
 #include <Reflection/Type.h>
+#include <Reflection/TypeInfo.h>
 
 #include <utility>
 

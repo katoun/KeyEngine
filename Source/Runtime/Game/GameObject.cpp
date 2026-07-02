@@ -237,7 +237,7 @@ namespace game
 
 	Component* GameObject::GetComponent(reflection::Type type) const
 	{
-		auto& search = m_Components.find(type);
+		auto search = m_Components.find(type.GetID());
 
 		if (search == m_Components.end())
 		{

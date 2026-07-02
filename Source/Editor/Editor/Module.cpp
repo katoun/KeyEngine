@@ -11,6 +11,8 @@
 #ifdef PLATFORM_WIN
 #	define WIN32_LEAN_AND_MEAN
 #	include <windows.h>
+#elif defined(PLATFORM_LINUX)
+#	include <dlfcn.h>
 #endif
 
 namespace editor
@@ -91,9 +93,13 @@ namespace editor
 
 		if (pUnloadFunc != nullptr) pUnloadFunc();
 
-		BOOL closed = DYNLIB_UNLOAD(m_hInst);
+		auto closed = DYNLIB_UNLOAD(m_hInst);
 
+#ifdef PLATFORM_WIN
 		assert(closed == TRUE);
+#elif defined(PLATFORM_LINUX)
+		assert(closed == 0);
+#endif
 	}
 
 	bool Module::Reload()
@@ -123,7 +129,8 @@ namespace editor
 		LocalFree(lpMsgBuf);
 		return ret;
 #elif PLATFORM_LINUX
-		return std::string(dlerror());
+		const char* error = dlerror();
+		return error != nullptr ? std::string(error) : std::string();
 #else
 		return std::string("");
 #endif

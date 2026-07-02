@@ -11,12 +11,41 @@
 #include <QFile>
 #include <QDir>
 #include <QDesktopServices>
+#include <QProcessEnvironment>
+#include <QUrl>
 
 #include <Runtime.h>
 #include <Editor/ModuleManager.h>
 
 #include <iostream>
 #include <fstream>
+
+namespace
+{
+	QString KeyEngineSDKPath()
+	{
+		QDir app_dir(QApplication::applicationDirPath());
+		app_dir.cdUp();
+		app_dir.cdUp();
+		return app_dir.canonicalPath();
+	}
+
+	QString ToolExecutableName(const QString& name)
+	{
+#ifdef Q_OS_WIN
+		return name + ".exe";
+#else
+		return name;
+#endif
+	}
+
+	void ApplyKeyEngineEnvironment(QProcess* process)
+	{
+		QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+		environment.insert("KEY_ENGINE_SDK_PATH", KeyEngineSDKPath());
+		process->setProcessEnvironment(environment);
+	}
+}
 
 namespace editor
 {
@@ -39,7 +68,7 @@ namespace editor
 
 		QObject::connect(ui.Exit, SIGNAL(triggered()), this, SLOT(OnExit()));
 		QObject::connect(ui.Compile, SIGNAL(triggered()), this, SLOT(OnCompile()));
-		QObject::connect(ui.OpenVS, SIGNAL(triggered()), this, SLOT(OpenVS()));
+		QObject::connect(ui.OpenVSCode, SIGNAL(triggered()), this, SLOT(OpenVSCode()));
 
 		QObject::connect(ui.CreateGameObject, SIGNAL(triggered()), m_OutlinerWidget, SLOT(OnCreateTopLevelGameObject()));
 
@@ -134,7 +163,7 @@ namespace editor
 		{
 			file << "Type: " << type.GetName() << std::endl;
 
-			auto& fields = type.GetFields();
+			auto fields = type.GetFields();
 
 			for (auto i = fields.begin(); i != fields.end(); ++i)
 			{
@@ -211,32 +240,20 @@ namespace editor
 		QApplication::exit();
 	}
 
-	void MainWindow::OpenVS()
+	void MainWindow::OpenVSCode()
 	{
 		if (current_project_path.isEmpty())
 			return;
 
-		QString vs_path = "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\devenv.exe\"";
-
-		QString vs_solution_file = current_project_path + "\\Project";
-		vs_solution_file.append(".sln");
-
-		m_CommandProcess = new QProcess();
-		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnOpenVSFinished(int, QProcess::ExitStatus)));
-
-		m_CommandProcess->setWorkingDirectory(current_project_path);
-
-		QString command = vs_path + " \"" + vs_solution_file + "\"";
-		m_CommandProcess->start(command);
-
-		//QString url = "file:///";
-		//url.append(current_project_path);
-		//url.append("/");
-		//url.append(vs_solution_file);
-
-		//QDesktopServices::openUrl(QUrl(url));//FOR NOW THIS METHIS WORKS!!!
-
-		ui.StatusBar->showMessage(tr("Opening VS"));
+		if (QProcess::startDetached("code", QStringList() << current_project_path))
+		{
+			ui.StatusBar->showMessage(tr("Opening VSCode"), 3000);
+		}
+		else
+		{
+			QDesktopServices::openUrl(QUrl::fromLocalFile(current_project_path));
+			ui.StatusBar->showMessage(tr("Opening Project Folder"), 3000);
+		}
 	}
 
 	void MainWindow::OnCompile()
@@ -260,20 +277,17 @@ namespace editor
 	{
 		QDir app_dir = QDir(QApplication::applicationDirPath());
 
-		QString creator_name = "ProjectCreator";
-#ifdef _DEBUG
-		creator_name += "_d";
-#endif
-		creator_name += ".exe";
-		QString creator_path = app_dir.absoluteFilePath(creator_name);
+		QString creator_path = app_dir.absoluteFilePath(ToolExecutableName("ProjectCreator"));
 
 		m_CommandProcess = new QProcess();
 		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCreatorFinished(int, QProcess::ExitStatus)));
 
 		m_CommandProcess->setWorkingDirectory(app_dir.absolutePath());
+		ApplyKeyEngineEnvironment(m_CommandProcess);
 
-		QString command = creator_path + " " + "-n " + current_project_name + " -p \"" + current_project_path + "\"";
-		m_CommandProcess->start(command);
+		QStringList arguments;
+		arguments << "-n" << current_project_name << "-p" << current_project_path;
+		m_CommandProcess->start(creator_path, arguments);
 
 		ui.StatusBar->showMessage(tr("Creating Project"));
 	}
@@ -282,20 +296,17 @@ namespace editor
 	{
 		QDir app_dir = QDir(QApplication::applicationDirPath());
 
-		QString parser_name = "ReflectionParser";
-#ifdef _DEBUG
-		parser_name += "_d";
-#endif
-		parser_name += ".exe";
-		QString parser_path = app_dir.absoluteFilePath(parser_name);
+		QString parser_path = app_dir.absoluteFilePath(ToolExecutableName("ReflectionParser"));
 
 		m_CommandProcess = new QProcess();
 		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnReflectionParserFinished(int, QProcess::ExitStatus)));
 
 		m_CommandProcess->setWorkingDirectory(app_dir.absolutePath());
+		ApplyKeyEngineEnvironment(m_CommandProcess);
 
-		QString command = parser_path + " " + "-n " + current_project_name + " -p \"" + current_project_path + "\"";
-		m_CommandProcess->start(command);
+		QStringList arguments;
+		arguments << "-n" << current_project_name << "-p" << current_project_path;
+		m_CommandProcess->start(parser_path, arguments);
 
 		ui.StatusBar->showMessage(tr("Parsing"));
 	}
@@ -314,24 +325,27 @@ namespace editor
 		QDir bin_dir(binaries_path);
 		res = bin_dir.removeRecursively();
 
-		QString msbuild_exe = "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\"";
-
 		m_CommandProcess = new QProcess();
-		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCompileFinished(int, QProcess::ExitStatus)));
+		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectConfigureFinished(int, QProcess::ExitStatus)));
 
 		m_CommandProcess->setWorkingDirectory(current_project_path);
+		ApplyKeyEngineEnvironment(m_CommandProcess);
 
-		QString command = msbuild_exe + " Project.sln /target:Project /p:Platform=Win64;Configuration=\"Debug Editor\"";
-		m_CommandProcess->start(command);
+		QStringList arguments;
+		arguments << "-S" << current_project_path;
+		arguments << "-B" << current_project_path + "/Build/Linux-Debug";
+		arguments << "-DCMAKE_BUILD_TYPE=Debug";
+		arguments << "-DKEY_ENGINE_SDK_PATH=" + KeyEngineSDKPath();
+		m_CommandProcess->start("cmake", arguments);
 
-		ui.StatusBar->showMessage(tr("Compiling"));
+		ui.StatusBar->showMessage(tr("Configuring"));
 	}
 
 	void MainWindow::OnProjectCreatorFinished(int exitCode, QProcess::ExitStatus status)
 	{
 		SAFE_DELETE(m_CommandProcess);
 
-		if (status == QProcess::NormalExit)
+		if (status == QProcess::NormalExit && exitCode == 0)
 		{
 			ui.StatusBar->clearMessage();
 
@@ -344,7 +358,7 @@ namespace editor
 			OpenProject(project_file_path);
 		}
 
-		if (status == QProcess::CrashExit)
+		if (status == QProcess::CrashExit || exitCode != 0)
 		{
 			current_project_path = tr("");
 			current_project_name = tr("");
@@ -357,24 +371,48 @@ namespace editor
 	{
 		SAFE_DELETE(m_CommandProcess);
 
-		if (status == QProcess::NormalExit)
+		if (status == QProcess::NormalExit && exitCode == 0)
 		{
 			ui.StatusBar->clearMessage();
 
 			StartProjectCompile();
 		}
 
-		if (status == QProcess::CrashExit)
+		if (status == QProcess::CrashExit || exitCode != 0)
 		{
 			ui.StatusBar->showMessage(tr("Parsing Failed"));
 		}
+	}
+
+	void MainWindow::OnProjectConfigureFinished(int exitCode, QProcess::ExitStatus status)
+	{
+		SAFE_DELETE(m_CommandProcess);
+
+		if (status != QProcess::NormalExit || exitCode != 0)
+		{
+			ui.StatusBar->showMessage(tr("Configure Failed"));
+			return;
+		}
+
+		m_CommandProcess = new QProcess();
+		QObject::connect(m_CommandProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(OnProjectCompileFinished(int, QProcess::ExitStatus)));
+
+		m_CommandProcess->setWorkingDirectory(current_project_path);
+		ApplyKeyEngineEnvironment(m_CommandProcess);
+
+		QStringList arguments;
+		arguments << "--build" << current_project_path + "/Build/Linux-Debug";
+		arguments << "--parallel";
+		m_CommandProcess->start("cmake", arguments);
+
+		ui.StatusBar->showMessage(tr("Compiling"));
 	}
 
 	void MainWindow::OnProjectCompileFinished(int exitCode, QProcess::ExitStatus status)
 	{
 		SAFE_DELETE(m_CommandProcess);
 
-		if (status == QProcess::NormalExit)
+		if (status == QProcess::NormalExit && exitCode == 0)
 		{
 			ui.StatusBar->clearMessage();
 
@@ -384,25 +422,11 @@ namespace editor
 			RefreshTypesList();
 		}
 
-		if (status == QProcess::CrashExit)
+		if (status == QProcess::CrashExit || exitCode != 0)
 		{
 			ui.StatusBar->showMessage(tr("Compiling Failed"));
 		}
 	}
 
-	void MainWindow::OnOpenVSFinished(int exitCode, QProcess::ExitStatus status)
-	{
-		SAFE_DELETE(m_CommandProcess);
-
-		if (status == QProcess::NormalExit)
-		{
-			ui.StatusBar->clearMessage();
-		}
-
-		if (status == QProcess::CrashExit)
-		{
-			ui.StatusBar->showMessage(tr("Open VS Failed"));
-		}
-	}
 }
 

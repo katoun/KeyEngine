@@ -1,0 +1,54 @@
+cmake_minimum_required(VERSION 3.20)
+
+project({{ProjectName}} LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+endif()
+
+set(KEY_ENGINE_SDK_PATH "" CACHE PATH "Path to the KeyEngine SDK root")
+if(NOT EXISTS "${KEY_ENGINE_SDK_PATH}/Source/Runtime/Runtime.h")
+    message(FATAL_ERROR "KEY_ENGINE_SDK_PATH must point to the KeyEngine SDK root")
+endif()
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Build/Linux")
+set(CMAKE_DEBUG_POSTFIX "_d")
+
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS
+    "Source/*.cpp"
+)
+
+add_library({{ProjectName}}EditorModule SHARED ${PROJECT_SOURCES})
+target_compile_definitions({{ProjectName}}EditorModule
+    PRIVATE
+        PROJECT_DLL
+        PROJECT_EXPORTS
+        RUNTIME_DLL
+        PLATFORM_LINUX
+        BUILD_OS_LINUX
+        $<$<CONFIG:Debug>:_DEBUG>
+)
+target_include_directories({{ProjectName}}EditorModule
+    PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/.Generated"
+        "${KEY_ENGINE_SDK_PATH}/Source/Runtime"
+        "${KEY_ENGINE_SDK_PATH}/Dependencies/base64"
+        "${KEY_ENGINE_SDK_PATH}/Dependencies/glm"
+        "${KEY_ENGINE_SDK_PATH}/Dependencies/rapidjson/include"
+)
+
+set(KEY_RUNTIME_LIBRARY "${KEY_ENGINE_SDK_PATH}/Build/Linux/libKeyRuntime.so")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(KEY_RUNTIME_LIBRARY "${KEY_ENGINE_SDK_PATH}/Build/Linux/libKeyRuntime_d.so")
+endif()
+
+target_link_libraries({{ProjectName}}EditorModule PRIVATE "${KEY_RUNTIME_LIBRARY}")
+set_target_properties({{ProjectName}}EditorModule PROPERTIES
+    PREFIX ""
+    OUTPUT_NAME "{{ProjectName}}-EditorModule"
+)

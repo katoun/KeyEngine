@@ -135,10 +135,12 @@ namespace reflection
 		m_Enum = { new Enum::Container<EnumType>(name, table) };
 	}
 
+#ifdef _MSC_VER
 #pragma warning(push)
 
 	// unused template parameters
 #pragma warning(disable : 4544)
+#endif
 
 	template<typename T>
 	void TypeData::SetDefaultConstructor(typename std::enable_if<!std::is_default_constructible<T>::value>::type*)
@@ -165,5 +167,7 @@ namespace reflection
 		m_Destructor = { typeof(T), [](Any &instance) { instance.GetValue<T>().~T(); } };
 	}
 
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 }

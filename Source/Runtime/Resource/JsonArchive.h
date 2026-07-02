@@ -15,6 +15,8 @@
 #include <rapidjson/document.h>
 #include <base64.hpp>
 
+#include <fstream>
+
 namespace resource
 {
 	namespace serialize

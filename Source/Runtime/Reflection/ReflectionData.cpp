@@ -15,7 +15,7 @@
 		{											\
 			auto id = core::string::Hash( #type );	\
 			TypeInfo<type>::Register(id);			\
-			auto& data = TypeData( #type );			\
+			auto data = TypeData( #type );			\
 			data.Initialize<type>();				\
 			Package::Default.AddType(id, data);		\
 		}											\
@@ -24,7 +24,7 @@
 		{																														\
 			auto id = core::string::Hash( #type );																				\
 			TypeInfo<type>::Register(id);																						\
-			auto& data = TypeData( #type,																						\
+			auto data = TypeData( #type,																						\
 			{																													\
 				reflection::AttributeInitializer<attribute::DisplayName>(name),													\
 			});																													\

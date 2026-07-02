@@ -86,21 +86,4 @@ namespace reflection
 		TypeID m_ID;
 	};
 
-	template<typename AttributeType>
-	const AttributeType* Type::GetAttribute(void) const
-	{
-		return ReflectionManager::Instance().GetTypeData(m_ID).GetAttribute<AttributeType>();
-	}
-
-	template<typename T>
-	bool Type::IsDerivedFrom(void) const
-	{
-		return IsDerivedFrom(typeof(T));
-	}
-
-	template<typename T>
-	bool Type::IsTypeOf(void) const
-	{
-		return IsTypeOf(typeof(T));
-	}
 }

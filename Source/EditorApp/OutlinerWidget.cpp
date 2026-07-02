@@ -189,8 +189,8 @@ namespace editor
 		if (game_object == nullptr)
 			return;
 
-		auto& type = game_object->GetType();
-		auto& game_object_type = typeof(game::GameObject);
+		auto type = game_object->GetType();
+		auto game_object_type = typeof(game::GameObject);
 		if (type == game_object_type)
 		{
 			QVariant data = component_action->data();

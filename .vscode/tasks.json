@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "cmake: configure debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S",
+                ".",
+                "-B",
+                "build/linux-Debug",
+                "-G",
+                "Ninja",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DCMAKE_C_COMPILER=clang",
+                "-DCMAKE_CXX_COMPILER=clang++"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "cmake: build debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build/linux-Debug",
+                "--parallel"
+            ],
+            "dependsOn": "cmake: configure debug",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        }
+    ]
+}

@@ -30,7 +30,7 @@ void RegisterReflectionData()
 	{
 		auto id = core::string::Hash("{{& ClassName}}");
 		reflection::TypeInfo<{{& ClassName}}>::Register(id);
-		auto& data = reflection::TypeData("{{& ClassName}}"{{#HasClassAttributes}}, 
+		auto data = reflection::TypeData("{{& ClassName}}"{{#HasClassAttributes}}, 
 		{
 			{{> AttributeInitializerList}}
 		}{{/HasClassAttributes}});
