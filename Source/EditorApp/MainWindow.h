@@ -38,6 +38,7 @@ namespace editor
 		bool HandleEvent(const SDL_Event& event);
 
 		void Draw();
+		void DebugOpenFileMenu();
 
 		bool seed_default_layout = false;
 
@@ -46,10 +47,10 @@ namespace editor
 
 		void DrawMainMenu();
 		void DrawHeaderMenus();
+		void DrawFileMenuItems();
 		void DrawAppHeader();
 		bool MenuItemWithIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
 		bool MenuItemWithOutlinerIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
-		void DrawToolbar();
 		void DrawDockspace();
 		void SeedDefaultDockLayout(ImGuiID dockspace_id, const ImVec2& size);
 		void DrawViewport();
@@ -85,8 +86,11 @@ namespace editor
 		std::vector<reflection::Type> m_ComponentTypes;
 		std::vector<reflection::Type> m_Types;
 
-		float m_HeaderHeight = 44.0f;
-		float m_ToolbarHeight = 60.0f;
+		float m_HeaderHeight = 40.0f;
+		float m_ToolbarHeight = 0.0f;
+		bool m_DebugOpenFileMenu = false;
+		bool m_DebugShowFileMenu = false;
+		ImVec2 m_DebugFileMenuPopupPos{};
 		bool m_ShowNewProject = false;
 		bool m_ShowImguiDemo = false;
 		char m_NewProjectName[128] = "Test";

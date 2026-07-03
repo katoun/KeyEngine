@@ -107,7 +107,6 @@ namespace editor
 	void MainWindow::Draw()
 	{
 		DrawAppHeader();
-		DrawToolbar();
 		DrawDockspace();
 		DrawViewport();
 		m_OutlinerWidget.Draw();
@@ -118,6 +117,11 @@ namespace editor
 
 		if (m_ShowImguiDemo)
 			ImGui::ShowDemoWindow(&m_ShowImguiDemo);
+	}
+
+	void MainWindow::DebugOpenFileMenu()
+	{
+		m_DebugOpenFileMenu = true;
 	}
 
 	void MainWindow::OnOutlinerSelectionChanged(void* user_data, core::Object* selection)
@@ -136,27 +140,16 @@ namespace editor
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if (MenuItemWithIcon("New", "new_project", "Ctrl+N"))
-				OnNewProject();
-			if (MenuItemWithIcon("Open", "open_project", "Ctrl+O"))
-				OnOpenProject();
-			if (MenuItemWithIcon("Save", "save", "Ctrl+S", false))
-				OnSave();
-			if (MenuItemWithIcon("Save All", "save_all", "Ctrl+Shift+S", false))
-				OnSaveAll();
-
-			ImGui::Separator();
-
-			if (MenuItemWithIcon("Open VSCode", "visual_studio", nullptr, !m_CurrentProjectPath.empty()))
-				OpenVSCode();
-			if (MenuItemWithIcon("Build", "build", "Ctrl+B", !m_CurrentProjectPath.empty()))
-				OnCompile();
-
-			ImGui::Separator();
-
-			if (MenuItemWithIcon("Exit", "exit", "Ctrl+Q"))
-				OnExit();
+			DrawFileMenuItems();
 			ImGui::EndMenu();
+		}
+
+		const ImVec2 file_menu_min = ImGui::GetItemRectMin();
+		if (m_DebugOpenFileMenu)
+		{
+			m_DebugFileMenuPopupPos = ImVec2(file_menu_min.x, 0.0f);
+			m_DebugShowFileMenu = true;
+			m_DebugOpenFileMenu = false;
 		}
 
 		if (ImGui::BeginMenu("Edit"))
@@ -241,14 +234,40 @@ namespace editor
 
 	}
 
+	void MainWindow::DrawFileMenuItems()
+	{
+		if (MenuItemWithIcon("New", "new_project", "Ctrl+N"))
+			OnNewProject();
+		if (MenuItemWithIcon("Open", "open_project", "Ctrl+O"))
+			OnOpenProject();
+		if (MenuItemWithIcon("Save", "save", "Ctrl+S", false))
+			OnSave();
+		if (MenuItemWithIcon("Save All", "save_all", "Ctrl+Shift+S", false))
+			OnSaveAll();
+
+		ImGui::Separator();
+
+		if (MenuItemWithIcon("Open VSCode", "visual_studio", nullptr, !m_CurrentProjectPath.empty()))
+			OpenVSCode();
+		if (MenuItemWithIcon("Build", "build", "Ctrl+B", !m_CurrentProjectPath.empty()))
+			OnCompile();
+
+		ImGui::Separator();
+
+		if (MenuItemWithIcon("Exit", "exit", "Ctrl+Q"))
+			OnExit();
+	}
+
 	void MainWindow::DrawAppHeader()
 	{
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		m_HeaderHeight = 44.0f;
+		m_HeaderHeight = 40.0f;
+		m_ToolbarHeight = 0.0f;
 
 		ImGui::SetNextWindowPos(viewport->WorkPos);
-		ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, m_HeaderHeight));
+		ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, m_HeaderHeight + m_ToolbarHeight));
 		ImGui::SetNextWindowViewport(viewport->ID);
+		ImDrawList* foreground = ImGui::GetForegroundDrawList(viewport);
 
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
 			| ImGuiWindowFlags_NoDocking
@@ -260,129 +279,133 @@ namespace editor
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(9.0f, 10.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 6.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 0.0f));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
 		ImGui::Begin("AppHeader", nullptr, flags);
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(5);
-		ImGui::SetWindowFontScale(1.08f);
+
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		const ImVec2 window_pos = ImGui::GetWindowPos();
+		draw_list->AddLine(
+			ImVec2(window_pos.x, window_pos.y + m_HeaderHeight - 1.0f),
+			ImVec2(window_pos.x + viewport->WorkSize.x, window_pos.y + m_HeaderHeight - 1.0f),
+			ImGui::GetColorU32(ImVec4(0.05f, 0.055f, 0.065f, 1.0f)));
 
 		if (ImGui::BeginMenuBar())
 		{
-			const float right_controls_width = 138.0f;
-			const float window_button_width = 46.0f;
-			const float window_button_height = 32.0f;
-			const float title_width = 620.0f;
-
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 6.0f);
-			Icon logo = IconManager::Instance().GetAppIcon();
-			IconManager::Instance().DrawIcon(logo, 30.0f);
-			if (!logo.IsValid())
-			{
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.20f, 0.62f, 0.92f, 1.0f));
-				ImGui::TextUnformatted("KE");
-				ImGui::PopStyleColor();
-			}
-			ImGui::SameLine(0.0f, 10.0f);
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 48.0f);
 
 			DrawHeaderMenus();
 
-			std::string title = "KeyEditor";
-			if (!m_CurrentProjectName.empty())
-				title = m_CurrentProjectName + " - KeyEditor";
-
-			const float title_text_width = ImGui::CalcTextSize(title.c_str()).x;
-			const float center_x = (viewport->WorkSize.x - title_width) * 0.5f;
-			const float title_x = center_x + (title_width - title_text_width) * 0.5f;
-			const float cursor_x = ImGui::GetCursorPosX();
-			if (title_x > cursor_x + 16.0f)
-			{
-				ImGui::SetCursorPosX(title_x);
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.88f, 0.88f, 0.90f, 1.0f));
-				ImGui::TextUnformatted(title.c_str());
-				ImGui::PopStyleColor();
-			}
-
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - right_controls_width);
-			ImGui::SetCursorPosY((m_HeaderHeight - window_button_height) * 0.5f);
-
-			auto header_button = [window_button_width, window_button_height](const char* id, const char* tooltip, const auto& draw_icon) {
-				ImGui::PushID(id);
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.24f, 0.25f, 0.28f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.30f, 0.32f, 0.36f, 1.0f));
-				bool pressed = ImGui::Button("##button", ImVec2(window_button_width, window_button_height));
-				ImGui::PopStyleColor(3);
-				draw_icon(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImGui::IsItemHovered());
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("%s", tooltip);
-				ImGui::SameLine(0.0f, 0.0f);
-				ImGui::PopID();
-				return pressed;
-			};
-
-			auto icon_color = [](bool hovered) {
-				return ImGui::GetColorU32(hovered ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.76f, 0.78f, 0.82f, 1.0f));
-			};
-
-			if (header_button("minimize", "Minimize", [icon_color](const ImVec2& min, const ImVec2& max, bool hovered) {
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
-				const float center_x = (min.x + max.x) * 0.5f;
-				const float y = (min.y + max.y) * 0.5f + 4.0f;
-				draw_list->AddLine(ImVec2(center_x - 6.0f, y), ImVec2(center_x + 6.0f, y), icon_color(hovered), 2.0f);
-			}))
-				SDL_MinimizeWindow(m_Window);
-
-			const bool maximized = (SDL_GetWindowFlags(m_Window) & SDL_WINDOW_MAXIMIZED) != 0;
-			if (header_button("maximize", maximized ? "Restore" : "Maximize", [icon_color, maximized](const ImVec2& min, const ImVec2& max, bool hovered) {
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
-				const float center_x = (min.x + max.x) * 0.5f;
-				const float center_y = (min.y + max.y) * 0.5f;
-				const ImU32 color = icon_color(hovered);
-				if (maximized)
-				{
-					draw_list->AddRect(ImVec2(center_x - 4.0f, center_y - 2.0f), ImVec2(center_x + 4.0f, center_y + 6.0f), color, 0.0f, 0, 1.3f);
-					draw_list->AddRect(ImVec2(center_x - 1.0f, center_y - 5.0f), ImVec2(center_x + 7.0f, center_y + 3.0f), color, 0.0f, 0, 1.3f);
-				}
-				else
-				{
-					draw_list->AddRect(ImVec2(center_x - 5.0f, center_y - 5.0f), ImVec2(center_x + 5.0f, center_y + 5.0f), color, 0.0f, 0, 1.3f);
-				}
-			}))
-			{
-				if (maximized)
-					SDL_RestoreWindow(m_Window);
-				else
-					SDL_MaximizeWindow(m_Window);
-			}
-
-			ImGui::PushID("close");
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.78f, 0.17f, 0.17f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.90f, 0.22f, 0.22f, 1.0f));
-			if (ImGui::Button("##button", ImVec2(window_button_width, window_button_height)))
-				OnExit();
-			ImGui::PopStyleColor(3);
-			{
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
-				const ImVec2 min = ImGui::GetItemRectMin();
-				const ImVec2 max = ImGui::GetItemRectMax();
-				const float center_x = (min.x + max.x) * 0.5f;
-				const float center_y = (min.y + max.y) * 0.5f;
-				const ImU32 color = icon_color(ImGui::IsItemHovered());
-				draw_list->AddLine(ImVec2(center_x - 5.0f, center_y - 5.0f), ImVec2(center_x + 5.0f, center_y + 5.0f), color, 1.4f);
-				draw_list->AddLine(ImVec2(center_x + 5.0f, center_y - 5.0f), ImVec2(center_x - 5.0f, center_y + 5.0f), color, 1.4f);
-			}
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("Close");
-			ImGui::PopID();
-
 			ImGui::EndMenuBar();
 		}
-		ImGui::SetWindowFontScale(1.0f);
+
+		const float logo_size = 22.0f;
+		const ImVec2 logo_pos(window_pos.x + 14.0f, window_pos.y + (m_HeaderHeight - logo_size) * 0.5f);
+		Icon logo = IconManager::Instance().GetAppIcon();
+		if (logo.IsValid())
+			foreground->AddImage(logo.texture, logo_pos, ImVec2(logo_pos.x + logo_size, logo_pos.y + logo_size));
+		else
+			foreground->AddText(logo_pos, ImGui::GetColorU32(ImVec4(0.20f, 0.62f, 0.92f, 1.0f)), "KE");
+
+		std::string title = "KeyEditor";
+		if (!m_CurrentProjectName.empty())
+			title = m_CurrentProjectName + " - KeyEditor";
+
+		const ImVec2 title_size = ImGui::CalcTextSize(title.c_str());
+		const float title_x = window_pos.x + (viewport->WorkSize.x - title_size.x) * 0.5f;
+		const float title_y = window_pos.y + (m_HeaderHeight - title_size.y) * 0.5f;
+		foreground->AddText(ImVec2(title_x, title_y), ImGui::GetColorU32(ImVec4(0.78f, 0.78f, 0.82f, 1.0f)), title.c_str());
+
+		const float window_button_width = 46.0f;
+		const float window_button_height = m_HeaderHeight;
+		const float window_controls_x = window_pos.x + viewport->WorkSize.x - (window_button_width * 3.0f);
+
+		auto icon_color = [](bool hovered) {
+			return ImGui::GetColorU32(hovered ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.76f, 0.78f, 0.82f, 1.0f));
+		};
+
+		auto window_button = [window_pos, window_controls_x, window_button_width, window_button_height, foreground, icon_color](int index, const char* tooltip, bool close_button, const auto& draw_icon) {
+			const ImVec2 min(window_controls_x + (window_button_width * static_cast<float>(index)), window_pos.y);
+			const ImVec2 max(min.x + window_button_width, min.y + window_button_height);
+			const bool hovered = ImGui::IsMouseHoveringRect(min, max, false);
+			const bool active = hovered && ImGui::IsMouseDown(ImGuiMouseButton_Left);
+			const bool pressed = hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+			if (hovered || active)
+			{
+				const ImU32 bg = close_button
+					? ImGui::GetColorU32(active ? ImVec4(0.90f, 0.22f, 0.22f, 1.0f) : ImVec4(0.78f, 0.17f, 0.17f, 1.0f))
+					: ImGui::GetColorU32(active ? ImVec4(0.30f, 0.32f, 0.36f, 1.0f) : ImVec4(0.24f, 0.25f, 0.28f, 1.0f));
+				foreground->AddRectFilled(min, max, bg);
+			}
+			draw_icon(foreground, min, max, icon_color(hovered || active));
+			if (hovered)
+				ImGui::SetTooltip("%s", tooltip);
+			return pressed;
+		};
+
+		if (window_button(0, "Minimize", false, [](ImDrawList* draw_list, const ImVec2& min, const ImVec2& max, ImU32 color) {
+			const float center_x = (min.x + max.x) * 0.5f;
+			const float center_y = (min.y + max.y) * 0.5f;
+			draw_list->AddLine(ImVec2(center_x - 6.0f, center_y), ImVec2(center_x + 6.0f, center_y), color, 1.5f);
+		}))
+			SDL_MinimizeWindow(m_Window);
+
+		const bool maximized = (SDL_GetWindowFlags(m_Window) & SDL_WINDOW_MAXIMIZED) != 0;
+		if (window_button(1, maximized ? "Restore" : "Maximize", false, [maximized](ImDrawList* draw_list, const ImVec2& min, const ImVec2& max, ImU32 color) {
+			const float center_x = (min.x + max.x) * 0.5f;
+			const float center_y = (min.y + max.y) * 0.5f;
+			if (maximized)
+			{
+				draw_list->AddRect(ImVec2(center_x - 5.0f, center_y - 2.0f), ImVec2(center_x + 3.0f, center_y + 6.0f), color, 0.0f, 0, 1.3f);
+				draw_list->AddRect(ImVec2(center_x - 2.0f, center_y - 5.0f), ImVec2(center_x + 6.0f, center_y + 3.0f), color, 0.0f, 0, 1.3f);
+			}
+			else
+			{
+				draw_list->AddRect(ImVec2(center_x - 5.0f, center_y - 5.0f), ImVec2(center_x + 5.0f, center_y + 5.0f), color, 0.0f, 0, 1.3f);
+			}
+		}))
+		{
+			if (maximized)
+				SDL_RestoreWindow(m_Window);
+			else
+				SDL_MaximizeWindow(m_Window);
+		}
+
+		if (window_button(2, "Close", true, [](ImDrawList* draw_list, const ImVec2& min, const ImVec2& max, ImU32 color) {
+			const float center_x = (min.x + max.x) * 0.5f;
+			const float center_y = (min.y + max.y) * 0.5f;
+			draw_list->AddLine(ImVec2(center_x - 5.0f, center_y - 5.0f), ImVec2(center_x + 5.0f, center_y + 5.0f), color, 1.5f);
+			draw_list->AddLine(ImVec2(center_x + 5.0f, center_y - 5.0f), ImVec2(center_x - 5.0f, center_y + 5.0f), color, 1.5f);
+		}))
+			OnExit();
 
 		ImGui::End();
+		ImGui::PopStyleColor(2);
+		ImGui::PopStyleVar(5);
+
+		if (m_DebugShowFileMenu)
+		{
+			m_DebugFileMenuPopupPos.y = window_pos.y + m_HeaderHeight;
+			ImGui::SetNextWindowPos(m_DebugFileMenuPopupPos, ImGuiCond_Always);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.0f, 6.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 3.0f));
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.09f, 0.96f));
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.28f, 0.28f, 0.30f, 1.0f));
+			ImGuiWindowFlags debug_menu_flags = ImGuiWindowFlags_NoDecoration
+				| ImGuiWindowFlags_NoDocking
+				| ImGuiWindowFlags_NoSavedSettings
+				| ImGuiWindowFlags_NoMove
+				| ImGuiWindowFlags_AlwaysAutoResize;
+			if (ImGui::Begin("DebugFileMenu", &m_DebugShowFileMenu, debug_menu_flags))
+				DrawFileMenuItems();
+			ImGui::End();
+			ImGui::PopStyleColor(2);
+			ImGui::PopStyleVar(4);
+		}
 	}
 
 	bool MainWindow::MenuItemWithIcon(const char* label, const char* icon_name, const char* shortcut, bool enabled)
@@ -400,69 +423,6 @@ namespace editor
 		IconManager::Instance().DrawIcon(IconManager::Instance().GetOutlinerIcon(icon_name), 16.0f);
 		ImGui::SameLine();
 		return ImGui::MenuItem(label, shortcut, false, enabled);
-	}
-
-	void MainWindow::DrawToolbar()
-	{
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		m_ToolbarHeight = 60.0f;
-
-		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + m_HeaderHeight));
-		ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, m_ToolbarHeight));
-		ImGui::SetNextWindowViewport(viewport->ID);
-
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration
-			| ImGuiWindowFlags_NoDocking
-			| ImGuiWindowFlags_NoMove
-			| ImGuiWindowFlags_NoSavedSettings
-			| ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-		const float toolbar_icon_size = 40.0f;
-		const float toolbar_frame_padding = 4.0f;
-		const float toolbar_button_size = toolbar_icon_size + (toolbar_frame_padding * 2.0f);
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 0.0f));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(toolbar_frame_padding, toolbar_frame_padding));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10.0f, 0.0f));
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.10f, 0.105f, 0.12f, 1.0f));
-		ImGui::Begin("Toolbar", nullptr, flags);
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(5);
-
-		ImGui::SetCursorPosY((m_ToolbarHeight - toolbar_button_size) * 0.5f);
-
-		auto toolbar_button = [toolbar_icon_size](const char* id, const char* tooltip, const Icon& icon) {
-			bool pressed = IconManager::Instance().ImageButton(id, icon, toolbar_icon_size);
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip("%s", tooltip);
-			ImGui::SameLine();
-			return pressed;
-		};
-
-		if (toolbar_button("##translate", "Translate", IconManager::Instance().GetEditorIcon("translate")))
-		{
-		}
-		if (toolbar_button("##rotate", "Rotate", IconManager::Instance().GetEditorIcon("rotate")))
-		{
-		}
-		if (toolbar_button("##scale", "Scale", IconManager::Instance().GetEditorIcon("scale")))
-		{
-		}
-
-		ImGui::Dummy(ImVec2(8.0f, 1.0f));
-		ImGui::SameLine();
-
-		if (toolbar_button("##compile", "Compile", IconManager::Instance().GetEditorIcon("compile")))
-			OnCompile();
-		if (toolbar_button("##build", "Build", IconManager::Instance().GetEditorIcon("build")))
-			OnCompile();
-		if (toolbar_button("##open_project", "Open Project", IconManager::Instance().GetEditorIcon("open_project")))
-			OnOpenProject();
-
-		ImGui::NewLine();
-		ImGui::End();
 	}
 
 	void MainWindow::DrawDockspace()

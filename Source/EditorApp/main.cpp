@@ -54,8 +54,8 @@ namespace
 	SDL_HitTestResult SDLCALL WindowHitTest(SDL_Window* window, const SDL_Point* area, void*)
 	{
 		constexpr int resize_border = 6;
-		constexpr int header_height = 44;
-		constexpr int left_interactive_width = 360;
+		constexpr int header_height = 40;
+		constexpr int left_interactive_width = 560;
 		constexpr int right_controls_width = 146;
 
 		int width = 0;
@@ -363,11 +363,25 @@ namespace
 int main(int argc, char* argv[])
 {
 	fs::path open_project;
+	bool debug_open_file_menu = false;
 	for (int i = 1; i < argc; ++i)
 	{
 		std::string_view argument = argv[i];
 		if ((argument == "-o" || argument == "--open-project") && i + 1 < argc)
 			open_project = argv[++i];
+		else if (argument == "--debug" && i + 1 < argc)
+		{
+			while (i + 1 < argc)
+			{
+				std::string_view debug_command = argv[i + 1];
+				if (!debug_command.empty() && debug_command.front() == '-')
+					break;
+
+				++i;
+				if (debug_command == "open-file-menu")
+					debug_open_file_menu = true;
+			}
+		}
 	}
 
 	if (!SDL_Init(SDL_INIT_VIDEO))
@@ -461,6 +475,8 @@ int main(int argc, char* argv[])
 	app.seed_default_layout = !has_saved_layout;
 	if (!open_project.empty())
 		app.OpenProject(open_project);
+	if (debug_open_file_menu)
+		app.DebugOpenFileMenu();
 
 	bool done = false;
 	while (!done)
