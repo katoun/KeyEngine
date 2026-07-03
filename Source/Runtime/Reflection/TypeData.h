@@ -65,7 +65,7 @@ namespace reflection
 
 		const Constructor& GetConstructor(void);
 		const Constructor& GetDynamicConstructor(void);
-		const Constructor& GetDynamicObjectConstructor(void);
+		std::shared_ptr<core::Object> CreateDynamicObject(void) const;
 		Any GetDynamicPointer(core::Object& object) const;
 
 		const Destructor& GetDestructor(void);
@@ -99,7 +99,7 @@ namespace reflection
 
 		Constructor m_Constructor;
 		Constructor m_DynamicConstructor;
-		Constructor m_DynamicObjectConstructor;
+		std::function<std::shared_ptr<core::Object>()> m_DynamicObjectFactory;
 		std::function<Any(core::Object*)> m_DynamicPointerCaster;
 
 		Destructor m_Destructor;
@@ -181,7 +181,7 @@ namespace reflection
 
 			if constexpr (std::is_base_of_v<core::Object, T>)
 			{
-				m_DynamicObjectConstructor = { TypeOf<T>(), []() { return Any{ static_cast<core::Object*>(std::make_unique<T>().release()) }; }, true };
+				m_DynamicObjectFactory = []() { return std::make_shared<T>(); };
 				m_DynamicPointerCaster = [](core::Object* object) { return Any{ dynamic_cast<T*>(object) }; };
 			}
 		}

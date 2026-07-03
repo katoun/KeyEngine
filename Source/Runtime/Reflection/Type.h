@@ -61,7 +61,7 @@ namespace reflection
 
 		Any Create() const;
 		Any CreateDynamic() const;
-		Any CreateDynamicObject() const;
+		std::shared_ptr<core::Object> CreateDynamicObject() const;
 		Any CreateDynamicPointer(core::Object& object) const;
 		void Destroy(Any &instance) const;
 

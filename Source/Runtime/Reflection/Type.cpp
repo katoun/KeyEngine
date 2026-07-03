@@ -122,12 +122,9 @@ namespace reflection
 		return constructor.Invoke();
 	}
 
-	Any Type::CreateDynamicObject() const
+	std::shared_ptr<core::Object> Type::CreateDynamicObject() const
 	{
-		auto &constructor = manager.GetTypeData(m_ID).GetDynamicObjectConstructor();
-		assert(constructor.IsValid());
-
-		return constructor.Invoke();
+		return manager.GetTypeData(m_ID).CreateDynamicObject();
 	}
 
 	Any Type::CreateDynamicPointer(core::Object& object) const

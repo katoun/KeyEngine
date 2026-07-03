@@ -24,6 +24,9 @@ namespace game
 
 	public:
 
+		using SharedPtr = std::shared_ptr<Component>;
+		using WeakPtr = std::weak_ptr<Component>;
+
 		Component();
 		virtual ~Component();
 

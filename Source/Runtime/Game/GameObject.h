@@ -30,9 +30,8 @@ namespace game
 
 		typedef std::shared_ptr<GameObject> SharedPtr;
 		typedef std::weak_ptr<GameObject> WeakPtr;
-		typedef std::shared_ptr<Component> ComponentPtr;
-		typedef std::unordered_map<reflection::TypeID, ComponentPtr> ComponentStorage;
-		typedef std::unordered_map<reflection::TypeID, ComponentPtr> Components;
+		typedef std::unordered_map<reflection::TypeID, Component::SharedPtr> ComponentStorage;
+		typedef ComponentStorage Components;
 		typedef std::unordered_map<reflection::TypeID, const reflection::Any> ComponentsAny;
 		typedef std::vector<SharedPtr> List;
 
@@ -74,12 +73,12 @@ namespace game
 
 		const List& GetChildren() const;
 
-		ComponentPtr AddComponent(reflection::Type type);
+		Component::SharedPtr AddComponent(reflection::Type type);
 
 		template<class ComponentType>
 		std::shared_ptr<ComponentType> AddComponent(void);
 
-		ComponentPtr GetComponent(reflection::Type type) const;
+		Component::SharedPtr GetComponent(reflection::Type type) const;
 
 		template<class ComponentType>
 		std::shared_ptr<ComponentType> GetComponent(void) const;
@@ -138,7 +137,7 @@ namespace game
 
 		auto type = reflection::TypeOf<ComponentType>();
 		m_Components.emplace(type.GetID(), component);
-		m_ComponentsAny.emplace(type.GetID(), reflection::Any{ component.get() });
+		m_ComponentsAny.emplace(type.GetID(), type.CreateDynamicPointer(*component));
 
 		return component;
 	}
@@ -171,7 +170,7 @@ namespace game
 		if (search == m_Components.end())
 			return;
 
-		Component* component = search->second.get();
+		auto component = search->second;
 		assert(component != nullptr);
 		component->OnMessage(MessageType::COMPONENT_DETACHED);
 

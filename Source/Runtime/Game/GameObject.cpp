@@ -235,7 +235,7 @@ namespace game
 		return m_Children;
 	}
 
-	GameObject::ComponentPtr GameObject::AddComponent(reflection::Type type)
+	Component::SharedPtr GameObject::AddComponent(reflection::Type type)
 	{
 		auto component = GetComponent(type);
 		if (component != nullptr)
@@ -243,16 +243,13 @@ namespace game
 			return nullptr;
 		}
 
-		reflection::Any object_any = type.CreateDynamicObject();
-		std::unique_ptr<core::Object> object(object_any.GetValue<core::Object*>());
-		Component* component_ptr = dynamic_cast<Component*>(object.get());
-		if (component_ptr == nullptr)
+		auto object = type.CreateDynamicObject();
+		component = std::dynamic_pointer_cast<Component>(object);
+		if (component == nullptr)
 		{
 			return nullptr;
 		}
 
-		object.release();
-		component = ComponentPtr(component_ptr);
 		component->m_GameObject = shared_from_this();
 		component->OnMessage(MessageType::COMPONENT_ATTACHED);
 
@@ -262,7 +259,7 @@ namespace game
 		return component;
 	}
 
-	GameObject::ComponentPtr GameObject::GetComponent(reflection::Type type) const
+	Component::SharedPtr GameObject::GetComponent(reflection::Type type) const
 	{
 		auto search = m_Components.find(type.GetID());
 

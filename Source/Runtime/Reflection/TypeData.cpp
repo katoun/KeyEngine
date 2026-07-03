@@ -108,9 +108,11 @@ namespace reflection
 		return m_DynamicConstructor;
 	}
 
-	const Constructor& TypeData::GetDynamicObjectConstructor(void)
+	std::shared_ptr<core::Object> TypeData::CreateDynamicObject(void) const
 	{
-		return m_DynamicObjectConstructor;
+		assert(m_DynamicObjectFactory != nullptr);
+
+		return m_DynamicObjectFactory();
 	}
 
 	Any TypeData::GetDynamicPointer(core::Object& object) const
