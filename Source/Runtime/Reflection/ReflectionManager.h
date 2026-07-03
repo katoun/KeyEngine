@@ -8,6 +8,7 @@
 
 #include <RuntimeConfig.h>
 #include <Reflection/Type.h>
+#include <Reflection/TypeInfo.h>
 #include <Reflection/Package.h>
 #include <Reflection/ReflectionData.h>
 
@@ -45,7 +46,7 @@ namespace reflection
 	template<typename T>
 	std::vector<Type> ReflectionManager::GetTypes(void) const
 	{
-		auto of_type = typeof(T);
+		auto of_type = TypeOf<T>();
 
 		std::vector<Type> ret;
 
@@ -75,12 +76,12 @@ namespace reflection
 	template<typename T>
 	bool Type::IsDerivedFrom(void) const
 	{
-		return IsDerivedFrom(typeof(T));
+		return IsDerivedFrom(TypeOf<T>());
 	}
 
 	template<typename T>
 	bool Type::IsTypeOf(void) const
 	{
-		return IsTypeOf(typeof(T));
+		return IsTypeOf(TypeOf<T>());
 	}
 }

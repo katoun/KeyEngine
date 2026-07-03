@@ -80,7 +80,7 @@ namespace reflection
 
 	Type Any::Container<void>::GetType(void) const
 	{
-		return typeof(void);
+		return TypeOf<void>();
 	}
 
 	void *Any::Container<void>::GetPtr(void) const
@@ -102,7 +102,7 @@ namespace reflection
 
 	Type Any::Container<int>::GetType(void) const
 	{
-		return typeof(int);
+		return TypeOf<int>();
 	}
 
 	void *Any::Container<int>::GetPtr(void) const
@@ -124,7 +124,7 @@ namespace reflection
 
 	Type Any::Container<bool>::GetType(void) const
 	{
-		return typeof(bool);
+		return TypeOf<bool>();
 	}
 
 	void *Any::Container<bool>::GetPtr(void) const
@@ -146,7 +146,7 @@ namespace reflection
 
 	Type Any::Container<float>::GetType(void) const
 	{
-		return typeof(float);
+		return TypeOf<float>();
 	}
 
 	void *Any::Container<float>::GetPtr(void) const
@@ -168,7 +168,7 @@ namespace reflection
 
 	Type Any::Container<double>::GetType(void) const
 	{
-		return typeof(double);
+		return TypeOf<double>();
 	}
 
 	void *Any::Container<double>::GetPtr(void) const
@@ -190,7 +190,7 @@ namespace reflection
 
 	Type Any::Container<std::string>::GetType(void) const
 	{
-		return typeof(std::string);
+		return TypeOf<std::string>();
 	}
 
 	void *Any::Container<std::string>::GetPtr(void) const

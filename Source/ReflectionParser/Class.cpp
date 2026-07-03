@@ -95,15 +95,6 @@ namespace parser
 
 	Class::~Class(void) = default;
 
-	mustache::Data Class::CompileDeclaration(void) const
-	{
-		mustache::Data data{ mustache::Data::Type::Object };
-
-		data["ClassName"] = m_Name;
-
-		return data;
-	}
-
 	mustache::Data Class::CompileDefinition(void) const
 	{
 		mustache::Data data{ mustache::Data::Type::Object };

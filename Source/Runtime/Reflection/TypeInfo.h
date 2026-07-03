@@ -7,7 +7,7 @@
 #pragma once
 
 #include <RuntimeConfig.h>
-#include <Reflection/TypeConfig.h>
+#include <Reflection/Type.h>
 
 #include <type_traits>
 
@@ -40,5 +40,11 @@ namespace reflection
 	const TypeID& TypeInfo<T>::GetID()
 	{
 		return m_ID;
+	}
+
+	template<typename T>
+	Type TypeOf()
+	{
+		return Type(TypeInfo<CleanedType<T>>::GetID());
 	}
 }

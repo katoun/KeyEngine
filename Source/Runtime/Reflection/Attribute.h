@@ -25,6 +25,6 @@ namespace reflection
 	{
 		static_assert(std::is_base_of<Attribute, AttributeType>::value, "Attributes must inherit from Attribute struct");
 
-		return std::make_pair(typeof(AttributeType), new AttributeType(std::forward<Args>(args)...));
+		return std::make_pair(TypeOf<AttributeType>(), new AttributeType(std::forward<Args>(args)...));
 	}
 }

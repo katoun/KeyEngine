@@ -9,6 +9,7 @@
 #include <RuntimeConfig.h>
 #include <Reflection/TypeConfig.h>
 #include <Reflection/Type.h>
+#include <Reflection/TypeInfo.h>
 #include <Reflection/Any.h>
 
 #include <vector>
@@ -120,13 +121,13 @@ namespace reflection
 	template<typename T>
 	Type Enum::Container<T>::GetType(void) const
 	{
-		return typeof(T);
+		return TypeOf<T>();
 	}
 
 	template<typename T>
 	Type Enum::Container<T>::GetUnderlyingType(void) const
 	{
-		return typeof(typename std::underlying_type< T >::type);
+		return TypeOf<typename std::underlying_type<T>::type>();
 	}
 
 	template<typename T>
@@ -159,7 +160,7 @@ namespace reflection
 		auto type = value.GetType();
 
 		// invalid type
-		if (type != typeof(T) && type != typeof(UnderlyingType))
+		if (type != TypeOf<T>() && type != TypeOf<UnderlyingType>())
 		{
 			return std::string();
 		}

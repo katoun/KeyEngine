@@ -107,19 +107,19 @@ namespace editor
 		ImGui::TableSetColumnIndex(1);
 		ImGui::PushItemWidth(-FLT_MIN);
 
-		if (field.GetType() == typeof(int))
+		if (field.GetType() == reflection::TypeOf<int>())
 		{
 			int value = value_any.GetValue<int>();
 			if (ImGui::InputInt(control_id.c_str(), &value))
 				field.SetValue(component_any, reflection::Any(value));
 		}
-		else if (field.GetType() == typeof(float))
+		else if (field.GetType() == reflection::TypeOf<float>())
 		{
 			float value = value_any.GetValue<float>();
 			if (ImGui::InputFloat(control_id.c_str(), &value))
 				field.SetValue(component_any, reflection::Any(value));
 		}
-		else if (field.GetType() == typeof(glm::vec3))
+		else if (field.GetType() == reflection::TypeOf<glm::vec3>())
 		{
 			glm::vec3 value = value_any.GetValue<glm::vec3>();
 			ImGui::PopItemWidth();
@@ -127,7 +127,7 @@ namespace editor
 				field.SetValue(component_any, reflection::Any(value));
 			return;
 		}
-		else if (field.GetType() == typeof(std::string))
+		else if (field.GetType() == reflection::TypeOf<std::string>())
 		{
 			auto& buffer = m_StringBuffers[control_id];
 			const std::string value = value_any.GetValue<std::string>();

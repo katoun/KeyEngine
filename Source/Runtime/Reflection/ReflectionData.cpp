@@ -5,7 +5,6 @@
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <Reflection/ReflectionData.h>
-#include <Core/Utils.h>
 #include <Reflection/Any.h>
 #include <Reflection/Package.h>
 
@@ -13,32 +12,26 @@
 
 #define REGISTER_BASE_TYPE(type)					\
 		{											\
-			auto id = core::string::Hash( #type );	\
-			TypeInfo<type>::Register(id);			\
-			auto data = TypeData( #type );			\
-			data.Initialize<type>();				\
+			auto [id, data] = RegisterClass<type>(#type); \
 			Package::Default.AddType(id, data);		\
 		}											\
 
 #define REGISTER_TYPE_BEGIN(type, name)																							\
 		{																														\
-			auto id = core::string::Hash( #type );																				\
-			TypeInfo<type>::Register(id);																						\
-			auto data = TypeData( #type,																						\
+			auto [id, data] = RegisterClass<type>(#type,																		\
 			{																													\
 				reflection::AttributeInitializer<attribute::DisplayName>(name),													\
 			});																													\
-			data.Initialize<type>();																							\
 
 #define REGISTER_TYPE_BASE(base)																								\
-			data.SetBaseTypes(id, { typeof(base) });																			\
+			data.SetBaseTypes(id, { reflection::TypeOf<base>() });																\
 
 #define REGISTER_TYPE_FIELD(class_type, type, name, display_name, getter, setter)												\
 			data.AddField<class_type,type>(#name,																				\
 			{																													\
 				reflection::AttributeInitializer<attribute::Getter>([](const reflection::Any &object)							\
 				{																												\
-					if (object.GetType() == typeof(class_type))																	\
+					if (object.GetType() == reflection::TypeOf<class_type>())													\
 					{																											\
 						auto &instance = object.GetValue<class_type>();															\
 						return reflection::Any{ instance.getter() };															\
@@ -51,7 +44,7 @@
 				}),																												\
 				reflection::AttributeInitializer<attribute::Setter>([](reflection::Any &object, const reflection::Any &value)	\
 				{																												\
-					if (object.GetType() == typeof(class_type))																	\
+					if (object.GetType() == reflection::TypeOf<class_type>())													\
 					{																											\
 						auto &instance = object.GetValue<class_type>();															\
 						instance.setter(value.GetValue<type>());																\

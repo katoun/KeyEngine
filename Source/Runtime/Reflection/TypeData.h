@@ -15,6 +15,7 @@
 #include <Reflection/Constructor.h>
 #include <Reflection/Destructor.h>
 #include <Reflection/AttributesContainer.h>
+#include <Core/Utils.h>
 
 #include <string>
 #include <unordered_map>
@@ -101,6 +102,36 @@ namespace reflection
 		std::unordered_map<std::string, Field> m_Fields;
 	};
 
+	struct RegisteredTypeData
+	{
+		TypeID ID;
+		TypeData Data;
+	};
+
+	template<typename T>
+	RegisteredTypeData RegisterClass(const std::string &name)
+	{
+		auto id = core::string::Hash(name);
+		TypeInfo<T>::Register(id);
+
+		auto data = TypeData(name);
+		data.Initialize<T>();
+
+		return { id, data };
+	}
+
+	template<typename T>
+	RegisteredTypeData RegisterClass(const std::string &name, const AttributesContainer::Initializer &attributes)
+	{
+		auto id = core::string::Hash(name);
+		TypeInfo<T>::Register(id);
+
+		auto data = TypeData(name, attributes);
+		data.Initialize<T>();
+
+		return { id, data };
+	}
+
 	template<typename T>
 	void TypeData::Initialize()
 	{
@@ -118,7 +149,7 @@ namespace reflection
 	template<typename ClassType, typename FieldType>
 	void TypeData::AddField(const std::string &name, const AttributesContainer::Initializer &attributes)
 	{
-		Field field{ name, typeof(FieldType), typeof(ClassType), attributes };
+		Field field{ name, TypeOf<FieldType>(), TypeOf<ClassType>(), attributes };
 
 		m_Fields.emplace(name, field);
 	}
@@ -134,8 +165,8 @@ namespace reflection
 	{
 		if constexpr (std::is_default_constructible_v<T>)
 		{
-			m_Constructor = { typeof(T), []() { return Any{ T() }; }, false };
-			m_DynamicConstructor = { typeof(T), []() { return Any{ new T() }; }, true };
+			m_Constructor = { TypeOf<T>(), []() { return Any{ T() }; }, false };
+			m_DynamicConstructor = { TypeOf<T>(), []() { return Any{ new T() }; }, true };
 		}
 	}
 
@@ -144,7 +175,7 @@ namespace reflection
 	{
 		if constexpr (std::is_destructible_v<T>)
 		{
-			m_Destructor = { typeof(T), [](Any &instance) { instance.GetValue<T>().~T(); } };
+			m_Destructor = { TypeOf<T>(), [](Any &instance) { instance.GetValue<T>().~T(); } };
 		}
 	}
 }

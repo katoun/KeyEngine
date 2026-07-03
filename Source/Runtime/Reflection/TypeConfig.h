@@ -9,9 +9,6 @@
 #include <cstdint>
 #include <type_traits>
 
-// converts the type name into a reflection::Type instance
-#define typeof(type) reflection::Type(reflection::TypeInfo<reflection::CleanedType< type >>::GetID())
-
 namespace reflection
 {
 	template<typename T>

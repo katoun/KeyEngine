@@ -25,7 +25,7 @@
 	public:											\
 	reflection::Type GetType(void) const override	\
 	{												\
-		return typeof( decltype(*this) );			\
+		return reflection::TypeOf<decltype(*this)>(); \
 	}												\
 	private:										\
 

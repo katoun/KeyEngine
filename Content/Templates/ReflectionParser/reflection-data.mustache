@@ -14,6 +14,7 @@
 #pragma once
 
 #include <Reflection/ReflectionManager.h>
+#include <Reflection/TypeInfo.h>
 #include <Reflection/TypeConfig.h>
 #include <Core/Utils.h>
 
@@ -21,29 +22,30 @@
 
 using namespace attribute;
 
-{{#ClassDeclaration}}template class PROJECT_API reflection::TypeInfo<{{& ClassName}}>;
-{{/ClassDeclaration}}
 reflection::Package ProjectPackage("{{ProjectName}}");
 
 void RegisterReflectionData()
-{	{{#ClassDefinition}}
+{
+{{#ClassDefinition}}
 	{
-		auto id = core::string::Hash("{{& ClassName}}");
-		reflection::TypeInfo<{{& ClassName}}>::Register(id);
-		auto data = reflection::TypeData("{{& ClassName}}"{{#HasClassAttributes}}, 
+		auto [id, data] = reflection::RegisterClass<{{& ClassName}}>("{{& ClassName}}"{{#HasClassAttributes}},
 		{
 			{{> AttributeInitializerList}}
 		}{{/HasClassAttributes}});
-		data.Initialize<{{& ClassName}}>();
 		{{#HasBaseTypes}}
-		data.SetBaseTypes(id, { {{#BaseClass}}typeof({{& ClassName}}){{^IsLast}},{{/IsLast}} {{/BaseClass}}});
-		{{/HasBaseTypes}}{{#Field}}
+		data.SetBaseTypes(id, { {{#BaseClass}}reflection::TypeOf<{{& ClassName}}>(){{^IsLast}}, {{/IsLast}}{{/BaseClass}} });
+		{{/HasBaseTypes}}
+		{{#Field}}
 		data.AddField<{{& ClassName}}, {{FieldType}}>("{{& FieldName}}",
 		{
 			{{> AttributeInitializerList}}
-		});{{/Field}}
+		});
+		{{/Field}}
+
 		ProjectPackage.AddType(id, data);
-	}{{/ClassDefinition}}
+	}
+{{/ClassDefinition}}
+
 	reflection::ReflectionManager::Instance().RegisterPackage(ProjectPackage);
 }
 

@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	RegisterReflectionData();
 
 	//TEST!!!
-	reflection::Type my_component_type = typeof(MyComponent);
+	reflection::Type my_component_type = reflection::TypeOf<MyComponent>();
 	reflection::Field test_field = my_component_type.GetField("m_Test");
 
 	reflection::Any my_component_any = my_component_type.Create();

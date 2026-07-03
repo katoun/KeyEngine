@@ -81,7 +81,6 @@ namespace parser
 
 		void BuildOutputSourceFile();
 
-		mustache::Data CompileClassDeclaration(void) const;
 		mustache::Data CompileClassDefinition(void) const;
 
 		ParserOptions m_Options;

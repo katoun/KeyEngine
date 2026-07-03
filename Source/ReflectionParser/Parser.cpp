@@ -25,6 +25,36 @@
 
 namespace parser
 {
+	namespace
+	{
+		std::string FormatGeneratedSource(const std::string& source)
+		{
+			std::stringstream input(source);
+			std::stringstream output;
+			std::string line;
+			bool previousBlank = false;
+
+			while (std::getline(input, line))
+			{
+				while (!line.empty() && (line.back() == ' ' || line.back() == '\t' || line.back() == '\r'))
+				{
+					line.pop_back();
+				}
+
+				const bool blank = line.empty();
+				if (blank && previousBlank)
+				{
+					continue;
+				}
+
+				output << line << '\n';
+				previousBlank = blank;
+			}
+
+			return output.str();
+		}
+	}
+
 	Parser::ClangIndex::ClangIndex(CXIndex handle)
 		: m_Handle(handle)
 	{}
@@ -272,27 +302,11 @@ namespace parser
 		mustache::Data OutputFileData{ mustache::Data::Type::Object };
 		OutputFileData["ProjectName"] = m_Options.ProjectName;
 
-		OutputFileData["ClassDeclaration"] = CompileClassDeclaration();
 		OutputFileData["ClassDefinition"] = CompileClassDefinition();
 
-		std::string output = output_file_mustache.render(OutputFileData);
+		std::string output = FormatGeneratedSource(output_file_mustache.render(OutputFileData));
 
 		WriteText(m_OutputSourceFile, output);
-	}
-
-	mustache::Data Parser::CompileClassDeclaration(void) const
-	{
-		mustache::Data data{ mustache::Data::Type::List };
-
-		for (const auto& klass : m_Classes)
-		{
-			if (klass->IsValid())
-			{
-				data << klass->CompileDeclaration();
-			}
-		}
-
-		return data;
 	}
 
 	mustache::Data Parser::CompileClassDefinition(void) const

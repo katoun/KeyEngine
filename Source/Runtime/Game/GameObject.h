@@ -123,7 +123,7 @@ namespace game
 		component->m_GameObject = this;
 		component->OnMessage(MessageType::COMPONENT_ATTACHED);
 
-		auto type = typeof(ComponentType);
+		auto type = reflection::TypeOf<ComponentType>();
 		m_Components.emplace(type.GetID(), component);
 		m_ComponentsAny.emplace(type.GetID(), reflection::Any{ component });
 
@@ -135,7 +135,7 @@ namespace game
 	{
 		static_assert(std::is_base_of<Component, ComponentType>::value, "Type must be a Component.");
 
-		auto type = typeof(ComponentType);
+		auto type = reflection::TypeOf<ComponentType>();
 		
 		auto search = m_Components.find(type.GetID());
 
@@ -152,7 +152,7 @@ namespace game
 	{
 		static_assert(std::is_base_of<Component, ComponentType>::value, "Type must be a Component.");
 
-		auto type = typeof(ComponentType);
+		auto type = reflection::TypeOf<ComponentType>();
 
 		auto search = m_Components.find(type.GetID());
 		if (search == m_Components.end())

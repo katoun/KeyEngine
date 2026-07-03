@@ -30,7 +30,6 @@ namespace parser
 		Class(const Cursor &cursor, const Namespace &currentNamespace);
 		virtual ~Class(void);
 
-		mustache::Data CompileDeclaration(void) const;
 		mustache::Data CompileDefinition(void) const;
 
 	private:

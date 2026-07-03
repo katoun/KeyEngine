@@ -13,6 +13,7 @@
 #include <Core/Object.h>
 #include <Reflection/Type.h>
 #include <Reflection/TypeConfig.h>
+#include <Reflection/TypeInfo.h>
 
 #include <cassert>
 #include <concepts>
@@ -200,7 +201,7 @@ namespace reflection
 	template<typename T>
 	Type Any::Container<T>::GetType(void) const
 	{
-		return typeof(T);
+		return TypeOf<T>();
 	}
 
 	template<typename T>
