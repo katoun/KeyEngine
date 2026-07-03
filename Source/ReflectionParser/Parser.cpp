@@ -302,7 +302,7 @@ namespace parser
 		mustache::Data OutputFileData{ mustache::Data::Type::Object };
 		OutputFileData["ProjectName"] = m_Options.ProjectName;
 
-		OutputFileData["ClassDefinition"] = CompileClassDefinition();
+		OutputFileData.set("ClassDefinition", CompileClassDefinition());
 
 		std::string output = FormatGeneratedSource(output_file_mustache.render(OutputFileData));
 

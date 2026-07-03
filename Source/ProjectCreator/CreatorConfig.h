@@ -12,6 +12,67 @@
 
 #include <mustache.hpp>
 
-using mustache = Kainjow::BasicMustache<std::string>;
+class mustache : public kainjow::mustache::mustache
+{
+public:
+	using kainjow::mustache::mustache::mustache;
+
+	class Data : public kainjow::mustache::data
+	{
+	public:
+		enum class Type
+		{
+			Object,
+			String,
+			List,
+			True,
+			False,
+			Partial,
+			Invalid
+		};
+
+		using PartialType = kainjow::mustache::partial;
+		using kainjow::mustache::data::data;
+
+		Data(Type type)
+			: kainjow::mustache::data(ToMustacheType(type))
+		{
+		}
+
+	private:
+		static kainjow::mustache::data::type ToMustacheType(Type type)
+		{
+			switch (type)
+			{
+			case Type::Object:
+				return kainjow::mustache::data::type::object;
+			case Type::String:
+				return kainjow::mustache::data::type::string;
+			case Type::List:
+				return kainjow::mustache::data::type::list;
+			case Type::True:
+				return kainjow::mustache::data::type::bool_true;
+			case Type::False:
+				return kainjow::mustache::data::type::bool_false;
+			case Type::Partial:
+				return kainjow::mustache::data::type::partial;
+			case Type::Invalid:
+				return kainjow::mustache::data::type::invalid;
+			}
+
+			return kainjow::mustache::data::type::invalid;
+		}
+	};
+
+	bool isValid() const
+	{
+		return is_valid();
+	}
+
+	const std::string& errorMessage() const
+	{
+		return error_message();
+	}
+};
 
 namespace cmd_parser = TCLAP;

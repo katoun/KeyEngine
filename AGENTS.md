@@ -109,9 +109,9 @@ Build/Linux-Debug/_deps
 CMake-managed dependencies:
 
 - `cereal` 1.3.2, used only for `cereal/external/base64.hpp`.
-- Dear ImGui `docking` branch for the editor UI.
-- `glm` 0.9.9.8.
-- `kainjow/Mustache` commit `506c6d3`, kept at the older API used by the tools.
+- Dear ImGui `v1.92.8-docking` for the editor UI.
+- `glm` 1.0.3.
+- `kainjow/Mustache` 4.1.
 - `RapidJSON` 1.1.0.
 - SDL 3.4.12 for the editor windowing/input.
 - `TCLAP` 1.2.5.

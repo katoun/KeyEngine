@@ -12,9 +12,9 @@
 
 namespace creator
 {
-	mustache::Data::Type ToMustache(bool value)
+	mustache::Data ToMustache(bool value)
 	{
-		return value ? mustache::Data::Type::True : mustache::Data::Type::False;
+		return value;
 	}
 
 	void LoadText(const std::string &filename, std::string &output)

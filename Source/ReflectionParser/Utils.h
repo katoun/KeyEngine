@@ -13,7 +13,7 @@
 namespace parser
 {
 	void ToString(const CXString &str, std::string &output);
-	mustache::Data::Type ToMustache(bool value);
+	mustache::Data ToMustache(bool value);
 
 	void LoadText(const std::string& filename, std::string& output);
 	void WriteText(const std::string& filename, const std::string& text);

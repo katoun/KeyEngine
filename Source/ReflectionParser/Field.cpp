@@ -45,7 +45,7 @@ namespace parser
 
 		data["ClassName"] = m_Parent.m_Name;
 
-		data["AttributeInitializerList"] = Parser::Instance().LoadTemplatePartial(templates::AttributeInitializer);
+		data.set("AttributeInitializerList", Parser::Instance().LoadTemplatePartial(templates::AttributeInitializer));
 
 		data["FieldName"] = m_Name;
 
@@ -62,7 +62,7 @@ namespace parser
 		data["HasExplicitSetter"] = ToMustache(m_HasExplicitSetter);
 		data["ExplicitSetter"] = m_ExplicitSetter;
 
-		data["AttributeInitializer"] = m_Attributes.CompileData();
+		data.set("AttributeInitializer", m_Attributes.CompileData());
 
 		return data;
 	}

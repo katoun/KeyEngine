@@ -115,13 +115,13 @@ namespace parser
 			}
 
 			data["HasBaseTypes"] = ToMustache(m_BaseClasses.size() != 0);
-			data["BaseClass"] = baseClasses;
+			data.set("BaseClass", baseClasses);
 
 			data["HasClassAttributes"] = ToMustache(m_Attributes.HasProperties());
-			data["AttributeInitializerList"] = Parser::Instance().LoadTemplatePartial(templates::AttributeInitializer);
+			data.set("AttributeInitializerList", Parser::Instance().LoadTemplatePartial(templates::AttributeInitializer));
 			data["HasGetter"] = ToMustache(false);
 			data["HasSetter"] = ToMustache(false);
-			data["AttributeInitializer"] = m_Attributes.CompileData();
+			data.set("AttributeInitializer", m_Attributes.CompileData());
 		}
 
 		// fields
@@ -136,7 +136,7 @@ namespace parser
 				}
 			}
 
-			data["Field"] = fields;
+			data.set("Field", fields);
 		}
 
 		return data;

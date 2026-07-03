@@ -4,7 +4,7 @@ set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "Do not update fetched depen
 
 FetchContent_Declare(
     glm
-    URL "https://github.com/g-truc/glm/archive/refs/tags/0.9.9.8.tar.gz"
+    URL "https://github.com/g-truc/glm/archive/refs/tags/1.0.3.tar.gz"
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
@@ -29,7 +29,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     mustache
     GIT_REPOSITORY "https://github.com/kainjow/Mustache.git"
-    GIT_TAG "506c6d3"
+    GIT_TAG "v4.1"
 )
 
 FetchContent_Declare(
@@ -43,7 +43,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY "https://github.com/ocornut/imgui.git"
-    GIT_TAG "docking"
+    GIT_TAG "v1.92.8-docking"
     GIT_SHALLOW TRUE
     UPDATE_DISCONNECTED TRUE
 )
