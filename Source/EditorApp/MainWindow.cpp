@@ -296,7 +296,7 @@ namespace editor
 
 		ImGui::Separator();
 
-		if (MenuItemWithIcon("Open VSCode", "visual_studio", nullptr, !m_CurrentProjectPath.empty()))
+		if (MenuItemWithIcon("Open VSCode", "vscode", nullptr, !m_CurrentProjectPath.empty()))
 			OpenVSCode();
 		if (MenuItemWithIcon("Build", "build", "Ctrl+B", !m_CurrentProjectPath.empty()))
 			OnCompile();
