@@ -15,7 +15,7 @@
 namespace reflection
 {
 	template<typename T>
-	using CleanedType = typename std::remove_cv<typename std::remove_reference< T >::type>::type;
+	using CleanedType = std::remove_cvref_t<T>;
 
-	typedef uint32_t TypeID;
+	using TypeID = uint32_t;
 }

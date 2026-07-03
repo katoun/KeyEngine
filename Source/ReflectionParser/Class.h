@@ -40,8 +40,8 @@ namespace parser
 		std::string m_Name;
 		std::string m_DisplayName;
 
-		std::vector<BaseClass*> m_BaseClasses;
+		std::vector<BaseClass> m_BaseClasses;
 
-		std::vector<Field*> m_Fields;
+		std::vector<Field> m_Fields;
 	};
 }

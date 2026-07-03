@@ -25,24 +25,92 @@
 
 namespace parser
 {
-	Parser::Parser(void)
-		: m_Index(nullptr)
-		, m_TranslationUnit(nullptr)
+	Parser::ClangIndex::ClangIndex(CXIndex handle)
+		: m_Handle(handle)
 	{}
 
-	Parser::~Parser()
+	Parser::ClangIndex::~ClangIndex(void)
 	{
-		for (auto *klass : m_Classes)
+		Reset();
+	}
+
+	Parser::ClangIndex::ClangIndex(ClangIndex&& other) noexcept
+		: m_Handle(other.m_Handle)
+	{
+		other.m_Handle = nullptr;
+	}
+
+	Parser::ClangIndex& Parser::ClangIndex::operator=(ClangIndex&& other) noexcept
+	{
+		if (this != &other)
 		{
-			SAFE_DELETE(klass);
+			Reset();
+			m_Handle = other.m_Handle;
+			other.m_Handle = nullptr;
 		}
 
-		if (m_TranslationUnit != nullptr)
-			clang_disposeTranslationUnit(m_TranslationUnit);
-
-		if (m_Index != nullptr)
-			clang_disposeIndex(m_Index);
+		return *this;
 	}
+
+	CXIndex Parser::ClangIndex::Get(void) const
+	{
+		return m_Handle;
+	}
+
+	void Parser::ClangIndex::Reset(CXIndex handle)
+	{
+		if (m_Handle != nullptr)
+		{
+			clang_disposeIndex(m_Handle);
+		}
+
+		m_Handle = handle;
+	}
+
+	Parser::TranslationUnit::TranslationUnit(CXTranslationUnit handle)
+		: m_Handle(handle)
+	{}
+
+	Parser::TranslationUnit::~TranslationUnit(void)
+	{
+		Reset();
+	}
+
+	Parser::TranslationUnit::TranslationUnit(TranslationUnit&& other) noexcept
+		: m_Handle(other.m_Handle)
+	{
+		other.m_Handle = nullptr;
+	}
+
+	Parser::TranslationUnit& Parser::TranslationUnit::operator=(TranslationUnit&& other) noexcept
+	{
+		if (this != &other)
+		{
+			Reset();
+			m_Handle = other.m_Handle;
+			other.m_Handle = nullptr;
+		}
+
+		return *this;
+	}
+
+	CXTranslationUnit Parser::TranslationUnit::Get(void) const
+	{
+		return m_Handle;
+	}
+
+	void Parser::TranslationUnit::Reset(CXTranslationUnit handle)
+	{
+		if (m_Handle != nullptr)
+		{
+			clang_disposeTranslationUnit(m_Handle);
+		}
+
+		m_Handle = handle;
+	}
+
+	Parser::Parser(void) = default;
+	Parser::~Parser() = default;
 
 	void Parser::SetOptions(const ParserOptions &options)
 	{
@@ -70,7 +138,7 @@ namespace parser
 		{ {
 			"-x",
 			"c++",
-			"-std=c++17",
+			"-std=c++20",
 			"-D__REFLECTION_PARSER__",
 			"-I" + runtime_source,
 			"-I" + editor_source,
@@ -90,10 +158,12 @@ namespace parser
 			arguments.emplace_back(argument.c_str());
 		}
 
-		m_Index = clang_createIndex(true, false);
-		m_TranslationUnit = clang_createTranslationUnitFromSourceFile(m_Index, m_InputSourceFile.c_str(), static_cast<int>(arguments.size()), arguments.data(), 0, nullptr);
+		m_Classes.clear();
+		m_TranslationUnit.Reset();
+		m_Index.Reset(clang_createIndex(true, false));
+		m_TranslationUnit.Reset(clang_createTranslationUnitFromSourceFile(m_Index.Get(), m_InputSourceFile.c_str(), static_cast<int>(arguments.size()), arguments.data(), 0, nullptr));
 
-		auto cursor = clang_getTranslationUnitCursor(m_TranslationUnit);
+		auto cursor = clang_getTranslationUnitCursor(m_TranslationUnit.Get());
 
 		Namespace tempNamespace;
 
@@ -178,7 +248,7 @@ namespace parser
 			// actual definition and a class or struct
 			if (child.IsDefinition() && (kind == CXCursor_ClassDecl || kind == CXCursor_StructDecl))
 			{
-				m_Classes.emplace_back(new Class(child, currentNamespace));
+				m_Classes.emplace_back(std::make_unique<Class>(child, currentNamespace));
 			}
 
 			RECURSE_NAMESPACES(kind, child, BuildClasses, currentNamespace);
@@ -214,7 +284,7 @@ namespace parser
 	{
 		mustache::Data data{ mustache::Data::Type::List };
 
-		for (auto *klass : m_Classes)
+		for (const auto& klass : m_Classes)
 		{
 			if (klass->IsValid())
 			{
@@ -229,7 +299,7 @@ namespace parser
 	{
 		mustache::Data data{ mustache::Data::Type::List };
 
-		for (auto *klass : m_Classes)
+		for (const auto& klass : m_Classes)
 		{
 			if (klass->IsValid())
 			{

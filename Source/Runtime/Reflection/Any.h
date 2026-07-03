@@ -14,8 +14,12 @@
 #include <Reflection/Type.h>
 #include <Reflection/TypeConfig.h>
 
-#include <string>
 #include <cassert>
+#include <concepts>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <utility>
 
 #define DECLARE_STANDARD_VARIANTS(type)								\
 	template<>														\
@@ -24,13 +28,13 @@
 	public:															\
 																	\
 		Container(const type &value);								\
-		Container(const type &&value);								\
+		Container(type &&value);									\
 																	\
 		Type GetType(void) const override;							\
 																	\
 		void *GetPtr(void) const override;							\
 																	\
-		Any::ContainerBase *Clone(void) const override;				\
+		std::unique_ptr<Any::ContainerBase> Clone(void) const override; \
 																	\
 	private:														\
 																	\
@@ -53,24 +57,22 @@ namespace reflection
 
 		Any(void);
 		Any(const Any &rhs);
-		Any(Any &&rhs);
+		Any(Any &&rhs) noexcept;
 
 		~Any(void);
-
-		/*template<typename T>
-		Any(T *data, typename std::enable_if<std::is_base_of<core::Object, T>::value>::type* = nullptr);*/
 
 		template<typename T>
 		Any(T &data);
 
-		// non-const r-value references, excluding other variants
 		template<typename T>
-		Any(T &&data, typename std::enable_if<!std::is_same<Any&, T>::value>::type* = nullptr, typename std::enable_if<!std::is_const<T>::value>::type* = nullptr);
+			requires (!std::same_as<CleanedType<T>, Any> && !std::is_const_v<std::remove_reference_t<T>>)
+		Any(T &&data);
 
-		Any &operator=(Any &&rhs);
+		Any &operator=(Any &&rhs) noexcept;
 		Any &operator=(const Any &rhs);
 
 		template<typename T>
+			requires (!std::same_as<CleanedType<T>, Any>)
 		Any &operator=(T &&rhs);
 
 		operator bool(void) const;
@@ -95,7 +97,7 @@ namespace reflection
 
 			virtual void *GetPtr(void) const = 0;
 
-			virtual ContainerBase *Clone(void) const = 0;
+			virtual std::unique_ptr<ContainerBase> Clone(void) const = 0;
 		};
 
 		template<typename T>
@@ -104,13 +106,13 @@ namespace reflection
 		public:
 
 			Container(const T &value);
-			Container(const T &&value);
+			Container(T &&value);
 
 			Type GetType(void) const override;
 
 			void *GetPtr(void) const override;
 
-			ContainerBase *Clone(void) const override;
+			std::unique_ptr<ContainerBase> Clone(void) const override;
 
 		private:
 
@@ -121,30 +123,13 @@ namespace reflection
 			T m_Value;
 		};
 
-		/*class RUNTIME_API ObjectContainer : public ContainerBase
-		{
-		public:
-
-			ObjectContainer(core::Object* instance);
-
-			Type GetType(void) const override;
-
-			void *GetPtr(void) const override;
-
-			ContainerBase *Clone(void) const override;
-
-		private:
-
-			core::Object* m_Instance;
-		};*/
-
 	private:
 
 		friend class Destructor;
 
 		bool m_IsConst;
 
-		ContainerBase *m_Container;
+		std::unique_ptr<ContainerBase> m_Container;
 	};
 
 	template<>
@@ -158,7 +143,7 @@ namespace reflection
 
 		void *GetPtr(void) const override;
 
-		Any::ContainerBase *Clone(void) const override;
+		std::unique_ptr<Any::ContainerBase> Clone(void) const override;
 
 	private:
 
@@ -173,28 +158,24 @@ namespace reflection
 	DECLARE_STANDARD_VARIANTS(double)
 	DECLARE_STANDARD_VARIANTS(std::string)
 
-	/*template <typename T>
-	Any::Any(T *data, typename std::enable_if<std::is_base_of<core::Object, T>::value>::type*)
-		: m_IsConst(std::is_const<T>::value)
-		, m_Container(new ObjectContainer(static_cast<core::Object *>(const_cast<typename std::remove_const<T>::type*>(data))))
-	{}*/
-
 	template<typename T>
 	Any::Any(T &data)
-		: m_IsConst(std::is_pointer<T>::value && std::is_const<T>::value)
-		, m_Container(new Container< CleanedType<T> >(data))
+		: m_IsConst(std::is_const_v<T>)
+		, m_Container(std::make_unique<Container<CleanedType<T>>>(data))
 	{}
 
 	template<typename T>
-	Any::Any(T &&data, typename std::enable_if< !std::is_same<Any&, T>::value >::type*, typename std::enable_if<!std::is_const<T>::value>::type*)
+		requires (!std::same_as<CleanedType<T>, Any> && !std::is_const_v<std::remove_reference_t<T>>)
+	Any::Any(T &&data)
 		: m_IsConst(false)
-		, m_Container(new Container< CleanedType<T> >(static_cast<T&&>(data)))
+		, m_Container(std::make_unique<Container<CleanedType<T>>>(std::forward<T>(data)))
 	{}
 
 	template<typename T>
+		requires (!std::same_as<CleanedType<T>, Any>)
 	Any &Any::operator=(T &&rhs)
 	{
-		Any(static_cast<T&&>(rhs)).Swap(*this);
+		Any(std::forward<T>(rhs)).Swap(*this);
 
 		return *this;
 	}
@@ -213,7 +194,7 @@ namespace reflection
 	{}
 
 	template<typename T>
-	Any::Container<T>::Container(const T &&value) : m_Value(std::move(value))
+	Any::Container<T>::Container(T &&value) : m_Value(std::move(value))
 	{}
 
 	template<typename T>
@@ -229,29 +210,11 @@ namespace reflection
 	}
 
 	template<typename T>
-	Any::ContainerBase *Any::Container<T>::Clone(void) const
+	std::unique_ptr<Any::ContainerBase> Any::Container<T>::Clone(void) const
 	{
-		return new Any::Container<T>(m_Value);
+		return std::make_unique<Any::Container<T>>(m_Value);
 	}
 
-	//Any::ObjectContainer
-	/*Any::ObjectContainer::ObjectContainer(core::Object* instance) : m_Instance(instance)
-	{}
-
-	Type Any::ObjectContainer::GetType(void) const
-	{
-		return m_Instance->GetType();
-	}
-
-	void *Any::ObjectContainer::GetPtr(void) const
-	{
-		return m_Instance;
-	}
-
-	Any::ContainerBase *Any::ObjectContainer::Clone(void) const
-	{
-		return new ObjectContainer(m_Instance);
-	}*/
 }
 
 #endif

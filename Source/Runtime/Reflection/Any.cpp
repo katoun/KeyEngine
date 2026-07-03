@@ -8,7 +8,8 @@
 #include <Reflection/Type.h>
 #include <Reflection/TypeInfo.h>
 
-#include <memory.h>
+#include <memory>
+#include <utility>
 
 namespace reflection
 {
@@ -24,24 +25,18 @@ namespace reflection
 		, m_Container(rhs.m_Container != nullptr ? rhs.m_Container->Clone() : nullptr)
 	{}
 
-	Any::Any(Any &&rhs)
+	Any::Any(Any &&rhs) noexcept
 		: m_IsConst(rhs.m_IsConst)
-		, m_Container(rhs.m_Container)
+		, m_Container(std::move(rhs.m_Container))
 	{
 		rhs.m_IsConst = true;
-		rhs.m_Container = nullptr;
 	}
 
-	Any::~Any(void)
-	{
-		SAFE_DELETE(m_Container);
-	}
+	Any::~Any(void) = default;
 
-	Any &Any::operator=(Any &&rhs)
+	Any &Any::operator=(Any &&rhs) noexcept
 	{
-		rhs.Swap(*this);
-
-		Any().Swap(rhs);
+		Any(std::move(rhs)).Swap(*this);
 
 		return *this;
 	}
@@ -75,6 +70,7 @@ namespace reflection
 
 	void Any::Swap(Any &other)
 	{
+		std::swap(m_IsConst, other.m_IsConst);
 		std::swap(m_Container, other.m_Container);
 	}
 
@@ -92,16 +88,16 @@ namespace reflection
 		return nullptr;
 	}
 
-	Any::ContainerBase *Any::Container<void>::Clone(void) const
+	std::unique_ptr<Any::ContainerBase> Any::Container<void>::Clone(void) const
 	{
-		return new Any::Container<void>();
+		return std::make_unique<Any::Container<void>>();
 	}
 
 	//Any::Container<int>
 	Any::Container<int>::Container(const int &value) : m_Value(value)
 	{}
 
-	Any::Container<int>::Container(const int &&value) : m_Value(std::move(value))
+	Any::Container<int>::Container(int &&value) : m_Value(std::move(value))
 	{}
 
 	Type Any::Container<int>::GetType(void) const
@@ -114,16 +110,16 @@ namespace reflection
 		return const_cast<void*>(reinterpret_cast<const void*>(std::addressof(m_Value)));
 	}
 
-	Any::ContainerBase *Any::Container<int>::Clone(void) const
+	std::unique_ptr<Any::ContainerBase> Any::Container<int>::Clone(void) const
 	{
-		return new Any::Container<int>(m_Value);
+		return std::make_unique<Any::Container<int>>(m_Value);
 	}
 
 	//Any::Container<bool>
 	Any::Container<bool>::Container(const bool &value) : m_Value(value)
 	{}
 
-	Any::Container<bool>::Container(const bool &&value) : m_Value(std::move(value))
+	Any::Container<bool>::Container(bool &&value) : m_Value(std::move(value))
 	{}
 
 	Type Any::Container<bool>::GetType(void) const
@@ -136,16 +132,16 @@ namespace reflection
 		return const_cast<void*>(reinterpret_cast<const void*>(std::addressof(m_Value)));
 	}
 
-	Any::ContainerBase *Any::Container<bool>::Clone(void) const
+	std::unique_ptr<Any::ContainerBase> Any::Container<bool>::Clone(void) const
 	{
-		return new Any::Container<bool>(m_Value);
+		return std::make_unique<Any::Container<bool>>(m_Value);
 	}
 
 	//Any::Container<float>
 	Any::Container<float>::Container(const float &value) : m_Value(value)
 	{}
 
-	Any::Container<float>::Container(const float &&value) : m_Value(std::move(value))
+	Any::Container<float>::Container(float &&value) : m_Value(std::move(value))
 	{}
 
 	Type Any::Container<float>::GetType(void) const
@@ -158,16 +154,16 @@ namespace reflection
 		return const_cast<void*>(reinterpret_cast<const void*>(std::addressof(m_Value)));
 	}
 
-	Any::ContainerBase *Any::Container<float>::Clone(void) const
+	std::unique_ptr<Any::ContainerBase> Any::Container<float>::Clone(void) const
 	{
-		return new Any::Container<float>(m_Value);
+		return std::make_unique<Any::Container<float>>(m_Value);
 	}
 
 	//Any::Container<float>
 	Any::Container<double>::Container(const double &value) : m_Value(value)
 	{}
 
-	Any::Container<double>::Container(const double &&value) : m_Value(std::move(value))
+	Any::Container<double>::Container(double &&value) : m_Value(std::move(value))
 	{}
 
 	Type Any::Container<double>::GetType(void) const
@@ -180,16 +176,16 @@ namespace reflection
 		return const_cast<void*>(reinterpret_cast<const void*>(std::addressof(m_Value)));
 	}
 
-	Any::ContainerBase *Any::Container<double>::Clone(void) const
+	std::unique_ptr<Any::ContainerBase> Any::Container<double>::Clone(void) const
 	{
-		return new Any::Container<double>(m_Value);
+		return std::make_unique<Any::Container<double>>(m_Value);
 	}
 
 	//Any::Container<std::string>
 	Any::Container<std::string>::Container(const std::string &value) : m_Value(value)
 	{}
 
-	Any::Container<std::string>::Container(const std::string &&value) : m_Value(std::move(value))
+	Any::Container<std::string>::Container(std::string &&value) : m_Value(std::move(value))
 	{}
 
 	Type Any::Container<std::string>::GetType(void) const
@@ -202,8 +198,8 @@ namespace reflection
 		return const_cast<void*>(reinterpret_cast<const void*>(std::addressof(m_Value)));
 	}
 
-	Any::ContainerBase *Any::Container<std::string>::Clone(void) const
+	std::unique_ptr<Any::ContainerBase> Any::Container<std::string>::Clone(void) const
 	{
-		return new Any::Container<std::string>(m_Value);
+		return std::make_unique<Any::Container<std::string>>(m_Value);
 	}
 }

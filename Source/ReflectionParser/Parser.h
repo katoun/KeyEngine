@@ -12,6 +12,7 @@
 #include <Namespace.h>
 #include <Templates.h>
 
+#include <memory>
 #include <vector>
 #include <unordered_map>
 
@@ -36,6 +37,46 @@ namespace parser
 
 	private:
 
+		class ClangIndex
+		{
+		public:
+			ClangIndex(void) = default;
+			explicit ClangIndex(CXIndex handle);
+			~ClangIndex(void);
+
+			ClangIndex(const ClangIndex&) = delete;
+			ClangIndex& operator=(const ClangIndex&) = delete;
+
+			ClangIndex(ClangIndex&& other) noexcept;
+			ClangIndex& operator=(ClangIndex&& other) noexcept;
+
+			CXIndex Get(void) const;
+			void Reset(CXIndex handle = nullptr);
+
+		private:
+			CXIndex m_Handle = nullptr;
+		};
+
+		class TranslationUnit
+		{
+		public:
+			TranslationUnit(void) = default;
+			explicit TranslationUnit(CXTranslationUnit handle);
+			~TranslationUnit(void);
+
+			TranslationUnit(const TranslationUnit&) = delete;
+			TranslationUnit& operator=(const TranslationUnit&) = delete;
+
+			TranslationUnit(TranslationUnit&& other) noexcept;
+			TranslationUnit& operator=(TranslationUnit&& other) noexcept;
+
+			CXTranslationUnit Get(void) const;
+			void Reset(CXTranslationUnit handle = nullptr);
+
+		private:
+			CXTranslationUnit m_Handle = nullptr;
+		};
+
 		void BuildClasses(const Cursor &cursor, Namespace &currentNamespace);
 
 		void BuildOutputSourceFile();
@@ -45,15 +86,15 @@ namespace parser
 
 		ParserOptions m_Options;
 
-		CXIndex m_Index;
-		CXTranslationUnit m_TranslationUnit;
+		ClangIndex m_Index;
+		TranslationUnit m_TranslationUnit;
 
 		std::string m_TemplatesPath;
 		std::string m_InputSourceFile;
 		std::string m_OutputSourceFile;
 		std::vector<std::string> m_Arguments;
 
-		std::vector<Class*> m_Classes;
+		std::vector<std::unique_ptr<Class>> m_Classes;
 
 		mutable std::unordered_map<std::string, std::string> m_TemplatePartialCache;
 	};

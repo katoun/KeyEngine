@@ -75,16 +75,10 @@ namespace reflection
 		friend class Type;
 
 		template<typename T>
-		void SetDefaultConstructor(typename std::enable_if<!std::is_default_constructible<T>::value>::type* = nullptr);
+		void SetDefaultConstructor(void);
 
 		template<typename T>
-		void SetDefaultConstructor(typename std::enable_if<std::is_default_constructible<T>::value>::type* = nullptr);
-
-		template<typename T>
-		void SetDefaultDestructor(typename std::enable_if<!std::is_destructible<T>::value>::type* = nullptr);
-
-		template<typename T>
-		void SetDefaultDestructor(typename std::enable_if<std::is_destructible<T>::value>::type* = nullptr);
+		void SetDefaultDestructor(void);
 
 		std::string m_Name;
 
@@ -110,12 +104,12 @@ namespace reflection
 	template<typename T>
 	void TypeData::Initialize()
 	{
-		typedef std::decay<T> Decayed;
+		using Decayed = std::decay_t<T>;
 
-		m_IsClass = std::is_class< Decayed >::value;
-		m_IsEnum = std::is_enum< Decayed >::value;
-		m_IsPointer = std::is_pointer< T >::value;
-		m_IsPrimitive = std::is_arithmetic< Decayed >::value;
+		m_IsClass = std::is_class_v<Decayed>;
+		m_IsEnum = std::is_enum_v<Decayed>;
+		m_IsPointer = std::is_pointer_v<T>;
+		m_IsPrimitive = std::is_arithmetic_v<Decayed>;
 
 		SetDefaultConstructor<T>();
 		SetDefaultDestructor<T>();
@@ -135,39 +129,22 @@ namespace reflection
 		m_Enum = { new Enum::Container<EnumType>(name, table) };
 	}
 
-#ifdef _MSC_VER
-#pragma warning(push)
-
-	// unused template parameters
-#pragma warning(disable : 4544)
-#endif
-
 	template<typename T>
-	void TypeData::SetDefaultConstructor(typename std::enable_if<!std::is_default_constructible<T>::value>::type*)
+	void TypeData::SetDefaultConstructor(void)
 	{
-		// do nothing
+		if constexpr (std::is_default_constructible_v<T>)
+		{
+			m_Constructor = { typeof(T), []() { return Any{ T() }; }, false };
+			m_DynamicConstructor = { typeof(T), []() { return Any{ new T() }; }, true };
+		}
 	}
 
 	template<typename T>
-	void TypeData::SetDefaultConstructor(typename std::enable_if<std::is_default_constructible<T>::value>::type*)
+	void TypeData::SetDefaultDestructor(void)
 	{
-		m_Constructor = { typeof(T), []() { return Any{ T() }; }, false };
-		m_DynamicConstructor = { typeof(T), []() { return Any{ new T() }; }, true };
+		if constexpr (std::is_destructible_v<T>)
+		{
+			m_Destructor = { typeof(T), [](Any &instance) { instance.GetValue<T>().~T(); } };
+		}
 	}
-
-	template<typename T>
-	void TypeData::SetDefaultDestructor(typename std::enable_if<!std::is_destructible<T>::value>::type*)
-	{
-		// do nothing
-	}
-
-	template<typename T>
-	void TypeData::SetDefaultDestructor(typename std::enable_if<std::is_destructible<T>::value>::type*)
-	{
-		m_Destructor = { typeof(T), [](Any &instance) { instance.GetValue<T>().~T(); } };
-	}
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
 }

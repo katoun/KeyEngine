@@ -51,18 +51,16 @@ namespace parser
 			{
 			case CXCursor_CXXBaseSpecifier:
 			{
-				auto baseClass = new BaseClass(child);
+				auto& baseClass = m_BaseClasses.emplace_back(child);
 
-				m_BaseClasses.emplace_back(baseClass);
-
-				if (!IsReservedType(baseClass->Name) && (IsBaseType(baseClass->Name) || IsValidType(baseClass->Name)))
+				if (!IsReservedType(baseClass.Name) && (IsBaseType(baseClass.Name) || IsValidType(baseClass.Name)))
 				{
 					m_IsValid = true;
 				}
 			}
 			break;
 			case CXCursor_FieldDecl:
-				m_Fields.emplace_back(new Field(child, currentNamespace, this));
+				m_Fields.emplace_back(child, currentNamespace, this);
 				break;
 			case CXCursor_VarDecl:
 				//m_staticFields.emplace_back(new Global(child, Namespace(), this));
@@ -95,20 +93,7 @@ namespace parser
 		}
 	}
 
-	Class::~Class(void)
-	{
-		for (auto *baseClass : m_BaseClasses)
-		{
-			SAFE_DELETE(baseClass);
-		}
-
-		for (auto *field : m_Fields)
-		{
-			SAFE_DELETE(field);
-		}
-
-		//TODO!!!
-	}
+	Class::~Class(void) = default;
 
 	mustache::Data Class::CompileDeclaration(void) const
 	{
@@ -130,11 +115,11 @@ namespace parser
 
 			for (size_t i = 0; i < m_BaseClasses.size(); ++i)
 			{
-				auto baseClass = m_BaseClasses[i];
+				auto& baseClass = m_BaseClasses[i];
 
 				mustache::Data item{ mustache::Data::Type::Object };
 
-				item["ClassName"] = baseClass->Name;
+				item["ClassName"] = baseClass.Name;
 
 				item["IsLast"] = ToMustache(i == m_BaseClasses.size() - 1);
 
@@ -155,11 +140,11 @@ namespace parser
 		{
 			mustache::Data fields{ mustache::Data::Type::List };
 
-			for (auto field : m_Fields)
+			for (const auto& field : m_Fields)
 			{
-				if (field->IsValid())
+				if (field.IsValid())
 				{
-					fields << field->CompileDefinition();
+					fields << field.CompileDefinition();
 				}
 			}
 

@@ -39,8 +39,6 @@ namespace reflection
 
 		m_Invoker(instance);
 
-		delete instance.m_Container;
-
-		instance.m_Container = nullptr;
+		instance.m_Container.reset();
 	}
 }
