@@ -60,19 +60,16 @@ namespace parser
 			}
 			break;
 			case CXCursor_FieldDecl:
-				m_Fields.emplace_back(child, currentNamespace, this);
+				m_Fields.emplace_back(child, currentNamespace, *this);
 				break;
 			case CXCursor_VarDecl:
-				//m_staticFields.emplace_back(new Global(child, Namespace(), this));
 				break;
 			case CXCursor_CXXMethod:
 				if (child.IsStatic())
 				{
-					//m_staticMethods.emplace_back(new Function(child, Namespace(), this));
 				}
 				else
 				{
-					//m_methods.emplace_back(new Method(child, currentNamespace, this));
 				}
 				break;
 			}

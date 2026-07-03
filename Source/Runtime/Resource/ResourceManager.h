@@ -9,6 +9,7 @@
 #include <RuntimeConfig.h>
 #include <Resource/Resource.h>
 
+#include <memory>
 #include <unordered_map>
 
 namespace resource
@@ -22,7 +23,7 @@ namespace resource
 		ResourceManager(void);
 
 		template<typename T>
-		T* CreateResource(const filesystem::path& path);
+		std::shared_ptr<T> CreateResource(const filesystem::path& path);
 
 		void LoadResources();
 		void UnloadResources();
@@ -35,16 +36,16 @@ namespace resource
 
 		filesystem::path m_BasePath;
 
-		std::unordered_map<uint32_t, Resource*> m_Resources;
+		std::unordered_map<uint32_t, std::shared_ptr<Resource>> m_Resources;
 	};
 
 	template<typename T>
-	T* ResourceManager::CreateResource(const filesystem::path& path)
+	std::shared_ptr<T> ResourceManager::CreateResource(const filesystem::path& path)
 	{
 		//if (!std::is_base_of<Resource, T>::value)
 		//	return nullptr;
 
-		T* value = new T(path);
+		auto value = std::make_shared<T>(path);
 
 		m_Resources.emplace(value->GetID(), value);
 

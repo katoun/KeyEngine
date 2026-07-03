@@ -10,6 +10,8 @@
 #include <vulkan/vulkan.h>
 
 #include <filesystem>
+#include <functional>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -52,7 +54,7 @@ namespace editor
 			int height = 0;
 		};
 
-		Texture* LoadTexture(const std::filesystem::path& path);
+		std::optional<std::reference_wrapper<Texture>> LoadTexture(const std::filesystem::path& path);
 		uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties) const;
 		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& memory) const;
 

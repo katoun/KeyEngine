@@ -11,7 +11,9 @@
 
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <system_error>
+#include <utility>
 
 namespace editor
 {
@@ -26,7 +28,7 @@ namespace editor
 			if (filelist != nullptr && filelist[0] == nullptr)
 				return;
 
-			auto* result = new OpenProjectDialogResult();
+			auto result = std::make_unique<OpenProjectDialogResult>();
 			if (filelist == nullptr)
 			{
 				result->has_error = true;
@@ -39,7 +41,7 @@ namespace editor
 
 			SDL_Event event{};
 			event.type = event_type;
-			event.user.data1 = result;
+			event.user.data1 = result.release();
 			SDL_PushEvent(&event);
 		}
 	}
@@ -77,9 +79,9 @@ namespace editor
 		Log("Project loaded: " + m_CurrentProjectName);
 	}
 
-	void MainWindow::SelectionChanged(core::Object* selection)
+	void MainWindow::SelectionChanged(std::shared_ptr<core::Object> selection)
 	{
-		m_InspectorWidget.SelectionChanged(selection);
+		m_InspectorWidget.SelectionChanged(std::move(selection));
 	}
 
 	void MainWindow::HandleOpenProjectDialogResult(OpenProjectDialogResult* result)
@@ -98,9 +100,8 @@ namespace editor
 		if (event.type != m_OpenProjectDialogEvent || m_OpenProjectDialogEvent == 0)
 			return false;
 
-		auto* result = static_cast<OpenProjectDialogResult*>(event.user.data1);
-		HandleOpenProjectDialogResult(result);
-		delete result;
+		std::unique_ptr<OpenProjectDialogResult> result(static_cast<OpenProjectDialogResult*>(event.user.data1));
+		HandleOpenProjectDialogResult(result.get());
 		return true;
 	}
 
@@ -124,11 +125,11 @@ namespace editor
 		m_DebugOpenFileMenu = true;
 	}
 
-	void MainWindow::OnOutlinerSelectionChanged(void* user_data, core::Object* selection)
+	void MainWindow::OnOutlinerSelectionChanged(void* user_data, std::shared_ptr<core::Object> selection)
 	{
 		auto* window = static_cast<MainWindow*>(user_data);
 		if (window != nullptr)
-			window->SelectionChanged(selection);
+			window->SelectionChanged(std::move(selection));
 	}
 
 	void MainWindow::DrawMainMenu()

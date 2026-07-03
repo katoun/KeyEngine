@@ -11,9 +11,9 @@
 
 namespace reflection
 {
-	std::vector<std::pair<Type, const Attribute *>> AttributesContainer::GetAttributes(void) const
+	std::vector<std::pair<Type, std::shared_ptr<const Attribute>>> AttributesContainer::GetAttributes(void) const
 	{
-		std::vector<std::pair<Type, const Attribute *>> attributes;
+		std::vector<std::pair<Type, std::shared_ptr<const Attribute>>> attributes;
 
 		for (auto &it : m_Attributes)
 		{
@@ -28,13 +28,6 @@ namespace reflection
 		for (auto &pair : attributes)
 		{
 			assert(pair.first.IsValid());
-
-			auto search = m_Attributes.find(pair.first);
-
-			if (search != m_Attributes.end())
-			{
-				delete search->second;
-			}
 
 			m_Attributes[pair.first] = pair.second;
 		}

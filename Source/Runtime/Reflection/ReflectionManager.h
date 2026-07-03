@@ -68,7 +68,7 @@ namespace reflection
 	}
 
 	template<typename AttributeType>
-	const AttributeType* Type::GetAttribute(void) const
+	std::shared_ptr<const AttributeType> Type::GetAttribute(void) const
 	{
 		return ReflectionManager::Instance().GetTypeData(m_ID).GetAttribute<AttributeType>();
 	}

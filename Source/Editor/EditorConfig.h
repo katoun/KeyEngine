@@ -34,6 +34,3 @@
 #endif
 
 #define EDITOR_VERSION "0.0.1"
-
-#define SAFE_DELETE(object_ptr) if(object_ptr != nullptr) { delete object_ptr; object_ptr = nullptr; }
-#define SAFE_DELETE_ARRAY(object_ptr) if(object_ptr != nullptr) { delete []object_ptr; object_ptr = nullptr; }

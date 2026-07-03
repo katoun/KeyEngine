@@ -61,10 +61,6 @@ namespace reflection
 
 	TypeData::~TypeData(void)
 	{
-		if (m_IsEnum)
-		{
-			SAFE_DELETE(m_Enum.m_Container);
-		}
 	}
 
 	const std::string& TypeData::GetName(void) const

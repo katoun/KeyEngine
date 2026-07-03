@@ -16,11 +16,23 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <memory>
 
 namespace editor
 {
 	namespace
 	{
+		struct SDLSurfaceDeleter
+		{
+			void operator()(SDL_Surface* surface) const
+			{
+				if (surface != nullptr)
+					SDL_DestroySurface(surface);
+			}
+		};
+
+		using SurfacePtr = std::unique_ptr<SDL_Surface, SDLSurfaceDeleter>;
+
 		std::string ToLower(std::string value)
 		{
 			std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) {
@@ -63,11 +75,12 @@ namespace editor
 
 	Icon IconManager::GetIcon(const std::filesystem::path& path)
 	{
-		Texture* texture = LoadTexture(path);
-		if (texture == nullptr)
+		auto texture = LoadTexture(path);
+		if (!texture.has_value())
 			return {};
 
-		return { ImTextureRef(static_cast<ImTextureID>(reinterpret_cast<std::uintptr_t>(texture->descriptor_set))), ImVec2(static_cast<float>(texture->width), static_cast<float>(texture->height)) };
+		Texture& value = texture->get();
+		return { ImTextureRef(static_cast<ImTextureID>(reinterpret_cast<std::uintptr_t>(value.descriptor_set))), ImVec2(static_cast<float>(value.width), static_cast<float>(value.height)) };
 	}
 
 	Icon IconManager::GetAppIcon()
@@ -127,27 +140,26 @@ namespace editor
 		return ImGui::ImageButton(id, icon.texture, ImVec2(size, size));
 	}
 
-	IconManager::Texture* IconManager::LoadTexture(const std::filesystem::path& path)
+	std::optional<std::reference_wrapper<IconManager::Texture>> IconManager::LoadTexture(const std::filesystem::path& path)
 	{
 		if (m_Device == VK_NULL_HANDLE || !std::filesystem::exists(path))
-			return nullptr;
+			return std::nullopt;
 
 		const std::string key = std::filesystem::weakly_canonical(path).string();
 		auto cached = m_Textures.find(key);
 		if (cached != m_Textures.end())
-			return &cached->second;
+			return cached->second;
 
-		SDL_Surface* loaded_surface = SDL_LoadPNG(path.string().c_str());
+		SurfacePtr loaded_surface(SDL_LoadPNG(path.string().c_str()));
 		if (loaded_surface == nullptr)
 		{
 			std::cerr << "Unable to load icon: " << path << " " << SDL_GetError() << std::endl;
-			return nullptr;
+			return std::nullopt;
 		}
 
-		SDL_Surface* surface = SDL_ConvertSurface(loaded_surface, SDL_PIXELFORMAT_RGBA32);
-		SDL_DestroySurface(loaded_surface);
+		SurfacePtr surface(SDL_ConvertSurface(loaded_surface.get(), SDL_PIXELFORMAT_RGBA32));
 		if (surface == nullptr)
-			return nullptr;
+			return std::nullopt;
 
 		const VkDeviceSize image_size = static_cast<VkDeviceSize>(surface->w) * static_cast<VkDeviceSize>(surface->h) * 4;
 
@@ -163,7 +175,7 @@ namespace editor
 		Texture texture;
 		texture.width = surface->w;
 		texture.height = surface->h;
-		SDL_DestroySurface(surface);
+		surface.reset();
 
 		VkImageCreateInfo image_info{};
 		image_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -269,7 +281,7 @@ namespace editor
 		texture.descriptor_set = ImGui_ImplVulkan_AddTexture(texture.image_view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		auto inserted = m_Textures.emplace(key, texture);
-		return &inserted.first->second;
+		return inserted.first->second;
 	}
 
 	uint32_t IconManager::FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties) const

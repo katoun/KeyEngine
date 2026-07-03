@@ -8,6 +8,7 @@
 
 #include <EditorConfig.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -22,10 +23,12 @@ namespace editor
 		ModuleManager();
 		~ModuleManager();
 
-		Module* LoadModule(const std::string& path, const std::string& name);
+		using ModulePtr = std::shared_ptr<Module>;
 
-		void UnloadModule(Module* module);
-		bool ReloadModule(Module* module);
+		ModulePtr LoadModule(const std::string& path, const std::string& name);
+
+		void UnloadModule(ModulePtr module);
+		bool ReloadModule(const ModulePtr& module);
 
 		void UnloadAllModules();
 		void ReloadAllModules();
@@ -34,6 +37,6 @@ namespace editor
 
 	protected:
 
-		std::vector<Module*> m_Modules;
+		std::vector<ModulePtr> m_Modules;
 	};
 }

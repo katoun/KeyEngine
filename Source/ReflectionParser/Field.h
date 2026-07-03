@@ -20,7 +20,7 @@ namespace parser
 	{
 	public:
 
-		Field(const Cursor &cursor, const Namespace &currentNamespace, Class *parent = nullptr);
+		Field(const Cursor &cursor, const Namespace &currentNamespace, Class& parent);
 		virtual ~Field(void) {}
 
 		mustache::Data CompileDefinition(void) const;
@@ -38,7 +38,7 @@ namespace parser
 
 		bool m_IsConst;
 
-		Class *m_Parent;
+		Class& m_Parent;
 
 		bool m_HasExplicitGetter;
 		bool m_HasExplicitSetter;

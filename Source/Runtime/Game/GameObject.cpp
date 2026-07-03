@@ -19,12 +19,19 @@ namespace game
 
 	GameObject::SharedPtr GameObject::Create()
 	{
-		return SharedPtr(new GameObject());
+		struct MakeSharedEnabler : GameObject {};
+		return std::make_shared<MakeSharedEnabler>();
 	}
 
 	GameObject::SharedPtr GameObject::Create(const std::string& name)
 	{
-		return SharedPtr(new GameObject(name));
+		struct MakeSharedEnabler : GameObject
+		{
+			explicit MakeSharedEnabler(const std::string& object_name)
+				: GameObject(object_name)
+			{}
+		};
+		return std::make_shared<MakeSharedEnabler>(name);
 	}
 
 	GameObject::GameObject()
@@ -237,14 +244,14 @@ namespace game
 		}
 
 		reflection::Any object_any = type.CreateDynamicObject();
-		core::Object* object = object_any.GetValue<core::Object*>();
-		Component* component_ptr = dynamic_cast<Component*>(object);
+		std::unique_ptr<core::Object> object(object_any.GetValue<core::Object*>());
+		Component* component_ptr = dynamic_cast<Component*>(object.get());
 		if (component_ptr == nullptr)
 		{
-			delete object;
 			return nullptr;
 		}
 
+		object.release();
 		component = ComponentPtr(component_ptr);
 		component->m_GameObject = shared_from_this();
 		component->OnMessage(MessageType::COMPONENT_ATTACHED);

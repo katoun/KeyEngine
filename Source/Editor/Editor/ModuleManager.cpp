@@ -17,16 +17,16 @@ namespace editor
 		UnloadAllModules();
 	}
 
-	Module* ModuleManager::LoadModule(const std::string& path, const std::string& name)
+	ModuleManager::ModulePtr ModuleManager::LoadModule(const std::string& path, const std::string& name)
 	{
-		Module* module = new Module(path, name);
+		auto module = std::make_shared<Module>(path, name);
 		module->Load();
-		m_Modules.push_back(module);
+		m_Modules.emplace_back(module);
 
 		return module;
 	}
 
-	void ModuleManager::UnloadModule(Module* module)
+	void ModuleManager::UnloadModule(ModulePtr module)
 	{
 		if (module == nullptr)
 			return;
@@ -35,7 +35,7 @@ namespace editor
 
 		for (auto it = m_Modules.begin(); it != m_Modules.end(); ++it)
 		{
-			if (**it == *module)
+			if (*it == module || **it == *module)
 			{
 				m_Modules.erase(it);
 				break;
@@ -43,7 +43,7 @@ namespace editor
 		}
 	}
 
-	bool ModuleManager::ReloadModule(Module* module)
+	bool ModuleManager::ReloadModule(const ModulePtr& module)
 	{
 		if (module == nullptr)
 			return false;
@@ -53,14 +53,12 @@ namespace editor
 
 	void ModuleManager::UnloadAllModules()
 	{
-		for (auto module : m_Modules)
+		for (auto& module : m_Modules)
 		{
 			if (module == nullptr)
 				continue;
 
 			module->Unload();
-
-			SAFE_DELETE(module);
 		}
 
 		m_Modules.clear();
@@ -68,7 +66,7 @@ namespace editor
 
 	void ModuleManager::ReloadAllModules()
 	{
-		for (auto module : m_Modules)
+		for (auto& module : m_Modules)
 		{
 			if (module == nullptr)
 				continue;

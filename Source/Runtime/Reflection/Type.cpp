@@ -143,7 +143,7 @@ namespace reflection
 		destructor.Invoke(instance);
 	}
 
-	std::vector<std::pair<Type, const Attribute *>> Type::GetAttributes(void) const
+	std::vector<std::pair<Type, std::shared_ptr<const Attribute>>> Type::GetAttributes(void) const
 	{
 		return manager.GetTypeData(m_ID).GetAttributes();
 	}

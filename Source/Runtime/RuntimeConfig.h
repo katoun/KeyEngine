@@ -44,9 +44,6 @@
 
 #define MAX_PATH_SIZE 255
 
-#define SAFE_DELETE(object_ptr) if(object_ptr != nullptr) { delete object_ptr; object_ptr = nullptr; }
-#define SAFE_DELETE_ARRAY(object_ptr) if(object_ptr != nullptr) { delete []object_ptr; object_ptr = nullptr; }
-
 #define __STRINGIFY(x) #x
 #define STRINGIFY(x) __STRINGIFY(x)
 

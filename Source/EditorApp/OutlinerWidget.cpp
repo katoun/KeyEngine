@@ -218,9 +218,9 @@ namespace editor
 		if (m_SelectionChangedCallback == nullptr)
 			return;
 
-		core::Object* object = nullptr;
+		std::shared_ptr<core::Object> object;
 		if (m_Selection != nullptr && m_Selection->type == ItemType::GameObject)
-			object = static_cast<core::Object*>(m_Selection->game_object.get());
+			object = m_Selection->game_object;
 
 		m_SelectionChangedCallback(m_SelectionChangedUserData, object);
 	}

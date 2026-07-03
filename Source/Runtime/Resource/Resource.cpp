@@ -7,6 +7,8 @@
 #include <Resource/Resource.h>
 #include <Core/Utils.h>
 
+#include <algorithm>
+
 namespace resource
 {
 	Resource::Resource(const filesystem::path& path)
@@ -15,7 +17,7 @@ namespace resource
 		, m_ID(core::string::Hash(path.string()))
 		, m_State(ResourceState::UNLOADED)
 	{
-		m_Event.source = this;
+		m_Event.source = *this;
 	}
 
 	Resource::~Resource(void)
@@ -36,34 +38,35 @@ namespace resource
 		return m_State;
 	}
 
-	void Resource::RegisterEventReceiver(ResourceEventReceiver* receiver)
+	void Resource::RegisterEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver)
 	{
-		if (receiver == nullptr)
+		auto shared_receiver = receiver.lock();
+		if (shared_receiver == nullptr)
 			return;
 
 		m_EventReceivers.emplace_back(receiver);
 
 		if (m_State == ResourceState::LOADED)
 		{
-			SendLoadedEvent(receiver);
+			SendLoadedEvent(shared_receiver);
 		}
 	}
 
-	void Resource::RemoveEventReceiver(ResourceEventReceiver* receiver)
+	void Resource::RemoveEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver)
 	{
-		if (receiver == nullptr)
+		auto shared_receiver = receiver.lock();
+		if (shared_receiver == nullptr)
 			return;
-		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end(); ++i)
-		{
-			if ((*i) == receiver)
+
+		m_EventReceivers.erase(std::remove_if(m_EventReceivers.begin(), m_EventReceivers.end(),
+			[&shared_receiver](const std::weak_ptr<ResourceEventReceiver>& current)
 			{
-				m_EventReceivers.erase(i);
-				return;
-			}
-		}
+				auto locked = current.lock();
+				return locked == nullptr || locked == shared_receiver;
+			}), m_EventReceivers.end());
 	}
 
-	void Resource::SendLoadedEvent(ResourceEventReceiver* receiver)
+	void Resource::SendLoadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver)
 	{
 		if (receiver == nullptr)
 			return;
@@ -73,13 +76,21 @@ namespace resource
 
 	void Resource::SendLoadedEvent(void)
 	{
-		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end(); ++i)
+		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end();)
 		{
-			SendLoadedEvent(*i);
+			auto receiver = i->lock();
+			if (receiver == nullptr)
+			{
+				i = m_EventReceivers.erase(i);
+				continue;
+			}
+
+			SendLoadedEvent(receiver);
+			++i;
 		}
 	}
 
-	void Resource::SendUnloadedEvent(ResourceEventReceiver* receiver)
+	void Resource::SendUnloadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver)
 	{
 		if (receiver == nullptr)
 			return;
@@ -89,9 +100,17 @@ namespace resource
 
 	void Resource::SendUnloadedEvent(void)
 	{
-		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end(); ++i)
+		for (auto i = m_EventReceivers.begin(); i != m_EventReceivers.end();)
 		{
-			SendUnloadedEvent(*i);
+			auto receiver = i->lock();
+			if (receiver == nullptr)
+			{
+				i = m_EventReceivers.erase(i);
+				continue;
+			}
+
+			SendUnloadedEvent(receiver);
+			++i;
 		}
 	}
 }

@@ -9,6 +9,7 @@
 #include <Runtime.h>
 
 #include <array>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -17,7 +18,7 @@ namespace editor
 	class InspectorWidget
 	{
 	public:
-		void SelectionChanged(core::Object* selection);
+		void SelectionChanged(std::shared_ptr<core::Object> selection);
 		void Draw();
 
 	private:
@@ -27,7 +28,7 @@ namespace editor
 		void DrawPropertyLabel(const std::string& label);
 		bool DrawVector3Field(const std::string& id, glm::vec3& value);
 
-		core::Object* m_Selection = nullptr;
+		std::shared_ptr<core::Object> m_Selection;
 		std::array<char, 256> m_NameBuffer{};
 		std::unordered_map<std::string, std::array<char, 256>> m_StringBuffers;
 	};

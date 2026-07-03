@@ -12,7 +12,7 @@
 #include <Reflection/TypeInfo.h>
 #include <Reflection/TypeConfig.h>
 
-#include <functional>
+#include <memory>
 #include <vector>
 #include <map>
 
@@ -24,12 +24,12 @@ namespace reflection
 	{
 	public:
 
-		typedef std::initializer_list<std::pair<Type, const Attribute *>> Initializer;
+		typedef std::initializer_list<std::pair<Type, std::shared_ptr<const Attribute>>> Initializer;
 
 		template<typename AttributeType>
-		const AttributeType* GetAttribute(void) const;
+		std::shared_ptr<const AttributeType> GetAttribute(void) const;
 
-		std::vector<std::pair<Type, const Attribute *>> GetAttributes(void) const;
+		std::vector<std::pair<Type, std::shared_ptr<const Attribute>>> GetAttributes(void) const;
 
 	protected:
 
@@ -41,11 +41,11 @@ namespace reflection
 
 		friend class TypeData;
 
-		std::map<Type, const Attribute*> m_Attributes;
+		std::map<Type, std::shared_ptr<const Attribute>> m_Attributes;
 	};
 
 	template<typename AttributeType>
-	const AttributeType* AttributesContainer::GetAttribute(void) const
+	std::shared_ptr<const AttributeType> AttributesContainer::GetAttribute(void) const
 	{
 		static_assert(std::is_base_of<Attribute, AttributeType>::value, "Type must be an Attribute.");
 
@@ -54,8 +54,8 @@ namespace reflection
 		auto search = m_Attributes.find(type);
 
 		if (search == m_Attributes.end())
-			return nullptr;
+			return {};
 
-		return static_cast<const AttributeType*>(search->second);
+		return std::static_pointer_cast<const AttributeType>(search->second);
 	}
 }

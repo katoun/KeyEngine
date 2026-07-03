@@ -13,13 +13,13 @@
 
 namespace editor
 {
-	void InspectorWidget::SelectionChanged(core::Object* selection)
+	void InspectorWidget::SelectionChanged(std::shared_ptr<core::Object> selection)
 	{
-		m_Selection = selection;
+		m_Selection = std::move(selection);
 		m_NameBuffer.fill('\0');
 		m_StringBuffers.clear();
 
-		auto* game_object = dynamic_cast<game::GameObject*>(selection);
+		auto game_object = std::dynamic_pointer_cast<game::GameObject>(m_Selection);
 		if (game_object != nullptr)
 			std::strncpy(m_NameBuffer.data(), game_object->GetName().c_str(), m_NameBuffer.size() - 1);
 	}
@@ -35,7 +35,7 @@ namespace editor
 			return;
 		}
 
-		auto* game_object = dynamic_cast<game::GameObject*>(m_Selection);
+		auto game_object = std::dynamic_pointer_cast<game::GameObject>(m_Selection);
 		if (game_object != nullptr)
 			DrawGameObject(*game_object);
 		else

@@ -10,6 +10,7 @@
 #include <Reflection/TypeConfig.h>
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 #include <set>
@@ -65,9 +66,9 @@ namespace reflection
 		void Destroy(Any &instance) const;
 
 		template<typename AttributeType>
-		const AttributeType* GetAttribute(void) const;
+		std::shared_ptr<const AttributeType> GetAttribute(void) const;
 
-		std::vector<std::pair<Type, const Attribute *>> GetAttributes(void) const;
+		std::vector<std::pair<Type, std::shared_ptr<const Attribute>>> GetAttributes(void) const;
 
 		const Field &GetField(const std::string &name) const;
 		std::vector<Field> GetFields(void) const;

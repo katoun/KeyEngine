@@ -17,7 +17,7 @@ namespace editor
 	class OutlinerWidget
 	{
 	public:
-		using SelectionChangedCallback = void (*)(void* user_data, core::Object* selection);
+		using SelectionChangedCallback = void (*)(void* user_data, std::shared_ptr<core::Object> selection);
 
 		OutlinerWidget();
 		~OutlinerWidget();

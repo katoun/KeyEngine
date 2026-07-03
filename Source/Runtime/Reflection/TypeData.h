@@ -19,6 +19,7 @@
 #include <Core/Utils.h>
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <type_traits>
@@ -103,7 +104,7 @@ namespace reflection
 
 		Destructor m_Destructor;
 
-		const attribute::Category* m_Category;
+		std::shared_ptr<const attribute::Category> m_Category;
 
 		std::unordered_map<std::string, Field> m_Fields;
 	};
@@ -163,7 +164,7 @@ namespace reflection
 	template<typename EnumType>
 	void TypeData::SetEnum(const std::string &name, const typename Enum::Container<EnumType>::Table &table)
 	{
-		m_Enum = { new Enum::Container<EnumType>(name, table) };
+		m_Enum = { std::make_shared<Enum::Container<EnumType>>(name, table) };
 	}
 
 	template<typename T>
@@ -171,7 +172,7 @@ namespace reflection
 	{
 		if constexpr (std::is_default_constructible_v<T>)
 		{
-			m_DynamicConstructor = { TypeOf<T>(), []() { return Any{ new T() }; }, true };
+			m_DynamicConstructor = { TypeOf<T>(), []() { return Any{ std::make_unique<T>().release() }; }, true };
 
 			if constexpr (std::is_copy_constructible_v<T>)
 			{
@@ -180,7 +181,7 @@ namespace reflection
 
 			if constexpr (std::is_base_of_v<core::Object, T>)
 			{
-				m_DynamicObjectConstructor = { TypeOf<T>(), []() { return Any{ static_cast<core::Object*>(new T()) }; }, true };
+				m_DynamicObjectConstructor = { TypeOf<T>(), []() { return Any{ static_cast<core::Object*>(std::make_unique<T>().release()) }; }, true };
 				m_DynamicPointerCaster = [](core::Object* object) { return Any{ dynamic_cast<T*>(object) }; };
 			}
 		}

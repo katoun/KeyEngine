@@ -75,7 +75,7 @@ namespace reflection
 	};
 
 	template<auto Member>
-	std::pair<Type, const Attribute*> FieldGetter()
+	std::pair<Type, std::shared_ptr<const Attribute>> FieldGetter()
 	{
 		using Traits = MemberFieldTraits<decltype(Member)>;
 		using ClassType = typename Traits::Class;
@@ -94,7 +94,7 @@ namespace reflection
 	}
 
 	template<auto Member>
-	std::pair<Type, const Attribute*> FieldSetter()
+	std::pair<Type, std::shared_ptr<const Attribute>> FieldSetter()
 	{
 		using Traits = MemberFieldTraits<decltype(Member)>;
 		using ClassType = typename Traits::Class;

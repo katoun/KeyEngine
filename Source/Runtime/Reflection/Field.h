@@ -14,6 +14,7 @@
 #include <Reflection/AttributesContainer.h>
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <map>
 
@@ -53,7 +54,7 @@ namespace reflection
 		Type m_Type;
 		Type m_ClassType;
 
-		const attribute::Getter* m_Getter;
-		const attribute::Setter* m_Setter;
+		std::shared_ptr<const attribute::Getter> m_Getter;
+		std::shared_ptr<const attribute::Setter> m_Setter;
 	};
 }

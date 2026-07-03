@@ -6,14 +6,16 @@
 
 #include <Reflection/Enum.h>
 
+#include <utility>
+
 namespace reflection
 {
 	Enum::Enum(void)
 		: m_Container(nullptr)
 	{}
 
-	Enum::Enum(const Enum::ContainerBase *base)
-		: m_Container(base)
+	Enum::Enum(std::shared_ptr<const Enum::ContainerBase> base)
+		: m_Container(std::move(base))
 	{ }
 
 	bool Enum::IsValid(void) const

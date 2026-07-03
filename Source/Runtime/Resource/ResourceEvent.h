@@ -8,14 +8,17 @@
 
 #include <RuntimeConfig.h>
 
+#include <functional>
+#include <optional>
+
 namespace resource
 {
 	class Resource;
 
 	struct RUNTIME_API ResourceEvent
 	{
-		Resource* source;
+		std::optional<std::reference_wrapper<Resource>> source;
 
-		ResourceEvent() : source(nullptr) {};
+		ResourceEvent() = default;
 	};
 }

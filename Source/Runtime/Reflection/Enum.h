@@ -15,6 +15,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 namespace reflection
 {
@@ -28,7 +29,7 @@ namespace reflection
 
 	private:
 
-		Enum(const ContainerBase * container);
+		Enum(std::shared_ptr<const ContainerBase> container);
 
 	public:
 
@@ -103,7 +104,7 @@ namespace reflection
 	private:
 		friend class TypeData;
 
-		const ContainerBase* m_Container;
+		std::shared_ptr<const ContainerBase> m_Container;
 	};
 
 	template<typename T>

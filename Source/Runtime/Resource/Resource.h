@@ -13,6 +13,7 @@
 #include <Resource/ResourceEvent.h>
 #include <Resource/ResourceEventReceiver.h>
 
+#include <memory>
 #include <vector>
 
 namespace resource
@@ -22,7 +23,7 @@ namespace resource
 		DEFINE_OBJECT
 	public:
 
-		typedef std::vector<ResourceEventReceiver*> EventReceivers;
+		typedef std::vector<std::weak_ptr<ResourceEventReceiver>> EventReceivers;
 
 		Resource(const filesystem::path& path);
 
@@ -32,14 +33,14 @@ namespace resource
 		const filesystem::path& GetPath(void) const;
 		const ResourceState& GetState(void) const;
 
-		void RegisterEventReceiver(ResourceEventReceiver* receiver);
-		void RemoveEventReceiver(ResourceEventReceiver* receiver);
+		void RegisterEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver);
+		void RemoveEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver);
 
 	protected:
 
-		void SendLoadedEvent(ResourceEventReceiver* receiver);
+		void SendLoadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver);
 		void SendLoadedEvent(void);
-		void SendUnloadedEvent(ResourceEventReceiver* receiver);
+		void SendUnloadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver);
 		void SendUnloadedEvent(void);
 
 		uint32_t m_ID;

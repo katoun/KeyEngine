@@ -10,6 +10,7 @@
 #include <Reflection/Type.h>
 #include <Reflection/TypeInfo.h>
 
+#include <memory>
 #include <utility>
 
 namespace reflection
@@ -18,13 +19,13 @@ namespace reflection
 	{};
 
 	template<typename AttributeType, typename ...Args>
-	std::pair<Type, const Attribute *> AttributeInitializer(Args&&... args);
+	std::pair<Type, std::shared_ptr<const Attribute>> AttributeInitializer(Args&&... args);
 
 	template<typename AttributeType, typename ...Args>
-	std::pair<Type, const Attribute *> AttributeInitializer(Args&&... args)
+	std::pair<Type, std::shared_ptr<const Attribute>> AttributeInitializer(Args&&... args)
 	{
 		static_assert(std::is_base_of<Attribute, AttributeType>::value, "Attributes must inherit from Attribute struct");
 
-		return std::make_pair(TypeOf<AttributeType>(), new AttributeType(std::forward<Args>(args)...));
+		return std::make_pair(TypeOf<AttributeType>(), std::make_shared<AttributeType>(std::forward<Args>(args)...));
 	}
 }

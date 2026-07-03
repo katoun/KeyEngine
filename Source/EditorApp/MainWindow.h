@@ -16,6 +16,7 @@
 #include <SDL3/SDL.h>
 #include <imgui.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -34,7 +35,7 @@ namespace editor
 		~MainWindow();
 
 		void OpenProject(const fs::path& project_file_path);
-		void SelectionChanged(core::Object* selection);
+		void SelectionChanged(std::shared_ptr<core::Object> selection);
 		void HandleOpenProjectDialogResult(OpenProjectDialogResult* result);
 		bool HandleEvent(const SDL_Event& event);
 
@@ -44,7 +45,7 @@ namespace editor
 		bool seed_default_layout = false;
 
 	private:
-		static void OnOutlinerSelectionChanged(void* user_data, core::Object* selection);
+		static void OnOutlinerSelectionChanged(void* user_data, std::shared_ptr<core::Object> selection);
 
 		void DrawMainMenu();
 		void DrawHeaderMenus();
@@ -77,7 +78,7 @@ namespace editor
 		fs::path m_SdkPath = SdkPath();
 		fs::path m_CurrentProjectPath;
 		std::string m_CurrentProjectName;
-		editor::Module* m_CurrentProjectModule = nullptr;
+		editor::ModuleManager::ModulePtr m_CurrentProjectModule;
 
 		OutlinerWidget m_OutlinerWidget;
 		ContentBrowserWidget m_ContentBrowserWidget;

@@ -13,7 +13,7 @@
 
 namespace parser
 {
-	Field::Field(const Cursor &cursor, const Namespace &currentNamespace, Class *parent)
+	Field::Field(const Cursor &cursor, const Namespace &currentNamespace, Class& parent)
 		: LanguageType(cursor, currentNamespace)
 		, m_Name{ cursor.GetSpelling() }
 		, m_Parent{ parent }
@@ -43,7 +43,7 @@ namespace parser
 		data["FieldName"] = m_Name;
 		data["FieldType"] = m_Type;
 
-		data["ClassName"] = m_Parent->m_Name;
+		data["ClassName"] = m_Parent.m_Name;
 
 		data["AttributeInitializerList"] = Parser::Instance().LoadTemplatePartial(templates::AttributeInitializer);
 
