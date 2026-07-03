@@ -23,7 +23,7 @@ namespace resource
 		DEFINE_OBJECT
 	public:
 
-		typedef std::vector<std::weak_ptr<ResourceEventReceiver>> EventReceivers;
+		typedef std::vector<ResourceEventReceiver::WeakPtr> EventReceivers;
 
 		Resource(const filesystem::path& path);
 
@@ -33,14 +33,14 @@ namespace resource
 		const filesystem::path& GetPath(void) const;
 		const ResourceState& GetState(void) const;
 
-		void RegisterEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver);
-		void RemoveEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver);
+		void RegisterEventReceiver(const ResourceEventReceiver::WeakPtr& receiver);
+		void RemoveEventReceiver(const ResourceEventReceiver::WeakPtr& receiver);
 
 	protected:
 
-		void SendLoadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver);
+		void SendLoadedEvent(const ResourceEventReceiver::SharedPtr& receiver);
 		void SendLoadedEvent(void);
-		void SendUnloadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver);
+		void SendUnloadedEvent(const ResourceEventReceiver::SharedPtr& receiver);
 		void SendUnloadedEvent(void);
 
 		uint32_t m_ID;

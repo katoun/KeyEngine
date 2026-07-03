@@ -38,7 +38,7 @@ namespace resource
 		return m_State;
 	}
 
-	void Resource::RegisterEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver)
+	void Resource::RegisterEventReceiver(const ResourceEventReceiver::WeakPtr& receiver)
 	{
 		auto shared_receiver = receiver.lock();
 		if (shared_receiver == nullptr)
@@ -52,21 +52,21 @@ namespace resource
 		}
 	}
 
-	void Resource::RemoveEventReceiver(const std::weak_ptr<ResourceEventReceiver>& receiver)
+	void Resource::RemoveEventReceiver(const ResourceEventReceiver::WeakPtr& receiver)
 	{
 		auto shared_receiver = receiver.lock();
 		if (shared_receiver == nullptr)
 			return;
 
 		m_EventReceivers.erase(std::remove_if(m_EventReceivers.begin(), m_EventReceivers.end(),
-			[&shared_receiver](const std::weak_ptr<ResourceEventReceiver>& current)
+			[&shared_receiver](const ResourceEventReceiver::WeakPtr& current)
 			{
 				auto locked = current.lock();
 				return locked == nullptr || locked == shared_receiver;
 			}), m_EventReceivers.end());
 	}
 
-	void Resource::SendLoadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver)
+	void Resource::SendLoadedEvent(const ResourceEventReceiver::SharedPtr& receiver)
 	{
 		if (receiver == nullptr)
 			return;
@@ -90,7 +90,7 @@ namespace resource
 		}
 	}
 
-	void Resource::SendUnloadedEvent(const std::shared_ptr<ResourceEventReceiver>& receiver)
+	void Resource::SendUnloadedEvent(const ResourceEventReceiver::SharedPtr& receiver)
 	{
 		if (receiver == nullptr)
 			return;

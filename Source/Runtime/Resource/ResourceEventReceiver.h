@@ -7,6 +7,7 @@
 #pragma once
 
 #include <RuntimeConfig.h>
+#include <memory>
 
 namespace resource
 {
@@ -15,6 +16,10 @@ namespace resource
 	class RUNTIME_API ResourceEventReceiver
 	{
 	public:
+
+		typedef std::shared_ptr<ResourceEventReceiver> SharedPtr;
+		typedef std::weak_ptr<ResourceEventReceiver> WeakPtr;
+
 		virtual void ResourceLoaded(const ResourceEvent& event) {};
 		virtual void ResourceUnloaded(const ResourceEvent& event) {};
 	};
