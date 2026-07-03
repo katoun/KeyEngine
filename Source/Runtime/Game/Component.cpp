@@ -16,7 +16,6 @@ namespace game
 		: core::Object()
 		, m_Name("Component_" + core::string::FromInt(m_IndexCounter++))
 		, m_Enabled{ true }
-		, m_GameObject{ nullptr }
 	{}
 
 	Component::~Component() {}
@@ -48,9 +47,9 @@ namespace game
 		}
 	}
 
-	GameObject* Component::GetGameObject()
+	std::shared_ptr<GameObject> Component::GetGameObject() const
 	{
-		return m_GameObject;
+		return m_GameObject.lock();
 	}
 
 	void Component::OnStart(void) {}

@@ -15,8 +15,10 @@
 #include <Reflection/Constructor.h>
 #include <Reflection/Destructor.h>
 #include <Reflection/AttributesContainer.h>
+#include <Core/Object.h>
 #include <Core/Utils.h>
 
+#include <functional>
 #include <string>
 #include <unordered_map>
 #include <type_traits>
@@ -62,6 +64,8 @@ namespace reflection
 
 		const Constructor& GetConstructor(void);
 		const Constructor& GetDynamicConstructor(void);
+		const Constructor& GetDynamicObjectConstructor(void);
+		Any GetDynamicPointer(core::Object& object) const;
 
 		const Destructor& GetDestructor(void);
 
@@ -94,6 +98,8 @@ namespace reflection
 
 		Constructor m_Constructor;
 		Constructor m_DynamicConstructor;
+		Constructor m_DynamicObjectConstructor;
+		std::function<Any(core::Object*)> m_DynamicPointerCaster;
 
 		Destructor m_Destructor;
 
@@ -165,8 +171,18 @@ namespace reflection
 	{
 		if constexpr (std::is_default_constructible_v<T>)
 		{
-			m_Constructor = { TypeOf<T>(), []() { return Any{ T() }; }, false };
 			m_DynamicConstructor = { TypeOf<T>(), []() { return Any{ new T() }; }, true };
+
+			if constexpr (std::is_copy_constructible_v<T>)
+			{
+				m_Constructor = { TypeOf<T>(), []() { return Any{ T() }; }, false };
+			}
+
+			if constexpr (std::is_base_of_v<core::Object, T>)
+			{
+				m_DynamicObjectConstructor = { TypeOf<T>(), []() { return Any{ static_cast<core::Object*>(new T()) }; }, true };
+				m_DynamicPointerCaster = [](core::Object* object) { return Any{ dynamic_cast<T*>(object) }; };
+			}
 		}
 	}
 

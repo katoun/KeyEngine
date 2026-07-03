@@ -16,31 +16,27 @@ namespace game
 
 	Scene::~Scene()
 	{
-		for (auto i = m_GameObjects.begin(); i != m_GameObjects.end(); ++i)
-		{
-			auto game_object = (*i);
-			
-			SAFE_DELETE(game_object);
-		}
 		m_GameObjects.clear();
 	}
 
-	void Scene::AddGameObject(GameObject* game_object)
+	Scene::GameObjectPtr Scene::AddGameObject(GameObjectPtr game_object)
 	{
 		if (game_object == nullptr)
-			return;
+			return nullptr;
 
-		m_GameObjects.push_back(game_object);
+		m_GameObjects.emplace_back(game_object);
+
+		return game_object;
 	}
 
-	void Scene::RemoveGameObject(GameObject* game_object)
+	void Scene::RemoveGameObject(GameObjectPtr game_object)
 	{
 		if (game_object == nullptr)
 			return;
 
 		for (auto i = m_GameObjects.begin(); i != m_GameObjects.end(); ++i)
 		{
-			if ((*i) == game_object)
+			if (*i == game_object)
 			{
 				m_GameObjects.erase(i);
 				return;

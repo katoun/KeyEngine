@@ -5,6 +5,7 @@
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <Reflection/TypeData.h>
+#include <Reflection/Any.h>
 #include <Reflection/Type.h>
 #include <Reflection/Attributes.h>
 #include <Reflection/ReflectionManager.h>
@@ -109,6 +110,18 @@ namespace reflection
 	const Constructor& TypeData::GetDynamicConstructor(void)
 	{
 		return m_DynamicConstructor;
+	}
+
+	const Constructor& TypeData::GetDynamicObjectConstructor(void)
+	{
+		return m_DynamicObjectConstructor;
+	}
+
+	Any TypeData::GetDynamicPointer(core::Object& object) const
+	{
+		assert(m_DynamicPointerCaster != nullptr);
+
+		return m_DynamicPointerCaster(&object);
 	}
 
 	const Destructor& TypeData::GetDestructor(void)

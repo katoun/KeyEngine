@@ -9,7 +9,9 @@
 #include <RuntimeConfig.h>
 #include <Resource/Resource.h>
 
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace game
 {
@@ -20,13 +22,14 @@ namespace game
 		DEFINE_OBJECT
 	public:
 
-		typedef std::vector<GameObject*> GameObjects;
+		typedef std::shared_ptr<GameObject> GameObjectPtr;
+		typedef std::vector<GameObjectPtr> GameObjects;
 
 		Scene(const filesystem::path& path);
 		~Scene();
 
-		void AddGameObject(GameObject* game_object);
-		void RemoveGameObject(GameObject* game_object);
+		GameObjectPtr AddGameObject(GameObjectPtr game_object);
+		void RemoveGameObject(GameObjectPtr game_object);
 
 	private:
 

@@ -12,6 +12,7 @@
 #include <Reflection/Reflection.h>
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -21,18 +22,27 @@ namespace game
 {
 	class Component;
 
-	class RUNTIME_API GameObject : public core::Object
+	class RUNTIME_API GameObject : public core::SharedObject<GameObject>
 	{
 		DEFINE_OBJECT
 
 	public:
 
-		typedef std::unordered_map<reflection::TypeID, Component*> Components;
+		typedef std::shared_ptr<GameObject> SharedPtr;
+		typedef std::weak_ptr<GameObject> WeakPtr;
+		typedef std::shared_ptr<Component> ComponentPtr;
+		typedef std::unordered_map<reflection::TypeID, ComponentPtr> ComponentStorage;
+		typedef std::unordered_map<reflection::TypeID, ComponentPtr> Components;
 		typedef std::unordered_map<reflection::TypeID, const reflection::Any> ComponentsAny;
-		typedef std::vector<GameObject*> GameObjects;
+		typedef std::vector<SharedPtr> List;
 
-		GameObject(void);
-		GameObject(const std::string& name);
+		static SharedPtr Create(void);
+		static SharedPtr Create(const std::string& name);
+
+		GameObject(const GameObject&) = delete;
+		GameObject& operator=(const GameObject&) = delete;
+		GameObject(GameObject&&) = delete;
+		GameObject& operator=(GameObject&&) = delete;
 
 		~GameObject(void);
 
@@ -46,33 +56,33 @@ namespace game
 		void SetActive(const bool active);
 
 		//! Gets this GameObject's parent.
-		GameObject* GetParent(void);
+		SharedPtr GetParent(void) const;
 
 		//! Sets this GameObject's parent.
-		void SetParent(GameObject* parent);
+		void SetParent(SharedPtr parent);
 
 		//! Adds a child to this GameObject.
-		void AddChild(GameObject* child);
+		SharedPtr AddChild(SharedPtr child);
 
-		void DetachChild(GameObject* child);
-		GameObject* DetachChild(const std::uint32_t& index);
+		SharedPtr DetachChild(SharedPtr child);
+		SharedPtr DetachChild(const std::uint32_t& index);
 
-		void RemoveChild(GameObject* child);
+		void RemoveChild(SharedPtr child);
 		void RemoveChild(const std::uint32_t& index);
 
 		void RemoveChildren(void);
 
-		const GameObjects& GetChildren();
+		const List& GetChildren() const;
 
-		Component* AddComponent(reflection::Type type);
-
-		template<class ComponentType>
-		ComponentType* AddComponent(void);
-
-		Component* GetComponent(reflection::Type type) const;
+		ComponentPtr AddComponent(reflection::Type type);
 
 		template<class ComponentType>
-		ComponentType* GetComponent(void) const;
+		std::shared_ptr<ComponentType> AddComponent(void);
+
+		ComponentPtr GetComponent(reflection::Type type) const;
+
+		template<class ComponentType>
+		std::shared_ptr<ComponentType> GetComponent(void) const;
 
 		Components GetComponents();
 		ComponentsAny GetComponentsAny();
@@ -90,6 +100,9 @@ namespace game
 
 	protected:
 
+		GameObject(void);
+		GameObject(const std::string& name);
+
 		void OnMessage(MessageType message);
 		void OnEnable(void);
 		void OnDisable(void);
@@ -102,36 +115,36 @@ namespace game
 
 		bool m_Active;
 
-		GameObject* m_Parent;
+		WeakPtr m_Parent;
 
-		GameObjects m_Children;
+		List m_Children;
 
-		Components m_Components;
+		ComponentStorage m_Components;
 		ComponentsAny m_ComponentsAny;
 	};
 
 	template<class ComponentType>
-	ComponentType* GameObject::AddComponent(void)
+	std::shared_ptr<ComponentType> GameObject::AddComponent(void)
 	{
-		ComponentType* component = GetComponent<ComponentType>();
+		auto component = GetComponent<ComponentType>();
 		if (component != nullptr)
 		{
 			return nullptr;
 		}
 
-		component = new ComponentType();
-		component->m_GameObject = this;
+		component = std::make_shared<ComponentType>();
+		component->m_GameObject = shared_from_this();
 		component->OnMessage(MessageType::COMPONENT_ATTACHED);
 
 		auto type = reflection::TypeOf<ComponentType>();
 		m_Components.emplace(type.GetID(), component);
-		m_ComponentsAny.emplace(type.GetID(), reflection::Any{ component });
+		m_ComponentsAny.emplace(type.GetID(), reflection::Any{ component.get() });
 
 		return component;
 	}
 
 	template<class ComponentType>
-	ComponentType* GameObject::GetComponent() const
+	std::shared_ptr<ComponentType> GameObject::GetComponent() const
 	{
 		static_assert(std::is_base_of<Component, ComponentType>::value, "Type must be a Component.");
 
@@ -144,7 +157,7 @@ namespace game
 			return nullptr;
 		}
 
-		return static_cast<ComponentType*>(search->second);
+		return std::static_pointer_cast<ComponentType>(search->second);
 	}
 
 	template<class ComponentType>
@@ -158,13 +171,11 @@ namespace game
 		if (search == m_Components.end())
 			return;
 
-		Component* component = search->second;
+		Component* component = search->second.get();
 		assert(component != nullptr);
 		component->OnMessage(MessageType::COMPONENT_DETACHED);
 
 		m_Components.erase(search);
-
-		SAFE_DELETE(component);
 
 		auto search_any = m_ComponentsAny.find(type.GetID());
 		if (search_any == m_ComponentsAny.end())

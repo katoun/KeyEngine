@@ -220,7 +220,7 @@ namespace editor
 		if (begin_header_menu("Component"))
 		{
 			draw_dropdown([this]() {
-				game::GameObject* selected_game_object = m_OutlinerWidget.GetSelectedGameObject();
+				auto selected_game_object = m_OutlinerWidget.GetSelectedGameObject();
 				for (const auto& component : m_ComponentTypes)
 				{
 					auto display_name_attribute = component.GetAttribute<attribute::DisplayName>();

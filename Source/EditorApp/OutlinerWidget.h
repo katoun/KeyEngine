@@ -27,7 +27,7 @@ namespace editor
 
 		void CreateTopLevelGameObject();
 		void AttachComponent(reflection::TypeID type_id);
-		game::GameObject* GetSelectedGameObject() const;
+		game::GameObject::SharedPtr GetSelectedGameObject() const;
 
 	private:
 		enum class ItemType
@@ -40,21 +40,23 @@ namespace editor
 		{
 			ItemType type = ItemType::Folder;
 			std::string name;
-			game::GameObject* game_object = nullptr;
-			Item* parent = nullptr;
-			std::vector<std::unique_ptr<Item>> children;
+			game::GameObject::SharedPtr game_object;
+			std::weak_ptr<Item> parent;
+			std::vector<std::shared_ptr<Item>> children;
 		};
 
-		void DrawItem(Item& item);
-		void CreateGameObjectItem(Item* parent);
-		void CreateFolderItem(Item* parent);
-		void DeleteItem(Item* item);
-		void SelectItem(Item* item);
-		void NotifySelectionChanged();
-		void DrawContextMenu(Item* item);
+		using ItemPtr = std::shared_ptr<Item>;
 
-		std::vector<std::unique_ptr<Item>> m_Items;
-		Item* m_Selection = nullptr;
+		void DrawItem(const ItemPtr& item);
+		void CreateGameObjectItem(const ItemPtr& parent);
+		void CreateFolderItem(const ItemPtr& parent);
+		void DeleteItem(const ItemPtr& item);
+		void SelectItem(const ItemPtr& item);
+		void NotifySelectionChanged();
+		void DrawContextMenu(const ItemPtr& item);
+
+		std::vector<ItemPtr> m_Items;
+		ItemPtr m_Selection = nullptr;
 		SelectionChangedCallback m_SelectionChangedCallback = nullptr;
 		void* m_SelectionChangedUserData = nullptr;
 	};

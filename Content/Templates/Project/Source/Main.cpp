@@ -42,9 +42,10 @@ int main(int argc, char **argv)
 
 	float value = test_field.GetValue(my_component_any).GetValue<float>();
 
-	game::GameObject* go = new game::GameObject();
+	auto go = game::GameObject::Create();
 
-	reflection::Any my_component_any2 = go->AddComponent(my_component_type);
+	auto my_component = go->AddComponent(my_component_type);
+	reflection::Any my_component_any2 = my_component.get();
 
 	float value2 = test_field.GetValue(my_component_any2).GetValue<float>();
 

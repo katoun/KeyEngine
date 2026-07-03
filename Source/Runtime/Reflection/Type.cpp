@@ -122,6 +122,19 @@ namespace reflection
 		return constructor.Invoke();
 	}
 
+	Any Type::CreateDynamicObject() const
+	{
+		auto &constructor = manager.GetTypeData(m_ID).GetDynamicObjectConstructor();
+		assert(constructor.IsValid());
+
+		return constructor.Invoke();
+	}
+
+	Any Type::CreateDynamicPointer(core::Object& object) const
+	{
+		return manager.GetTypeData(m_ID).GetDynamicPointer(object);
+	}
+
 	void Type::Destroy(Any &instance) const
 	{
 		auto &destructor = manager.GetTypeData(m_ID).GetDestructor();

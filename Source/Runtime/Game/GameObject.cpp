@@ -17,31 +17,34 @@ namespace game
 {
 	std::uint32_t GameObject::m_IndexCounter = 0;
 
+	GameObject::SharedPtr GameObject::Create()
+	{
+		return SharedPtr(new GameObject());
+	}
+
+	GameObject::SharedPtr GameObject::Create(const std::string& name)
+	{
+		return SharedPtr(new GameObject(name));
+	}
+
 	GameObject::GameObject()
-		: core::Object()
+		: core::SharedObject<GameObject>()
 		, m_Index{ m_IndexCounter++ }
 		, m_Name("GameObject_" + core::string::FromInt(m_Index))
 		, m_Active{ true }
-		, m_Parent{ nullptr }
 	{}
 
 	GameObject::GameObject(const std::string& name)
-		: core::Object()
+		: core::SharedObject<GameObject>()
 		, m_Index{ m_IndexCounter++ }
 		, m_Name(name)
 		, m_Active{ true }
-		, m_Parent{ nullptr }
 	{}
 
 	GameObject::~GameObject()
 	{
 		RemoveComponents();
 		RemoveChildren();
-
-		if (m_Parent != nullptr)
-		{
-			m_Parent->RemoveChild(this);
-		}
 	}
 
 	const std::uint32_t& GameObject::GetIndex() const
@@ -89,89 +92,97 @@ namespace game
 		}
 	}
 
-	GameObject* GameObject::GetParent(void)
+	GameObject::SharedPtr GameObject::GetParent() const
 	{
-		return m_Parent;
+		return m_Parent.lock();
 	}
 
-	void GameObject::SetParent(GameObject* parent)
+	void GameObject::SetParent(SharedPtr parent)
 	{
-		if (m_Parent != nullptr)
+		if (m_Parent.lock() == parent)
+			return;
+
+		auto self = shared_from_this();
+		if (auto current_parent = m_Parent.lock())
 		{
-			m_Parent->RemoveChild(this);
+			current_parent->DetachChild(self);
 		}
 
-		m_Parent = parent;
-
-		if (m_Parent != nullptr)
+		if (parent != nullptr)
 		{
-			m_Parent->m_Children.push_back(this);
-			m_Index = (uint32_t)m_Parent->m_Children.size() - 1;
-		}
-		else
-		{
-			m_Index = m_IndexCounter++;
+			parent->AddChild(self);
+			return;
 		}
 
+		m_Parent.reset();
+		m_Index = m_IndexCounter++;
 		SendMessage(MessageType::PARENT_CHANGED);
 	}
 
-	void GameObject::AddChild(GameObject* child)
+	GameObject::SharedPtr GameObject::AddChild(SharedPtr child)
 	{
 		assert(child != nullptr);
 		if (child == nullptr)
-			return;
+			return nullptr;
 
-		if (child->m_Parent != nullptr)
+		auto self = shared_from_this();
+		if (child == self)
+			return nullptr;
+
+		if (auto current_parent = child->m_Parent.lock())
 		{
-			child->m_Parent->RemoveChild(child);
+			if (current_parent == self)
+				return child;
+
+			current_parent->DetachChild(child);
 		}
 
-		m_Children.push_back(child);
-		child->m_Parent = this;
+		m_Children.emplace_back(child);
+		child->m_Parent = self;
 		child->m_Index = (uint32_t)m_Children.size() - 1;
 		child->SendMessage(MessageType::PARENT_CHANGED);
+
+		return child;
 	}
 
-	void GameObject::DetachChild(GameObject* child)
+	GameObject::SharedPtr GameObject::DetachChild(SharedPtr child)
 	{
 		assert(child != nullptr);
-
 		if (child == nullptr)
-			return;
+			return nullptr;
 
-		RemoveChild(child->GetIndex());
+		return DetachChild(child->GetIndex());
 	}
 
-	GameObject* GameObject::DetachChild(const std::uint32_t& index)
+	GameObject::SharedPtr GameObject::DetachChild(const std::uint32_t& index)
 	{
 		assert(index < m_Children.size());
+		if (index >= m_Children.size())
+			return nullptr;
 
-		auto& child = m_Children[index];
-		if (child != nullptr)
+		auto child = m_Children[index];
+		if (child == nullptr)
+			return nullptr;
+
+		m_Children.erase(m_Children.begin() + index);
+		for (std::uint32_t i = index; i < m_Children.size(); ++i)
 		{
-			m_Children.erase(m_Children.begin() + index);
-			for (std::uint32_t i = index; i < m_Children.size(); ++i)
-			{
-				if (m_Children[i] == nullptr)
-					continue;
+			if (m_Children[i] == nullptr)
+				continue;
 
-				m_Children[i]->m_Index = i;
-			}
-
-			child->m_Parent = nullptr;
-			child->m_Index = m_IndexCounter++;
-
-			return child;
+			m_Children[i]->m_Index = i;
 		}
 
-		return nullptr;
+		child->m_Parent.reset();
+		child->m_Index = m_IndexCounter++;
+		child->SendMessage(MessageType::PARENT_CHANGED);
+
+		return child;
 	}
 
-	void GameObject::RemoveChild(GameObject* child)
+	void GameObject::RemoveChild(SharedPtr child)
 	{
 		assert(child != nullptr);
-
 		if (child == nullptr)
 			return;
 
@@ -181,20 +192,22 @@ namespace game
 	void GameObject::RemoveChild(const std::uint32_t& index)
 	{
 		assert(index < m_Children.size());
+		if (index >= m_Children.size())
+			return;
 
-		auto& child = m_Children[index];
+		auto child = m_Children[index];
 		if (child != nullptr)
 		{
-			m_Children.erase(m_Children.begin() + index);
-			for (std::uint32_t i = index; i < m_Children.size(); ++i)
-			{
-				if (m_Children[i] == nullptr)
-					continue;
+			child->m_Parent.reset();
+		}
 
-				m_Children[i]->m_Index = i;
-			}
+		m_Children.erase(m_Children.begin() + index);
+		for (std::uint32_t i = index; i < m_Children.size(); ++i)
+		{
+			if (m_Children[i] == nullptr)
+				continue;
 
-			SAFE_DELETE(child);
+			m_Children[i]->m_Index = i;
 		}
 	}
 
@@ -205,37 +218,44 @@ namespace game
 			if (child == nullptr)
 				continue;
 
-			SAFE_DELETE(child);
+			child->m_Parent.reset();
 		}
 		m_Children.clear();
 	}
 
-	const GameObject::GameObjects& GameObject::GetChildren()
+	const GameObject::List& GameObject::GetChildren() const
 	{
 		return m_Children;
 	}
 
-	Component* GameObject::AddComponent(reflection::Type type)
+	GameObject::ComponentPtr GameObject::AddComponent(reflection::Type type)
 	{
-		Component* component = GetComponent(type);
+		auto component = GetComponent(type);
 		if (component != nullptr)
 		{
 			return nullptr;
 		}
 
-		reflection::Any component_any = type.CreateDynamic();
+		reflection::Any object_any = type.CreateDynamicObject();
+		core::Object* object = object_any.GetValue<core::Object*>();
+		Component* component_ptr = dynamic_cast<Component*>(object);
+		if (component_ptr == nullptr)
+		{
+			delete object;
+			return nullptr;
+		}
 
-		component = component_any.GetValue<Component*>();
-		component->m_GameObject = this;
+		component = ComponentPtr(component_ptr);
+		component->m_GameObject = shared_from_this();
 		component->OnMessage(MessageType::COMPONENT_ATTACHED);
 
 		m_Components.emplace(type.GetID(), component);
-		m_ComponentsAny.emplace(type.GetID(), reflection::Any{ component });
+		m_ComponentsAny.emplace(type.GetID(), type.CreateDynamicPointer(*component));
 
 		return component;
 	}
 
-	Component* GameObject::GetComponent(reflection::Type type) const
+	GameObject::ComponentPtr GameObject::GetComponent(reflection::Type type) const
 	{
 		auto search = m_Components.find(type.GetID());
 
@@ -244,7 +264,7 @@ namespace game
 			return nullptr;
 		}
 
-		return (search->second);
+		return search->second;
 	}
 
 	GameObject::Components GameObject::GetComponents()
@@ -261,15 +281,14 @@ namespace game
 	{
 		for (auto& pair : m_Components)
 		{
-			Component* component = pair.second;
+			auto component = pair.second;
 			if (component == nullptr)
 				continue;
 
 			component->OnMessage(MessageType::COMPONENT_DETACHED);
-
-			SAFE_DELETE(component);
 		}
 		m_Components.clear();
+		m_ComponentsAny.clear();
 	}
 
 	void GameObject::SendMessage(const MessageType message)
@@ -292,7 +311,7 @@ namespace game
 
 		for (auto& pair : m_Components)
 		{
-			Component* component = pair.second;
+			auto component = pair.second;
 			if (component == nullptr)
 				continue;
 
@@ -315,7 +334,7 @@ namespace game
 
 		for (auto& pair : m_Components)
 		{
-			Component* component = pair.second;
+			auto component = pair.second;
 			if (component == nullptr)
 				continue;
 
@@ -338,7 +357,7 @@ namespace game
 
 		for (auto& pair : m_Components)
 		{
-			Component* component = pair.second;
+			auto component = pair.second;
 			if (component == nullptr)
 				continue;
 
@@ -358,7 +377,7 @@ namespace game
 	{
 		for (auto& pair : m_Components)
 		{
-			Component* component = pair.second;
+			auto component = pair.second;
 			if (component == nullptr)
 				continue;
 
@@ -370,7 +389,7 @@ namespace game
 	{
 		for (auto& pair : m_Components)
 		{
-			Component* component = pair.second;
+			auto component = pair.second;
 			if (component == nullptr)
 				continue;
 
@@ -382,7 +401,7 @@ namespace game
 	{
 		for (auto& pair : m_Components)
 		{
-			Component* component = pair.second;
+			auto component = pair.second;
 			if (component == nullptr)
 				continue;
 

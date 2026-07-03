@@ -11,6 +11,7 @@
 #include <Reflection/Reflection.h>
 #include <Game/MessageType.h>
 
+#include <memory>
 #include <string>
 
 namespace game
@@ -31,7 +32,7 @@ namespace game
 		const bool IsEnabled() const;
 		void SetEnabled(const bool enabled);
 
-		GameObject* GetGameObject();
+		std::shared_ptr<GameObject> GetGameObject() const;
 
 	protected:
 
@@ -51,7 +52,7 @@ namespace game
 
 		bool m_Enabled;
 
-		GameObject* m_GameObject;
+		std::weak_ptr<GameObject> m_GameObject;
 	};
 
 } // end namespace game

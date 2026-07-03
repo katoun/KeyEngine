@@ -151,10 +151,10 @@ namespace game
 			break;
 		case TransformSpace::GLOBAL:
 			// position is relative to parent so transform upwards
-			if (m_Parent != nullptr)
+			if (auto parent = m_Parent.lock())
 			{
-				glm::vec3 offset = glm::inverse(m_Parent->GetAbsoluteOrientation()) * d;
-				offset = offset / m_Parent->GetAbsoluteScale();
+				glm::vec3 offset = glm::inverse(parent->GetAbsoluteOrientation()) * d;
+				offset = offset / parent->GetAbsoluteScale();
 				m_Position += offset;
 			}
 			else
@@ -220,12 +220,15 @@ namespace game
 
 		if (m_TransformNeedsUpdate)
 		{
-			m_GameObject->SendMessage(MessageType::NEEDS_UPDATE);
+			if (auto game_object = GetGameObject())
+			{
+				game_object->SendMessage(MessageType::NEEDS_UPDATE);
+			}
 
-			if (m_Parent != nullptr)
+			if (auto parent = m_Parent.lock())
 			{
 				// Combine orientation with that of parent
-				const glm::quat& parentOrientation = m_Parent->GetAbsoluteOrientation();
+				const glm::quat& parentOrientation = parent->GetAbsoluteOrientation();
 				if (m_IsOrientationInherited)
 				{
 					// Combine orientation with that of parent
@@ -237,7 +240,7 @@ namespace game
 					m_AbsoluteOrientation = m_Orientation;
 				}
 
-				const glm::vec3& parentScale = m_Parent->GetAbsoluteScale();
+				const glm::vec3& parentScale = parent->GetAbsoluteScale();
 				// Update scale
 				if (m_IsScaleInherited)
 				{
@@ -252,7 +255,7 @@ namespace game
 					m_AbsoluteScale = m_Scale;
 				}
 
-				const glm::vec3& parentPosition = m_Parent->GetAbsolutePosition();
+				const glm::vec3& parentPosition = parent->GetAbsolutePosition();
 
 				// Change position vector based on parent's orientation & scale
 				m_AbsolutePosition = m_Position;
@@ -287,14 +290,15 @@ namespace game
 		{
 		case MessageType::PARENT_CHANGED:
 		{
-			GameObject* parent_object = m_GameObject->GetParent();
+			auto game_object = GetGameObject();
+			auto parent_object = game_object != nullptr ? game_object->GetParent() : nullptr;
 			if (parent_object)
 			{
 				m_Parent = parent_object->GetComponent<Transform>();
 			}
 			else
 			{
-				m_Parent = nullptr;
+				m_Parent.reset();
 			}
 
 			m_TransformNeedsUpdate = true;

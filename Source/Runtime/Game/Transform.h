@@ -14,6 +14,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include <memory>
+
 namespace game
 {
 	class RUNTIME_API Transform : public Component
@@ -72,7 +74,7 @@ namespace game
 		void OnStop(void) override;
 		void OnMessage(MessageType message) override;
 
-		Transform* m_Parent;
+		std::weak_ptr<Transform> m_Parent;
 
 		glm::vec3 m_Position;
 		glm::quat m_Orientation;

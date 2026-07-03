@@ -11,6 +11,8 @@
 #include <Reflection/TypeInfo.h>
 #include <Reflection/TypeConfig.h>
 
+#include <memory>
+
 namespace reflection
 {
 	class Type;
@@ -24,5 +26,13 @@ namespace core
 
 		virtual ~Object(void) { }
 		virtual reflection::Type GetType(void) const = 0;
+	};
+
+	template<class T>
+	class SharedObject : public Object, public std::enable_shared_from_this<T>
+	{
+	public:
+		using SharedPtr = std::shared_ptr<T>;
+		using WeakPtr = std::weak_ptr<T>;
 	};
 } // end namespace core

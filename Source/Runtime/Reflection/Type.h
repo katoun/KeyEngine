@@ -14,6 +14,11 @@
 #include <vector>
 #include <set>
 
+namespace core
+{
+	class Object;
+}
+
 namespace reflection
 {
 	class Any;
@@ -55,6 +60,8 @@ namespace reflection
 
 		Any Create() const;
 		Any CreateDynamic() const;
+		Any CreateDynamicObject() const;
+		Any CreateDynamicPointer(core::Object& object) const;
 		void Destroy(Any &instance) const;
 
 		template<typename AttributeType>
