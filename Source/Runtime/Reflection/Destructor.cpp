@@ -39,6 +39,8 @@ namespace reflection
 
 		m_Invoker(instance);
 
-		instance.m_Container.reset();
+		instance.m_Value.reset();
+		instance.m_Type = Type::Invalid;
+		instance.m_IsConst = true;
 	}
 }

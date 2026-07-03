@@ -175,7 +175,7 @@ namespace reflection
 	{
 		if constexpr (std::is_destructible_v<T>)
 		{
-			m_Destructor = { TypeOf<T>(), [](Any &instance) { instance.GetValue<T>().~T(); } };
+			m_Destructor = { TypeOf<T>(), [](Any &) {} };
 		}
 	}
 }
