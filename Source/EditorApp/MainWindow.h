@@ -8,6 +8,7 @@
 
 #include "ContentBrowserWidget.h"
 #include "InspectorWidget.h"
+#include "LayoutConstants.h"
 #include "OutlinerWidget.h"
 #include "Utils.h"
 
@@ -86,7 +87,7 @@ namespace editor
 		std::vector<reflection::Type> m_ComponentTypes;
 		std::vector<reflection::Type> m_Types;
 
-		float m_HeaderHeight = 40.0f;
+		float m_HeaderHeight = layout::AppHeaderHeight;
 		float m_ToolbarHeight = 0.0f;
 		bool m_DebugOpenFileMenu = false;
 		bool m_DebugShowFileMenu = false;

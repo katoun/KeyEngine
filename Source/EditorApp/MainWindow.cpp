@@ -138,98 +138,146 @@ namespace editor
 
 	void MainWindow::DrawHeaderMenus()
 	{
-		if (ImGui::BeginMenu("File"))
+		const float header_menu_margin_y = 5.0f;
+		const float header_menu_height = m_HeaderHeight - (header_menu_margin_y * 2.0f);
+		const ImVec2 header_button_padding(8.0f, 0.0f);
+		const ImVec2 dropdown_frame_padding(8.0f, 6.0f);
+		const ImVec2 header_window_pos = ImGui::GetWindowPos();
+
+		auto begin_header_menu = [&](const char* label, bool request_open = false) {
+			const ImVec2 label_size = ImGui::CalcTextSize(label);
+			const ImVec2 button_size(label_size.x + (header_button_padding.x * 2.0f), header_menu_height);
+			const bool popup_open = ImGui::IsPopupOpen(label, ImGuiPopupFlags_None);
+
+			ImGui::SetCursorPosY(header_menu_margin_y);
+			ImGui::PushStyleColor(ImGuiCol_Button, popup_open ? ImVec4(0.20f, 0.42f, 0.64f, 1.0f) : ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.18f, 0.32f, 0.46f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.20f, 0.42f, 0.64f, 1.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, header_button_padding);
+			const bool pressed = ImGui::Button(label, button_size);
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor(3);
+
+			const ImVec2 item_min = ImGui::GetItemRectMin();
+			const bool hovered = ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup);
+			const bool any_header_popup_open = GImGui->OpenPopupStack.Size > 0;
+			if (pressed || request_open || (hovered && any_header_popup_open && !popup_open))
+				ImGui::OpenPopup(label);
+
+			ImGui::SetNextWindowPos(ImVec2(item_min.x, header_window_pos.y + m_HeaderHeight), ImGuiCond_Always);
+			return ImGui::BeginPopup(label);
+		};
+
+		auto draw_dropdown = [&dropdown_frame_padding](const auto& draw_content) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, dropdown_frame_padding);
+			draw_content();
+			ImGui::PopStyleVar();
+		};
+
+		const bool open_file_menu = m_DebugOpenFileMenu;
+		if (begin_header_menu("File", open_file_menu))
 		{
-			DrawFileMenuItems();
-			ImGui::EndMenu();
+			draw_dropdown([this]() { DrawFileMenuItems(); });
+			ImGui::EndPopup();
 		}
 
-		const ImVec2 file_menu_min = ImGui::GetItemRectMin();
 		if (m_DebugOpenFileMenu)
 		{
-			m_DebugFileMenuPopupPos = ImVec2(file_menu_min.x, 0.0f);
-			m_DebugShowFileMenu = true;
 			m_DebugOpenFileMenu = false;
 		}
 
-		if (ImGui::BeginMenu("Edit"))
+		if (begin_header_menu("Edit"))
 		{
-			MenuItemWithIcon("Undo", "undo", "Ctrl+Z", false);
-			MenuItemWithIcon("Redo", "redo", "Ctrl+Y", false);
-			ImGui::Separator();
-			MenuItemWithIcon("Cut", nullptr, "Ctrl+X", false);
-			MenuItemWithIcon("Copy", nullptr, "Ctrl+C", false);
-			MenuItemWithIcon("Paste", nullptr, "Ctrl+V", false);
-			ImGui::Separator();
-			MenuItemWithIcon("Duplicate", nullptr, "Ctrl+D", false);
-			MenuItemWithIcon("Delete", nullptr, "Del", false);
-			ImGui::Separator();
-			MenuItemWithIcon("Find", nullptr, "Ctrl+F", false);
-			MenuItemWithIcon("Select All", nullptr, "Ctrl+A", false);
-			ImGui::Separator();
-			MenuItemWithIcon("Editor Preferences", "editor_preferences", nullptr, false);
-			MenuItemWithIcon("Project Settings", "project_settings", nullptr, false);
-			ImGui::EndMenu();
+			draw_dropdown([this]() {
+				MenuItemWithIcon("Undo", "undo", "Ctrl+Z", false);
+				MenuItemWithIcon("Redo", "redo", "Ctrl+Y", false);
+				ImGui::Separator();
+				MenuItemWithIcon("Cut", nullptr, "Ctrl+X", false);
+				MenuItemWithIcon("Copy", nullptr, "Ctrl+C", false);
+				MenuItemWithIcon("Paste", nullptr, "Ctrl+V", false);
+				ImGui::Separator();
+				MenuItemWithIcon("Duplicate", nullptr, "Ctrl+D", false);
+				MenuItemWithIcon("Delete", nullptr, "Del", false);
+				ImGui::Separator();
+				MenuItemWithIcon("Find", nullptr, "Ctrl+F", false);
+				MenuItemWithIcon("Select All", nullptr, "Ctrl+A", false);
+				ImGui::Separator();
+				MenuItemWithIcon("Editor Preferences", "editor_preferences", nullptr, false);
+				MenuItemWithIcon("Project Settings", "project_settings", nullptr, false);
+			});
+			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginMenu("GameObject"))
+		if (begin_header_menu("GameObject"))
 		{
-			if (MenuItemWithOutlinerIcon("Create", "gameobject", "Ctrl+Shift+N"))
-				m_OutlinerWidget.CreateTopLevelGameObject();
-			ImGui::EndMenu();
+			draw_dropdown([this]() {
+				if (MenuItemWithOutlinerIcon("Create", "gameobject", "Ctrl+Shift+N"))
+					m_OutlinerWidget.CreateTopLevelGameObject();
+			});
+			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginMenu("Component"))
+		if (begin_header_menu("Component"))
 		{
-			game::GameObject* selected_game_object = m_OutlinerWidget.GetSelectedGameObject();
-			for (const auto& component : m_ComponentTypes)
-			{
-				auto display_name_attribute = component.GetAttribute<attribute::DisplayName>();
-				const std::string component_name = display_name_attribute != nullptr ? display_name_attribute->Value : component.GetName();
+			draw_dropdown([this]() {
+				game::GameObject* selected_game_object = m_OutlinerWidget.GetSelectedGameObject();
+				for (const auto& component : m_ComponentTypes)
+				{
+					auto display_name_attribute = component.GetAttribute<attribute::DisplayName>();
+					const std::string component_name = display_name_attribute != nullptr ? display_name_attribute->Value : component.GetName();
 
-				Icon icon = IconManager::Instance().GetComponentIcon(component_name, m_CurrentProjectPath);
-				IconManager::Instance().DrawIcon(icon, 16.0f);
-				ImGui::SameLine();
+					Icon icon = IconManager::Instance().GetComponentIcon(component_name, m_CurrentProjectPath);
+					IconManager::Instance().DrawIcon(icon, 16.0f);
+					ImGui::SameLine();
 
-				if (ImGui::MenuItem(component_name.c_str(), nullptr, false, selected_game_object != nullptr))
-					m_OutlinerWidget.AttachComponent(component.GetID());
-			}
-			ImGui::EndMenu();
+					if (ImGui::MenuItem(component_name.c_str(), nullptr, false, selected_game_object != nullptr))
+						m_OutlinerWidget.AttachComponent(component.GetID());
+				}
+			});
+			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginMenu("Build"))
+		if (begin_header_menu("Build"))
 		{
-			if (MenuItemWithIcon("Compile", "compile", "Ctrl+Shift+C", !m_CurrentProjectPath.empty()))
-				OnCompile();
-			ImGui::EndMenu();
+			draw_dropdown([this]() {
+				if (MenuItemWithIcon("Compile", "compile", "Ctrl+Shift+C", !m_CurrentProjectPath.empty()))
+					OnCompile();
+			});
+			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginMenu("Window"))
+		if (begin_header_menu("Window"))
 		{
-			MenuItemWithIcon("Inspector", "inspector", "Ctrl+0", false);
-			MenuItemWithIcon("Outliner", "scene_outliner", "Ctrl+1", false);
-			MenuItemWithIcon("Content", "content", "Ctrl+2", false);
-			MenuItemWithIcon("Console", "console", "Ctrl+Shift+C", false);
-			ImGui::Separator();
-			if (MenuItemWithIcon("Reset Layout", nullptr))
-				seed_default_layout = true;
-			ImGui::MenuItem("Dear ImGui Demo", nullptr, &m_ShowImguiDemo);
-			ImGui::EndMenu();
+			draw_dropdown([this]() {
+				MenuItemWithIcon("Inspector", "inspector", "Ctrl+0", false);
+				MenuItemWithIcon("Outliner", "scene_outliner", "Ctrl+1", false);
+				MenuItemWithIcon("Content", "content", "Ctrl+2", false);
+				MenuItemWithIcon("Console", "console", "Ctrl+Shift+C", false);
+				ImGui::Separator();
+				if (MenuItemWithIcon("Reset Layout", nullptr))
+					seed_default_layout = true;
+				ImGui::MenuItem("Dear ImGui Demo", nullptr, &m_ShowImguiDemo);
+			});
+			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginMenu("Help"))
+		if (begin_header_menu("Help"))
 		{
-			MenuItemWithIcon("Documentation", nullptr, nullptr, false);
-			ImGui::Separator();
-			MenuItemWithIcon("About", nullptr, nullptr, false);
-			ImGui::EndMenu();
+			draw_dropdown([this]() {
+				MenuItemWithIcon("Documentation", nullptr, nullptr, false);
+				ImGui::Separator();
+				MenuItemWithIcon("About", nullptr, nullptr, false);
+			});
+			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginMenu("Types"))
+		if (begin_header_menu("Types"))
 		{
-			for (const auto& type : m_Types)
-				ImGui::MenuItem(type.GetName().c_str(), nullptr, false, false);
-			ImGui::EndMenu();
+			draw_dropdown([this]() {
+				for (const auto& type : m_Types)
+					ImGui::MenuItem(type.GetName().c_str(), nullptr, false, false);
+			});
+			ImGui::EndPopup();
 		}
 
 	}
@@ -261,7 +309,7 @@ namespace editor
 	void MainWindow::DrawAppHeader()
 	{
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		m_HeaderHeight = 40.0f;
+		m_HeaderHeight = layout::AppHeaderHeight;
 		m_ToolbarHeight = 0.0f;
 
 		ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -279,7 +327,8 @@ namespace editor
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 6.0f));
+		const float header_menu_padding_y = (m_HeaderHeight - ImGui::GetFontSize()) * 0.5f;
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, header_menu_padding_y > 0.0f ? header_menu_padding_y : 0.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 0.0f));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
@@ -301,7 +350,7 @@ namespace editor
 			ImGui::EndMenuBar();
 		}
 
-		const float logo_size = 22.0f;
+		const float logo_size = 20.0f;
 		const ImVec2 logo_pos(window_pos.x + 14.0f, window_pos.y + (m_HeaderHeight - logo_size) * 0.5f);
 		Icon logo = IconManager::Instance().GetAppIcon();
 		if (logo.IsValid())
@@ -318,17 +367,18 @@ namespace editor
 		const float title_y = window_pos.y + (m_HeaderHeight - title_size.y) * 0.5f;
 		foreground->AddText(ImVec2(title_x, title_y), ImGui::GetColorU32(ImVec4(0.78f, 0.78f, 0.82f, 1.0f)), title.c_str());
 
-		const float window_button_width = 46.0f;
-		const float window_button_height = m_HeaderHeight;
-		const float window_controls_x = window_pos.x + viewport->WorkSize.x - (window_button_width * 3.0f);
+		const float window_button_size = m_HeaderHeight - 8.0f;
+		const float window_button_margin_y = (m_HeaderHeight - window_button_size) * 0.5f;
+		const float window_button_margin_right = 4.0f;
+		const float window_controls_x = window_pos.x + viewport->WorkSize.x - (window_button_size * 3.0f) - window_button_margin_right;
 
 		auto icon_color = [](bool hovered) {
 			return ImGui::GetColorU32(hovered ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.76f, 0.78f, 0.82f, 1.0f));
 		};
 
-		auto window_button = [window_pos, window_controls_x, window_button_width, window_button_height, foreground, icon_color](int index, const char* tooltip, bool close_button, const auto& draw_icon) {
-			const ImVec2 min(window_controls_x + (window_button_width * static_cast<float>(index)), window_pos.y);
-			const ImVec2 max(min.x + window_button_width, min.y + window_button_height);
+		auto window_button = [window_pos, window_controls_x, window_button_size, window_button_margin_y, foreground, icon_color](int index, const char* tooltip, bool close_button, const auto& draw_icon) {
+			const ImVec2 min(window_controls_x + (window_button_size * static_cast<float>(index)), window_pos.y + window_button_margin_y);
+			const ImVec2 max(min.x + window_button_size, min.y + window_button_size);
 			const bool hovered = ImGui::IsMouseHoveringRect(min, max, false);
 			const bool active = hovered && ImGui::IsMouseDown(ImGuiMouseButton_Left);
 			const bool pressed = hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left);

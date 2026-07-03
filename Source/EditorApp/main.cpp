@@ -7,6 +7,7 @@
 #include "MainWindow.h"
 #include "Utils.h"
 #include "IconManager.h"
+#include "LayoutConstants.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -54,7 +55,7 @@ namespace
 	SDL_HitTestResult SDLCALL WindowHitTest(SDL_Window* window, const SDL_Point* area, void*)
 	{
 		constexpr int resize_border = 6;
-		constexpr int header_height = 40;
+		constexpr int header_height = static_cast<int>(editor::layout::AppHeaderHeight);
 		constexpr int left_interactive_width = 560;
 		constexpr int right_controls_width = 146;
 
