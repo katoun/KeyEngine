@@ -58,6 +58,7 @@ namespace editor
 		void DrawHeaderMenus();
 		void DrawFileMenuItems();
 		void DrawAppHeader();
+		void DrawHeaderToolbar(const ImVec2& window_pos, float width, float y_offset);
 		bool MenuItemWithIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
 		bool MenuItemWithOutlinerIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
 		void DrawDockspace();
@@ -102,6 +103,9 @@ namespace editor
 		ImVec2 m_DebugFileMenuPopupPos{};
 		bool m_ShowNewProject = false;
 		bool m_ShowImguiDemo = false;
+		bool m_IsPlaying = false;
+		bool m_IsPaused = false;
+		int m_BuildConfigIndex = 0;
 		char m_NewProjectName[128] = "Test";
 		char m_NewProjectParent[PATH_MAX] = "/home/catalin/Work/Programming/KeyEngineProjects";
 	};

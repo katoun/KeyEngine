@@ -12,6 +12,7 @@
 * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #include "InspectorWidget.h"
+#include "WindowLabels.h"
 
 #include <imgui.h>
 
@@ -33,7 +34,7 @@ namespace editor
 
 	void InspectorWidget::Draw()
 	{
-		ImGui::Begin("Inspector");
+		ImGui::Begin(window_label::Inspector);
 
 		if (m_Selection == nullptr)
 		{

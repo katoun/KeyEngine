@@ -117,8 +117,10 @@ add_executable(KeyEditorApp
     "Source/EditorApp/ContentBrowserWidget.h"
     "Source/EditorApp/InspectorWidget.h"
     "Source/EditorApp/IconManager.h"
+    "Source/EditorApp/WindowLabels.h"
     "Source/EditorApp/OutlinerWidget.h"
     "Source/EditorApp/Utils.h"
+    "Source/EditorApp/Resources/Fonts/fontawesome-webfont.ttf"
 )
 target_compile_definitions(KeyEditorApp PRIVATE RUNTIME_DLL EDITOR_DLL)
 target_include_directories(KeyEditorApp

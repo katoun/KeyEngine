@@ -13,6 +13,7 @@
 
 #include "ContentBrowserWidget.h"
 #include "IconManager.h"
+#include "WindowLabels.h"
 
 #include <imgui.h>
 
@@ -29,7 +30,7 @@ namespace editor
 
 	void ContentBrowserWidget::Draw()
 	{
-		ImGui::Begin("Content Browser");
+		ImGui::Begin(window_label::ContentBrowser);
 
 		if (m_ProjectPath.empty())
 		{

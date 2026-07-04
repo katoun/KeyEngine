@@ -27,6 +27,7 @@
 #include <vulkan/vulkan.h>
 
 #include <array>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -349,22 +350,116 @@ namespace
 	void ApplyStyle()
 	{
 		ImGui::StyleColorsDark();
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigDockingTransparentPayload = true;
+
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowRounding = 4.0f;
-		style.FrameRounding = 3.0f;
-		style.GrabRounding = 3.0f;
-		style.TabRounding = 3.0f;
+		style.WindowRounding = 0.0f;
+		style.ChildRounding = 0.0f;
+		style.FrameRounding = 2.0f;
+		style.PopupRounding = 6.0f;
+		style.ScrollbarRounding = 0.0f;
+		style.GrabRounding = 0.0f;
+		style.TabRounding = 2.0f;
 		style.WindowBorderSize = 1.0f;
+		style.ChildBorderSize = 0.0f;
+		style.PopupBorderSize = 1.0f;
 		style.FrameBorderSize = 0.0f;
-		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.085f, 0.095f, 1.0f);
-		style.Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.11f, 0.12f, 1.0f);
-		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.16f, 0.18f, 0.20f, 1.0f);
-		style.Colors[ImGuiCol_Header] = ImVec4(0.20f, 0.24f, 0.27f, 1.0f);
-		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.31f, 0.35f, 1.0f);
-		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.32f, 0.38f, 0.43f, 1.0f);
-		style.Colors[ImGuiCol_Tab] = ImVec4(0.12f, 0.13f, 0.14f, 1.0f);
-		style.Colors[ImGuiCol_TabHovered] = ImVec4(0.28f, 0.33f, 0.38f, 1.0f);
-		style.Colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.24f, 0.27f, 1.0f);
+		style.WindowPadding = ImVec2(6.0f, 6.0f);
+		style.FramePadding = ImVec2(8.0f, 3.0f);
+		style.CellPadding = ImVec2(4.0f, 2.0f);
+		style.ItemSpacing = ImVec2(4.0f, 3.0f);
+		style.ItemInnerSpacing = ImVec2(4.0f, 2.0f);
+		style.IndentSpacing = 15.0f;
+		style.ScrollbarSize = 16.0f;
+		style.GrabMinSize = 10.0f;
+		style.WindowMenuButtonPosition = ImGuiDir_None;
+
+		ImVec4* colors = style.Colors;
+		const ImVec4 background_darkest = ImColor(48, 48, 48, 255);
+		const ImVec4 background_dark = ImColor(56, 56, 56, 255);
+		const ImVec4 background_medium = ImColor(62, 62, 62, 255);
+		const ImVec4 background_light = ImColor(72, 72, 72, 255);
+		const ImVec4 background_popup = ImColor(52, 52, 52, 255);
+		const ImVec4 primary_accent = ImColor(58, 121, 187, 255);
+		const ImVec4 primary_accent_hover = ImColor(78, 141, 207, 255);
+		const ImVec4 primary_accent_strong = ImColor(58, 121, 187, 180);
+		const ImVec4 primary_accent_muted = ImColor(58, 121, 187, 60);
+		const ImVec4 text_primary = ImColor(220, 220, 220, 255);
+		const ImVec4 text_muted = ImColor(128, 128, 128, 255);
+		const ImVec4 border_dark = ImColor(35, 35, 35, 255);
+		const ImVec4 border_medium = ImColor(80, 80, 80, 255);
+
+		colors[ImGuiCol_WindowBg] = background_dark;
+		colors[ImGuiCol_ChildBg] = background_medium;
+		colors[ImGuiCol_PopupBg] = background_popup;
+		colors[ImGuiCol_Border] = border_dark;
+		colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
+		colors[ImGuiCol_MenuBarBg] = background_darkest;
+		colors[ImGuiCol_Text] = text_primary;
+		colors[ImGuiCol_TextDisabled] = text_muted;
+		colors[ImGuiCol_TextSelectedBg] = primary_accent_strong;
+		colors[ImGuiCol_Button] = ImVec4(0.28f, 0.28f, 0.28f, 0.45f);
+		colors[ImGuiCol_ButtonHovered] = primary_accent_muted;
+		colors[ImGuiCol_ButtonActive] = primary_accent_strong;
+		colors[ImGuiCol_Header] = background_light;
+		colors[ImGuiCol_HeaderHovered] = primary_accent_muted;
+		colors[ImGuiCol_HeaderActive] = primary_accent_strong;
+		colors[ImGuiCol_FrameBg] = ImColor(35, 35, 35, 255);
+		colors[ImGuiCol_FrameBgHovered] = ImColor(45, 45, 45, 255);
+		colors[ImGuiCol_FrameBgActive] = ImColor(55, 55, 55, 255);
+		colors[ImGuiCol_TitleBg] = background_darkest;
+		colors[ImGuiCol_TitleBgActive] = background_dark;
+		colors[ImGuiCol_TitleBgCollapsed] = background_darkest;
+		colors[ImGuiCol_Tab] = background_dark;
+		colors[ImGuiCol_TabHovered] = primary_accent_muted;
+		colors[ImGuiCol_TabSelected] = background_light;
+		colors[ImGuiCol_TabSelectedOverline] = primary_accent;
+		colors[ImGuiCol_TabDimmed] = background_darkest;
+		colors[ImGuiCol_TabDimmedSelected] = background_light;
+		colors[ImGuiCol_ScrollbarBg] = background_dark;
+		colors[ImGuiCol_ScrollbarGrab] = background_light;
+		colors[ImGuiCol_ScrollbarGrabHovered] = border_medium;
+		colors[ImGuiCol_ScrollbarGrabActive] = primary_accent;
+		colors[ImGuiCol_CheckMark] = primary_accent;
+		colors[ImGuiCol_SliderGrab] = primary_accent;
+		colors[ImGuiCol_SliderGrabActive] = primary_accent_hover;
+		colors[ImGuiCol_Separator] = border_dark;
+		colors[ImGuiCol_SeparatorHovered] = border_medium;
+		colors[ImGuiCol_SeparatorActive] = primary_accent;
+		colors[ImGuiCol_ResizeGrip] = ImVec4(0, 0, 0, 0);
+		colors[ImGuiCol_ResizeGripHovered] = primary_accent_muted;
+		colors[ImGuiCol_ResizeGripActive] = primary_accent;
+		colors[ImGuiCol_TableHeaderBg] = background_light;
+		colors[ImGuiCol_TableBorderStrong] = border_dark;
+		colors[ImGuiCol_TableBorderLight] = border_medium;
+		colors[ImGuiCol_TableRowBg] = ImVec4(0, 0, 0, 0);
+		colors[ImGuiCol_TableRowBgAlt] = ImVec4(1, 1, 1, 0.01f);
+		colors[ImGuiCol_DockingPreview] = primary_accent_strong;
+		colors[ImGuiCol_DockingEmptyBg] = background_darkest;
+		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0, 0, 0, 0.65f);
+	}
+
+	void LoadEditorFonts()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		ImFontConfig default_config;
+		default_config.SizePixels = 13.0f;
+		io.Fonts->AddFontDefault(&default_config);
+
+		const fs::path icon_font_path = editor::SdkPath() / "Source" / "EditorApp" / "Resources" / "Fonts" / "fontawesome-webfont.ttf";
+		if (!fs::exists(icon_font_path))
+			return;
+
+		static constexpr ImWchar icon_ranges[] = { 0xf000, 0xf2ff, 0 };
+		ImFontConfig config;
+		config.MergeMode = true;
+		config.PixelSnapH = true;
+		io.Fonts->AddFontFromFileTTF(
+			icon_font_path.string().c_str(),
+			14.0f,
+			&config,
+			icon_ranges);
 	}
 }
 
@@ -449,6 +544,7 @@ int main(int argc, char* argv[])
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	LoadEditorFonts();
 
 	fs::path editor_config_path = editor::EditorConfigPath();
 	std::error_code config_error;

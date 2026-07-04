@@ -13,6 +13,7 @@
 
 #include "OutlinerWidget.h"
 #include "IconManager.h"
+#include "WindowLabels.h"
 
 #include <imgui.h>
 
@@ -34,7 +35,7 @@ namespace editor
 
 	void OutlinerWidget::Draw()
 	{
-		ImGui::Begin("Outliner");
+		ImGui::Begin(window_label::Outliner);
 
 		if (ImGui::BeginPopupContextWindow("OutlinerContext", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
 		{

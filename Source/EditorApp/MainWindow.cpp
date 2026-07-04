@@ -13,6 +13,7 @@
 
 #include "MainWindow.h"
 #include "IconManager.h"
+#include "WindowLabels.h"
 
 #include <imgui_internal.h>
 
@@ -158,9 +159,9 @@ namespace editor
 			const bool popup_open = ImGui::IsPopupOpen(label, ImGuiPopupFlags_None);
 
 			ImGui::SetCursorPosY(header_menu_margin_y);
-			ImGui::PushStyleColor(ImGuiCol_Button, popup_open ? ImVec4(0.20f, 0.42f, 0.64f, 1.0f) : ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.18f, 0.32f, 0.46f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.20f, 0.42f, 0.64f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Button, popup_open ? ImVec4(0.28f, 0.28f, 0.28f, 1.0f) : ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.32f, 0.32f, 0.32f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.23f, 0.47f, 0.73f, 0.75f));
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, header_button_padding);
 			const bool pressed = ImGui::Button(label, button_size);
 			ImGui::PopStyleVar();
@@ -173,6 +174,7 @@ namespace editor
 				ImGui::OpenPopup(label);
 
 			ImGui::SetNextWindowPos(ImVec2(item_min.x, header_window_pos.y + m_HeaderHeight), ImGuiCond_Always);
+			ImGui::SetNextWindowBgAlpha(1.0f);
 			return ImGui::BeginPopup(label);
 		};
 
@@ -318,7 +320,7 @@ namespace editor
 	{
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
 		m_HeaderHeight = layout::AppHeaderHeight;
-		m_ToolbarHeight = 0.0f;
+		m_ToolbarHeight = 32.0f;
 
 		ImGui::SetNextWindowPos(viewport->WorkPos);
 		ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, m_HeaderHeight + m_ToolbarHeight));
@@ -338,8 +340,8 @@ namespace editor
 		const float header_menu_padding_y = (m_HeaderHeight - ImGui::GetFontSize()) * 0.5f;
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, header_menu_padding_y > 0.0f ? header_menu_padding_y : 0.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 0.0f));
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.12f, 0.12f, 0.135f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.188f, 0.188f, 0.188f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.188f, 0.188f, 0.188f, 1.0f));
 		ImGui::Begin("AppHeader", nullptr, flags);
 
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -347,7 +349,11 @@ namespace editor
 		draw_list->AddLine(
 			ImVec2(window_pos.x, window_pos.y + m_HeaderHeight - 1.0f),
 			ImVec2(window_pos.x + viewport->WorkSize.x, window_pos.y + m_HeaderHeight - 1.0f),
-			ImGui::GetColorU32(ImVec4(0.05f, 0.055f, 0.065f, 1.0f)));
+			ImGui::GetColorU32(ImVec4(0.137f, 0.137f, 0.137f, 1.0f)));
+		draw_list->AddLine(
+			ImVec2(window_pos.x, window_pos.y + m_HeaderHeight + m_ToolbarHeight - 1.0f),
+			ImVec2(window_pos.x + viewport->WorkSize.x, window_pos.y + m_HeaderHeight + m_ToolbarHeight - 1.0f),
+			ImGui::GetColorU32(ImVec4(0.137f, 0.137f, 0.137f, 1.0f)));
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -357,6 +363,8 @@ namespace editor
 
 			ImGui::EndMenuBar();
 		}
+
+		DrawHeaderToolbar(window_pos, viewport->WorkSize.x, m_HeaderHeight);
 
 		const float logo_size = 20.0f;
 		const ImVec2 logo_pos(window_pos.x + 14.0f, window_pos.y + (m_HeaderHeight - logo_size) * 0.5f);
@@ -371,9 +379,9 @@ namespace editor
 			title = m_CurrentProjectName + " - KeyEditor";
 
 		const ImVec2 title_size = ImGui::CalcTextSize(title.c_str());
-		const float title_x = window_pos.x + (viewport->WorkSize.x - title_size.x) * 0.5f;
+		const float title_x = window_pos.x + ((viewport->WorkSize.x - title_size.x) * 0.5f);
 		const float title_y = window_pos.y + (m_HeaderHeight - title_size.y) * 0.5f;
-		foreground->AddText(ImVec2(title_x, title_y), ImGui::GetColorU32(ImVec4(0.78f, 0.78f, 0.82f, 1.0f)), title.c_str());
+		foreground->AddText(ImVec2(title_x, title_y), ImGui::GetColorU32(ImVec4(0.86f, 0.86f, 0.86f, 1.0f)), title.c_str());
 
 		const float window_button_size = m_HeaderHeight - 8.0f;
 		const float window_button_margin_y = (m_HeaderHeight - window_button_size) * 0.5f;
@@ -451,8 +459,8 @@ namespace editor
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 3.0f));
-			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.09f, 0.96f));
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.28f, 0.28f, 0.30f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.204f, 0.204f, 0.204f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.137f, 0.137f, 0.137f, 1.0f));
 			ImGuiWindowFlags debug_menu_flags = ImGuiWindowFlags_NoDecoration
 				| ImGuiWindowFlags_NoDocking
 				| ImGuiWindowFlags_NoSavedSettings
@@ -464,6 +472,100 @@ namespace editor
 			ImGui::PopStyleColor(2);
 			ImGui::PopStyleVar(4);
 		}
+	}
+
+	void MainWindow::DrawHeaderToolbar(const ImVec2& window_pos, float width, float y_offset)
+	{
+		constexpr const char* configs[] = { "Debug", "Release" };
+		const float button_height = 24.0f;
+		const float play_width = 36.0f;
+		const float pause_width = 36.0f;
+		const float combo_width = 112.0f;
+		const float spacing = 6.0f;
+		const float total_width = play_width + pause_width + combo_width + (spacing * 2.0f);
+		const float y = y_offset + ((m_ToolbarHeight - button_height) * 0.5f);
+
+		ImGui::SetCursorScreenPos(ImVec2(window_pos.x + ((width - total_width) * 0.5f), window_pos.y + y));
+
+		auto toolbar_button = [](const char* id, const Icon& icon, const ImVec2& size, bool enabled, const char* fallback_label) {
+			ImGui::BeginDisabled(!enabled);
+			const ImVec2 min = ImGui::GetCursorScreenPos();
+			const bool pressed = ImGui::InvisibleButton(id, size);
+			const bool hovered = enabled && ImGui::IsItemHovered();
+			const bool active = enabled && ImGui::IsItemActive();
+			const ImVec2 max(min.x + size.x, min.y + size.y);
+
+			const ImU32 bg = ImGui::GetColorU32(active
+				? ImVec4(0.23f, 0.47f, 0.73f, 0.75f)
+				: hovered ? ImVec4(0.34f, 0.34f, 0.34f, 1.0f) : ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
+			const ImU32 border = ImGui::GetColorU32(ImVec4(0.16f, 0.16f, 0.16f, 1.0f));
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			draw_list->AddRectFilled(min, max, bg, 1.0f);
+			draw_list->AddRect(min, max, border, 1.0f);
+
+			if (icon.IsValid())
+			{
+				const float icon_size = 14.0f;
+				const ImVec2 icon_min(min.x + ((size.x - icon_size) * 0.5f), min.y + ((size.y - icon_size) * 0.5f));
+				const ImVec2 icon_max(icon_min.x + icon_size, icon_min.y + icon_size);
+				draw_list->AddImage(icon.texture, icon_min, icon_max, ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), ImGui::GetColorU32(enabled ? ImVec4(0.88f, 0.88f, 0.88f, 1.0f) : ImVec4(0.56f, 0.56f, 0.56f, 1.0f)));
+			}
+			else
+			{
+				const ImVec2 label_size = ImGui::CalcTextSize(fallback_label);
+				draw_list->AddText(ImVec2(min.x + ((size.x - label_size.x) * 0.5f), min.y + ((size.y - label_size.y) * 0.5f)), ImGui::GetColorU32(enabled ? ImVec4(0.88f, 0.88f, 0.88f, 1.0f) : ImVec4(0.56f, 0.56f, 0.56f, 1.0f)), fallback_label);
+			}
+
+			ImGui::EndDisabled();
+			return pressed && enabled;
+		};
+
+		const Icon play_icon = IconManager::Instance().GetEditorIcon(m_IsPlaying ? "exit" : "play");
+		if (toolbar_button("##HeaderPlay", play_icon, ImVec2(play_width, button_height), true, m_IsPlaying ? "Stop" : "Play"))
+		{
+			m_IsPlaying = !m_IsPlaying;
+			if (!m_IsPlaying)
+				m_IsPaused = false;
+			Log(m_IsPlaying ? "Play mode entered." : "Play mode stopped.");
+		}
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("%s", m_IsPlaying ? "Stop" : "Play");
+
+		ImGui::SameLine(0.0f, spacing);
+		const Icon pause_icon = IconManager::Instance().GetEditorIcon("pause");
+		if (toolbar_button("##HeaderPause", pause_icon, ImVec2(pause_width, button_height), m_IsPlaying, "Pause"))
+		{
+			m_IsPaused = !m_IsPaused;
+			Log(m_IsPaused ? "Play mode paused." : "Play mode resumed.");
+		}
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			ImGui::SetTooltip("%s", m_IsPaused ? "Resume" : "Pause");
+
+		ImGui::SameLine(0.0f, spacing);
+		ImGui::SetNextItemWidth(combo_width);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 3.0f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.34f, 0.34f, 0.34f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.23f, 0.47f, 0.73f, 0.75f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.30f, 0.30f, 0.30f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.38f, 0.38f, 0.38f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.23f, 0.47f, 0.73f, 0.75f));
+		if (ImGui::BeginCombo("##HeaderBuildConfig", configs[m_BuildConfigIndex]))
+		{
+			for (int i = 0; i < 2; ++i)
+			{
+				const bool selected = m_BuildConfigIndex == i;
+				if (ImGui::Selectable(configs[i], selected))
+					m_BuildConfigIndex = i;
+				if (selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Build configuration");
+		ImGui::PopStyleColor(6);
+		ImGui::PopStyleVar();
 	}
 
 	bool MainWindow::MenuItemWithIcon(const char* label, const char* icon_name, const char* shortcut, bool enabled)
@@ -491,8 +593,7 @@ namespace editor
 			| ImGuiWindowFlags_NoResize
 			| ImGuiWindowFlags_NoMove
 			| ImGuiWindowFlags_NoBringToFrontOnFocus
-			| ImGuiWindowFlags_NoNavFocus
-			| ImGuiWindowFlags_NoBackground;
+			| ImGuiWindowFlags_NoNavFocus;
 
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x, viewport->WorkPos.y + m_HeaderHeight + m_ToolbarHeight));
@@ -510,7 +611,7 @@ namespace editor
 			seed_default_layout = false;
 		}
 
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoWindowMenuButton);
 		ImGui::End();
 	}
 
@@ -525,17 +626,17 @@ namespace editor
 		ImGuiID right_id = ImGui::DockBuilderSplitNode(center_id, ImGuiDir_Right, 0.26f, nullptr, &center_id);
 		ImGuiID bottom_id = ImGui::DockBuilderSplitNode(center_id, ImGuiDir_Down, 0.30f, nullptr, &center_id);
 
-		ImGui::DockBuilderDockWindow("Outliner", left_id);
-		ImGui::DockBuilderDockWindow("Inspector", right_id);
-		ImGui::DockBuilderDockWindow("Content Browser", bottom_id);
-		ImGui::DockBuilderDockWindow("Console", bottom_id);
-		ImGui::DockBuilderDockWindow("Viewport", center_id);
+		ImGui::DockBuilderDockWindow(window_label::Outliner, left_id);
+		ImGui::DockBuilderDockWindow(window_label::Inspector, right_id);
+		ImGui::DockBuilderDockWindow(window_label::ContentBrowser, bottom_id);
+		ImGui::DockBuilderDockWindow(window_label::Console, bottom_id);
+		ImGui::DockBuilderDockWindow(window_label::Viewport, center_id);
 		ImGui::DockBuilderFinish(dockspace_id);
 	}
 
 	void MainWindow::DrawViewport()
 	{
-		ImGui::Begin("Viewport");
+		ImGui::Begin(window_label::Viewport);
 		ImGui::TextUnformatted("Scene viewport");
 		ImGui::Separator();
 		ImGui::TextWrapped("The Vulkan-backed editor shell is running. This panel is ready for engine rendering integration.");
@@ -544,7 +645,7 @@ namespace editor
 
 	void MainWindow::DrawConsole()
 	{
-		ImGui::Begin("Console");
+		ImGui::Begin(window_label::Console);
 		if (ImGui::Button("Clear"))
 			m_Log.clear();
 		ImGui::SameLine();
