@@ -364,7 +364,7 @@ namespace editor
 			ImGui::EndMenuBar();
 		}
 
-		DrawHeaderToolbar(window_pos, viewport->WorkSize.x, m_HeaderHeight);
+		DrawHeaderToolbar(window_pos, m_HeaderHeight);
 
 		const float logo_size = 20.0f;
 		const ImVec2 logo_pos(window_pos.x + 14.0f, window_pos.y + (m_HeaderHeight - logo_size) * 0.5f);
@@ -474,7 +474,7 @@ namespace editor
 		}
 	}
 
-	void MainWindow::DrawHeaderToolbar(const ImVec2& window_pos, float width, float y_offset)
+	void MainWindow::DrawHeaderToolbar(const ImVec2& window_pos, float y_offset)
 	{
 		constexpr const char* configs[] = { "Debug", "Release" };
 		const float button_height = 24.0f;
@@ -482,10 +482,10 @@ namespace editor
 		const float pause_width = 36.0f;
 		const float combo_width = 112.0f;
 		const float spacing = 6.0f;
-		const float total_width = play_width + pause_width + combo_width + (spacing * 2.0f);
+		const float toolbar_left_margin = 8.0f;
 		const float y = y_offset + ((m_ToolbarHeight - button_height) * 0.5f);
 
-		ImGui::SetCursorScreenPos(ImVec2(window_pos.x + ((width - total_width) * 0.5f), window_pos.y + y));
+		ImGui::SetCursorScreenPos(ImVec2(window_pos.x + toolbar_left_margin, window_pos.y + y));
 
 		auto toolbar_button = [](const char* id, const Icon& icon, const ImVec2& size, bool enabled, const char* fallback_label) {
 			ImGui::BeginDisabled(!enabled);
@@ -543,7 +543,8 @@ namespace editor
 
 		ImGui::SameLine(0.0f, spacing);
 		ImGui::SetNextItemWidth(combo_width);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 3.0f));
+		const float combo_padding_y = (button_height - ImGui::GetFontSize()) * 0.5f;
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, combo_padding_y > 0.0f ? combo_padding_y : 0.0f));
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.34f, 0.34f, 0.34f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.23f, 0.47f, 0.73f, 0.75f));

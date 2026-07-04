@@ -58,7 +58,7 @@ namespace editor
 		void DrawHeaderMenus();
 		void DrawFileMenuItems();
 		void DrawAppHeader();
-		void DrawHeaderToolbar(const ImVec2& window_pos, float width, float y_offset);
+		void DrawHeaderToolbar(const ImVec2& window_pos, float y_offset);
 		bool MenuItemWithIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
 		bool MenuItemWithOutlinerIcon(const char* label, const char* icon_name, const char* shortcut = nullptr, bool enabled = true);
 		void DrawDockspace();
